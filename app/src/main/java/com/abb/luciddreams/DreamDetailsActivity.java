@@ -25,9 +25,9 @@ public class DreamDetailsActivity extends AppCompatActivity {
 
     private String journalText;
     private boolean initialNightmareState;
-    private String selectedMood = "☁"; // Default
-
-    private LinearLayout moodCalm, moodStressed, moodUnclear, moodLucid, moodIntense;
+    private String selectedMood = "Unclear"; // Default
+ 
+    private LinearLayout moodIntense, moodStressed, moodUnclear, moodCalm, moodLucid;
     private SeekBar sbClarity, sbLucidity;
     private TextInputEditText etTagInput;
     private ChipGroup chipGroupTags;
@@ -51,11 +51,11 @@ public class DreamDetailsActivity extends AppCompatActivity {
         ivBack.setOnClickListener(v -> finish());
 
         // Mood Selectors
-        moodCalm = findViewById(R.id.moodCalm);
+        moodIntense = findViewById(R.id.moodIntense);
         moodStressed = findViewById(R.id.moodStressed);
         moodUnclear = findViewById(R.id.moodUnclear);
+        moodCalm = findViewById(R.id.moodCalm);
         moodLucid = findViewById(R.id.moodLucid);
-        moodIntense = findViewById(R.id.moodIntense);
 
         setupMoodClickListeners();
 
@@ -106,9 +106,7 @@ public class DreamDetailsActivity extends AppCompatActivity {
             repo.insertDream(dream);
 
             // Clear draft
-            SharedPreferences.Editor editor = getSharedPreferences("DreamPrefs", Context.MODE_PRIVATE).edit();
-            editor.remove("DraftJournal");
-            editor.apply();
+            getSharedPreferences("DreamPrefs", Context.MODE_PRIVATE).edit().remove("DraftJournal").apply();
 
             Toast.makeText(this, "Dream saved successfully! ✨", Toast.LENGTH_SHORT).show();
 
@@ -121,22 +119,22 @@ public class DreamDetailsActivity extends AppCompatActivity {
     }
 
     private void setupMoodClickListeners() {
-        moodCalm.setOnClickListener(v -> updateMoodSelection("🌙", moodCalm));
-        moodStressed.setOnClickListener(v -> updateMoodSelection("⚡", moodStressed));
-        moodUnclear.setOnClickListener(v -> updateMoodSelection("☁", moodUnclear));
-        moodLucid.setOnClickListener(v -> updateMoodSelection("✨", moodLucid));
-        moodIntense.setOnClickListener(v -> updateMoodSelection("🔥", moodIntense));
-        updateMoodSelection("☁", moodUnclear); // Default
+        moodIntense.setOnClickListener(v -> updateMoodSelection("Intense", moodIntense));
+        moodStressed.setOnClickListener(v -> updateMoodSelection("Stressed", moodStressed));
+        moodUnclear.setOnClickListener(v -> updateMoodSelection("Unclear", moodUnclear));
+        moodCalm.setOnClickListener(v -> updateMoodSelection("Calm", moodCalm));
+        moodLucid.setOnClickListener(v -> updateMoodSelection("Lucid", moodLucid));
+        updateMoodSelection("Unclear", moodUnclear); // Default
     }
 
     private void updateMoodSelection(String moodText, LinearLayout selectedCard) {
         this.selectedMood = moodText;
         
-        moodCalm.setBackgroundResource(R.drawable.bg_mood_unselected);
+        moodIntense.setBackgroundResource(R.drawable.bg_mood_unselected);
         moodStressed.setBackgroundResource(R.drawable.bg_mood_unselected);
         moodUnclear.setBackgroundResource(R.drawable.bg_mood_unselected);
+        moodCalm.setBackgroundResource(R.drawable.bg_mood_unselected);
         moodLucid.setBackgroundResource(R.drawable.bg_mood_unselected);
-        moodIntense.setBackgroundResource(R.drawable.bg_mood_unselected);
 
         selectedCard.setBackgroundResource(R.drawable.bg_mood_selected);
     }

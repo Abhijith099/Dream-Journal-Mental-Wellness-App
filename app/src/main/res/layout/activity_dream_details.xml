@@ -68,7 +68,7 @@
                 android:layout_marginBottom="32dp">
 
                 <LinearLayout
-                    android:id="@+id/moodCalm"
+                    android:id="@+id/moodIntense"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -78,8 +78,8 @@
                     android:paddingBottom="12dp"
                     android:layout_marginEnd="4dp"
                     android:background="@drawable/bg_mood_unselected">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🌙" android:textSize="24sp" />
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Calm" android:textColor="#FFFFFF" android:textSize="12sp" android:layout_marginTop="4dp" android:fontFamily="@font/poppins" />
+                    <ImageView android:layout_width="28dp" android:layout_height="28dp" android:src="@drawable/ic_mood_terrible" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Intense" android:textColor="#FFFFFF" android:textSize="10dp" android:layout_marginTop="4dp" android:fontFamily="@font/poppins" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -93,8 +93,8 @@
                     android:paddingBottom="12dp"
                     android:layout_marginHorizontal="2dp"
                     android:background="@drawable/bg_mood_unselected">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="⚡" android:textSize="24sp" />
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Stressed" android:textColor="#FFFFFF" android:textSize="12sp" android:layout_marginTop="4dp" android:fontFamily="@font/poppins" />
+                    <ImageView android:layout_width="28dp" android:layout_height="28dp" android:src="@drawable/ic_mood_bad" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Stressed" android:textColor="#FFFFFF" android:textSize="10dp" android:layout_marginTop="4dp" android:fontFamily="@font/poppins" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -108,8 +108,23 @@
                     android:paddingBottom="12dp"
                     android:layout_marginHorizontal="2dp"
                     android:background="@drawable/bg_mood_unselected">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="☁" android:textSize="24sp" />
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Unclear" android:textColor="#FFFFFF" android:textSize="12sp" android:layout_marginTop="4dp" android:fontFamily="@font/poppins" />
+                    <ImageView android:layout_width="28dp" android:layout_height="28dp" android:src="@drawable/ic_mood_neutral" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Unclear" android:textColor="#FFFFFF" android:textSize="10dp" android:layout_marginTop="4dp" android:fontFamily="@font/poppins" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/moodCalm"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:layout_marginHorizontal="2dp"
+                    android:background="@drawable/bg_mood_unselected">
+                    <ImageView android:layout_width="28dp" android:layout_height="28dp" android:src="@drawable/ic_mood_good" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Calm" android:textColor="#FFFFFF" android:textSize="10dp" android:layout_marginTop="4dp" android:fontFamily="@font/poppins" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -121,25 +136,10 @@
                     android:gravity="center"
                     android:paddingTop="12dp"
                     android:paddingBottom="12dp"
-                    android:layout_marginHorizontal="2dp"
-                    android:background="@drawable/bg_mood_unselected">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="✨" android:textSize="24sp" />
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Lucid" android:textColor="#FFFFFF" android:textSize="12sp" android:layout_marginTop="4dp" android:fontFamily="@font/poppins" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/moodIntense"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:paddingTop="12dp"
-                    android:paddingBottom="12dp"
                     android:layout_marginStart="4dp"
                     android:background="@drawable/bg_mood_unselected">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🔥" android:textSize="24sp" />
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Intense" android:textColor="#FFFFFF" android:textSize="12sp" android:layout_marginTop="4dp" android:fontFamily="@font/poppins" />
+                    <ImageView android:layout_width="28dp" android:layout_height="28dp" android:src="@drawable/ic_mood_great" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Lucid" android:textColor="#FFFFFF" android:textSize="10dp" android:layout_marginTop="4dp" android:fontFamily="@font/poppins" />
                 </LinearLayout>
             </LinearLayout>
 
