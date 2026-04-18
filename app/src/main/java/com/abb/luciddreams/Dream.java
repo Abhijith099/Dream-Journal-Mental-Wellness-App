@@ -1,31 +1,67 @@
 package com.abb.luciddreams;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Dream {
-    private String month;
-    private String dayOfWeek;
-    private String dayNumber;
-    private String fullDate;
+    private long id;
+    private long timestamp;
     private String description;
-    private List<String> tags;
-    private boolean showMonthHeader;
+    private String mood;
+    private int clarity;
+    private int lucidity;
+    private boolean isNightmare;
+    private boolean isRecurring;
+    private String tags; // Comma separated for SQLite
 
-    public Dream(String month, String dayOfWeek, String dayNumber, String fullDate, String description, List<String> tags, boolean showMonthHeader) {
-        this.month = month;
-        this.dayOfWeek = dayOfWeek;
-        this.dayNumber = dayNumber;
-        this.fullDate = fullDate;
-        this.description = description;
-        this.tags = tags;
-        this.showMonthHeader = showMonthHeader;
+    // Empty constructor needed for instantiating in some cases
+    public Dream() {
     }
 
-    public String getMonth() { return month; }
-    public String getDayOfWeek() { return dayOfWeek; }
-    public String getDayNumber() { return dayNumber; }
-    public String getFullDate() { return fullDate; }
+    public Dream(long id, long timestamp, String description, String mood, int clarity, int lucidity, boolean isNightmare, boolean isRecurring, String tags) {
+        this.id = id;
+        this.timestamp = timestamp;
+        this.description = description;
+        this.mood = mood;
+        this.clarity = clarity;
+        this.lucidity = lucidity;
+        this.isNightmare = isNightmare;
+        this.isRecurring = isRecurring;
+        this.tags = tags;
+    }
+
+    public long getId() { return id; }
+    public void setId(long id) { this.id = id; }
+    
+    public long getTimestamp() { return timestamp; }
+    public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
+    
     public String getDescription() { return description; }
-    public List<String> getTags() { return tags; }
-    public boolean isShowMonthHeader() { return showMonthHeader; }
+    public void setDescription(String description) { this.description = description; }
+    
+    public String getMood() { return mood; }
+    public void setMood(String mood) { this.mood = mood; }
+    
+    public int getClarity() { return clarity; }
+    public void setClarity(int clarity) { this.clarity = clarity; }
+    
+    public int getLucidity() { return lucidity; }
+    public void setLucidity(int lucidity) { this.lucidity = lucidity; }
+    
+    public boolean isNightmare() { return isNightmare; }
+    public void setNightmare(boolean nightmare) { isNightmare = nightmare; }
+    
+    public boolean isRecurring() { return isRecurring; }
+    public void setRecurring(boolean recurring) { isRecurring = recurring; }
+    
+    public String getTags() { return tags; }
+    public void setTags(String tags) { this.tags = tags; }
+
+    public List<String> getTagsList() {
+        if (tags == null || tags.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
+        return Arrays.asList(tags.split(","));
+    }
 }

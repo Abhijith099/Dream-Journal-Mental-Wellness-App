@@ -8,11 +8,19 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class DreamAdapter extends RecyclerView.Adapter<DreamAdapter.DreamViewHolder> {
 
     private List<Dream> dreamList;
+
+    public void updateList(List<Dream> newList) {
+        this.dreamList = newList;
+        notifyDataSetChanged();
+    }
 
     public DreamAdapter(List<Dream> dreamList) {
         this.dreamList = dreamList;
@@ -29,23 +37,27 @@ public class DreamAdapter extends RecyclerView.Adapter<DreamAdapter.DreamViewHol
     public void onBindViewHolder(@NonNull DreamViewHolder holder, int position) {
         Dream dream = dreamList.get(position);
 
-        if (dream.isShowMonthHeader()) {
-            holder.tvMonthHeader.setVisibility(View.VISIBLE);
-            holder.tvMonthHeader.setText(dream.getMonth());
+        // Date format
+        SimpleDateFormat sdf = new SimpleDateFormat("h:mm a", Locale.getDefault());
+        holder.tvCardDate.setText(sdf.format(new Date(dream.getTimestamp())));
+
+        holder.tvDescription.setText(dream.getDescription());
+        holder.tvMoodIcon.setText(dream.getMood() != null ? dream.getMood() : "😐");
+
+        if (dream.isNightmare()) {
+            holder.tvNightmareBadge.setVisibility(View.VISIBLE);
         } else {
-            holder.tvMonthHeader.setVisibility(View.GONE);
+            holder.tvNightmareBadge.setVisibility(View.GONE);
         }
 
-        holder.tvDayOfWeek.setText(dream.getDayOfWeek());
-        holder.tvDayNumber.setText(dream.getDayNumber());
-        holder.tvCardDate.setText(dream.getFullDate());
-        holder.tvDescription.setText(dream.getDescription());
-
-        // Update tags dynamically if needed, or leave static for UI demo
+        // Tags
         holder.llTags.removeAllViews();
-        for (String tag : dream.getTags()) {
+        List<String> tags = dream.getTagsList();
+        for (String tag : tags) {
+            if(tag.trim().isEmpty()) continue;
+            
             TextView tagView = new TextView(holder.itemView.getContext());
-            tagView.setText(tag);
+            tagView.setText(tag.trim());
             tagView.setBackgroundResource(R.drawable.bg_tag);
             tagView.setTextColor(holder.itemView.getContext().getResources().getColor(R.color.text_tag, null));
             tagView.setTextSize(12);
@@ -67,20 +79,19 @@ public class DreamAdapter extends RecyclerView.Adapter<DreamAdapter.DreamViewHol
 
     @Override
     public int getItemCount() {
-        return dreamList.size();
+        return dreamList == null ? 0 : dreamList.size();
     }
 
     static class DreamViewHolder extends RecyclerView.ViewHolder {
-        TextView tvMonthHeader, tvDayOfWeek, tvDayNumber, tvCardDate, tvDescription;
+        TextView tvCardDate, tvDescription, tvMoodIcon, tvNightmareBadge;
         LinearLayout llTags;
 
         public DreamViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvMonthHeader = itemView.findViewById(R.id.tvMonthHeader);
-            tvDayOfWeek = itemView.findViewById(R.id.tvDayOfWeek);
-            tvDayNumber = itemView.findViewById(R.id.tvDayNumber);
             tvCardDate = itemView.findViewById(R.id.tvCardDate);
             tvDescription = itemView.findViewById(R.id.tvDescription);
+            tvMoodIcon = itemView.findViewById(R.id.tvMoodIcon);
+            tvNightmareBadge = itemView.findViewById(R.id.tvNightmareBadge);
             llTags = itemView.findViewById(R.id.llTags);
         }
     }
