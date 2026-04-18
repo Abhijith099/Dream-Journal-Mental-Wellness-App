@@ -2,4 +2,28 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    
+    <!-- Gradient Colors -->
+    <color name="gradient_top">#0F1C3F</color>
+    <color name="gradient_mid">#1B2A5B</color>
+    <color name="gradient_bottom">#243A7A</color>
+
+    <!-- Text Colors -->
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#C9D4F1</color>
+    <color name="text_nav">#B8C4E8</color>
+    <color name="text_card_desc">#AFC1E6</color>
+    <color name="text_tag">#D6E2FF</color>
+    <color name="text_tag_highlight">#E6EDFF</color>
+    
+    <!-- Highlights and Glows -->
+    <color name="glow_primary">#4FC3F7</color>
+    <color name="glow_light">#6FD3FF</color>
+    <color name="glow_dark">#38BDF8</color>
+
+    <!-- Card Backgrounds -->
+    <color name="card_bg">#1E2F5C</color>
+    <color name="card_bg_alt">#22366B</color>
+    <color name="tag_bg">#2B417F</color>
+    <color name="tag_bg_highlight">#2A3F7F</color>
 </resources>

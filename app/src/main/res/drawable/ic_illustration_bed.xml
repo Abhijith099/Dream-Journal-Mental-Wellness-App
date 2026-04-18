@@ -1,0 +1,27 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+    <!-- Circular Background -->
+    <path
+        android:fillColor="#4F658D"
+        android:pathData="M100,100m-80,0a80,80 0,1 1,160 0a80,80 0,1 1,-160 0" />
+    <!-- Moon -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M80,40 a20,20 0 1,0 15,35 a25,25 0 1,1 -15,-35 z" />
+    <!-- Blanket shape rough approx -->
+    <path
+        android:fillColor="#24A6D9"
+        android:pathData="M40,110 Q60,80 120,95 Q140,120 150,110 Q160,115 145,130 Q120,135 110,125 Q90,130 50,120 Z" />
+    <path
+        android:fillColor="#151E33"
+        android:pathData="M40,110 Q60,80 120,95 Q140,120 150,110 Q160,115 145,130 Q120,135 110,125 Q90,130 50,120 Z" 
+        android:strokeColor="#151E33"
+        android:strokeWidth="2"
+        android:fillAlpha="0" />
+    <path
+        android:fillColor="#E5E7EB"
+        android:pathData="M140,95 A15,15 0 1 1 125,115 Z" />
+</vector>
