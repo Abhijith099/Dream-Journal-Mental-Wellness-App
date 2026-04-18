@@ -387,6 +387,7 @@ public class DreamRepository {
             if (detailedCursor.getInt(2) == 1) nightmaresInPeriod++;
         }
         detailedCursor.close();
+        db.close();
 
         stats.put("totalDreamsPeriod", selectedCount);
         stats.put("totalWords", totalWords);
@@ -400,7 +401,6 @@ public class DreamRepository {
             stats.put("avgTags", 0.0);
         }
 
-        db.close();
         return stats;
     }
 }

@@ -116,20 +116,23 @@ public class PatternsActivity extends AppCompatActivity {
             case "Year": 
                 cal.set(Calendar.DAY_OF_YEAR, 1);
                 return cal.getTimeInMillis();
-            case "Lifetime": return 0;
-            default: return 0;
+            default: return 0; // Covers "Lifetime" and any other cases
         }
     }
 
     private void loadData(long startTime) {
         Map<String, Object> stats = repository.getStatsSummary(startTime);
-        int periodCount = (int) stats.getOrDefault("totalDreamsPeriod", 0);
+        Object periodObj = stats.getOrDefault("totalDreamsPeriod", 0);
+        Object lifetimeObj = stats.getOrDefault("totalDreamsLifetime", 0);
         
-        if (periodCount == 0 && startTime != 0) {
-            if ((int)repository.getStatsSummary(0).getOrDefault("totalDreamsLifetime", 0) == 0) {
-                llEmptyState.setVisibility(View.VISIBLE);
-                return;
-            }
+        int periodCount = (periodObj instanceof Integer) ? (int) periodObj : 0;
+        int lifetimeCount = (lifetimeObj instanceof Integer) ? (int) lifetimeObj : 0;
+        
+        if (lifetimeCount == 0) {
+            llEmptyState.setVisibility(View.VISIBLE);
+            tvPeriodDreams.setText("0 Dreams");
+            tvTotalDreams.setText("0 Total");
+            return;
         }
         llEmptyState.setVisibility(View.GONE);
 
@@ -139,8 +142,40 @@ public class PatternsActivity extends AppCompatActivity {
         updateChart(repository.getMoodHistory(startTime));
         updateKeywords(repository.getKeywords(startTime));
         
-        tvPeriodDreams.setText(periodCount + " Dreams");
-        tvTotalDreams.setText(stats.getOrDefault("totalDreamsLifetime", 0) + " Total");
+        tvPeriodDreams.setText(periodCount + (periodCount == 1 ? " Dream" : " Dreams"));
+        tvTotalDreams.setText(lifetimeCount + " Total");
+    }
+
+    private void updateFactors(Map<String, Double> factors) {
+        llFactorsContainer.removeAllViews();
+        if (factors.isEmpty()) return;
+
+        LayoutInflater inflater = LayoutInflater.from(this);
+        
+        addFactorRow(inflater, "Average Clarity", factors.getOrDefault("avgClarity", 0.0), 10.0, true);
+        addFactorRow(inflater, "Average Lucidity", factors.getOrDefault("avgLucidity", 0.0), 10.0, true);
+        addFactorRow(inflater, "Nightmare Frequency", factors.getOrDefault("nightmarePercent", 0.0), 100.0, false);
+        addFactorRow(inflater, "Recurring Dreams", factors.getOrDefault("recurringPercent", 0.0), 100.0, false);
+    }
+
+    private void addFactorRow(LayoutInflater inflater, String label, Double value, double max, boolean isDecimal) {
+        View itemView = inflater.inflate(R.layout.item_factor_row, llFactorsContainer, false);
+        TextView tvLabel = itemView.findViewById(R.id.tvFactorLabel);
+        TextView tvValue = itemView.findViewById(R.id.tvFactorValue);
+        ProgressBar pb = itemView.findViewById(R.id.pbFactor);
+
+        tvLabel.setText(label);
+        
+        if (isDecimal) {
+            tvValue.setText(String.format(Locale.getDefault(), "%.1f", value));
+        } else {
+            tvValue.setText(Math.round(value) + "%");
+        }
+        
+        pb.setMax((int) (max * 10));
+        ObjectAnimator.ofInt(pb, "progress", 0, (int) (value * 10)).setDuration(1000).start();
+        
+        llFactorsContainer.addView(itemView);
     }
 
     private void updateInsight(long startTime) {
@@ -175,11 +210,10 @@ public class PatternsActivity extends AppCompatActivity {
             String mood = entry.getKey();
             ivIcon.setImageResource(getMoodDrawable(mood));
             
-            // Format: 😄 Happy — 6 dreams
             String emoji = getMoodEmoji(mood);
             String name = getMoodName(mood);
-            tvLabel.setText(emoji + " " + name + " — " + entry.getValue() + (entry.getValue() == 1 ? " dream" : " dreams"));
-            tvCount.setVisibility(View.GONE); // Hide separate count if using combined string
+            tvLabel.setText(name); // Removed emoji from label to match modern UI
+            tvCount.setText(entry.getValue() + (entry.getValue() == 1 ? " dream" : " dreams"));
             
             pb.setMax(max);
             ObjectAnimator.ofInt(pb, "progress", 0, entry.getValue()).setDuration(1200).start();
@@ -204,8 +238,9 @@ public class PatternsActivity extends AppCompatActivity {
                 chip.setChipBackgroundColorResource(R.color.accent_purple);
                 chip.setTextSize(15f);
             }
-            
-            chip.setChipCornerRadius(44f);
+            chip.setShapeAppearanceModel(chip.getShapeAppearanceModel().toBuilder()
+                    .setAllCornerSizes(44f)
+                    .build());
             chip.setChipStrokeWidth(0);
             chip.setPadding(24, 12, 24, 12);
             cgKeywords.addView(chip);
@@ -253,7 +288,7 @@ public class PatternsActivity extends AppCompatActivity {
             @Override
             public String getFormattedValue(float value) {
                 int val = Math.round(value);
-                return getMoodEmoji(getMoodFromValue(val));
+                return getMoodName(getMoodFromValue(val)); // Show text labels instead of emojis if emojis fail to render
             }
         });
 
