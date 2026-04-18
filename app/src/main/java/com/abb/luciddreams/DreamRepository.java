@@ -297,22 +297,16 @@ public class DreamRepository {
         return dreams;
     }
 
-    public java.util.Map<String, Object> getStatsSummary(long startTime) {
-        java.util.Map<String, Object> stats = new java.util.HashMap<>();
+    public List<java.util.Map.Entry<String, Integer>> getKeywords(long startTime) {
+        java.util.Map<String, Integer> wordCounts = new java.util.HashMap<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         
-        // Total dreams (lifetime)
-        Cursor lifetimeCursor = db.rawQuery("SELECT COUNT(*) FROM " + DreamDbHelper.TABLE_DREAMS, null);
-        if (lifetimeCursor.moveToFirst()) stats.put("totalDreamsLifetime", lifetimeCursor.getInt(0));
-        lifetimeCursor.close();
-
-        // Selected period stats
         String selection = startTime > 0 ? DreamDbHelper.COLUMN_TIMESTAMP + " >= ?" : null;
         String[] selectionArgs = startTime > 0 ? new String[]{String.valueOf(startTime)} : null;
 
         Cursor cursor = db.query(
                 DreamDbHelper.TABLE_DREAMS,
-                new String[]{"COUNT(*)", DreamDbHelper.COLUMN_DESCRIPTION, DreamDbHelper.COLUMN_TAGS},
+                new String[]{DreamDbHelper.COLUMN_DESCRIPTION},
                 selection,
                 selectionArgs,
                 null,
@@ -320,14 +314,55 @@ public class DreamRepository {
                 null
         );
 
+        java.util.Set<String> stopWords = new java.util.HashSet<>(java.util.Arrays.asList(
+            "the", "a", "an", "i", "was", "in", "to", "and", "of", "my", "me", "with", "it", "that", "at", "for", "on", 
+            "he", "she", "they", "we", "had", "have", "be", "is", "his", "her", "but", "so", "this", "up", "out", 
+            "about", "into", "by", "all", "were", "when", "there", "then", "very", "could", "would", "been", "from",
+            "if", "or", "as", "what", "how", "who", "where", "one", "just", "like", "get", "got", "can", "their"
+        ));
+
+        while (cursor.moveToNext()) {
+            String desc = cursor.getString(0);
+            if (desc != null) {
+                String[] words = desc.toLowerCase().replaceAll("[^a-zA-Z ]", "").split("\\s+");
+                for (String word : words) {
+                    if (word.length() > 3 && !stopWords.contains(word)) {
+                        wordCounts.put(word, wordCounts.getOrDefault(word, 0) + 1);
+                    }
+                }
+            }
+        }
+        cursor.close();
+        db.close();
+
+        List<java.util.Map.Entry<String, Integer>> sortedWords = new ArrayList<>(wordCounts.entrySet());
+        sortedWords.sort((a, b) -> b.getValue().compareTo(a.getValue()));
+        return sortedWords.size() > 12 ? sortedWords.subList(0, 12) : sortedWords;
+    }
+
+    public List<java.util.Map.Entry<String, Integer>> getMoodSummary(long startTime) {
+        java.util.Map<String, Integer> counts = getEmotionsCount(startTime);
+        List<java.util.Map.Entry<String, Integer>> sortedMoods = new ArrayList<>(counts.entrySet());
+        sortedMoods.sort((a, b) -> b.getValue().compareTo(a.getValue()));
+        return sortedMoods;
+    }
+
+    public java.util.Map<String, Object> getStatsSummary(long startTime) {
+        java.util.Map<String, Object> stats = new java.util.HashMap<>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        
+        Cursor lifetimeCursor = db.rawQuery("SELECT COUNT(*) FROM " + DreamDbHelper.TABLE_DREAMS, null);
+        if (lifetimeCursor.moveToFirst()) stats.put("totalDreamsLifetime", lifetimeCursor.getInt(0));
+        lifetimeCursor.close();
+
+        String selection = startTime > 0 ? DreamDbHelper.COLUMN_TIMESTAMP + " >= ?" : null;
+        String[] selectionArgs = startTime > 0 ? new String[]{String.valueOf(startTime)} : null;
+
         int selectedCount = 0;
         long totalWords = 0;
         java.util.Set<String> uniqueTags = new java.util.HashSet<>();
         int nightmaresInPeriod = 0;
 
-        // Reset cursor and fetch more details if needed, or query again.
-        // Let's do a more detailed fetch if selected period is small, or specific aggregate queries.
-        
         Cursor detailedCursor = db.query(
                 DreamDbHelper.TABLE_DREAMS,
                 new String[]{DreamDbHelper.COLUMN_DESCRIPTION, DreamDbHelper.COLUMN_TAGS, DreamDbHelper.COLUMN_IS_NIGHTMARE},
@@ -341,7 +376,7 @@ public class DreamRepository {
         while (detailedCursor.moveToNext()) {
             selectedCount++;
             String desc = detailedCursor.getString(0);
-            if (desc != null) {
+            if (desc != null && !desc.trim().isEmpty()) {
                 totalWords += desc.trim().split("\\s+").length;
             }
             String tags = detailedCursor.getString(1);
@@ -359,7 +394,7 @@ public class DreamRepository {
         stats.put("totalNightmares", nightmaresInPeriod);
         if (selectedCount > 0) {
             stats.put("avgWords", (double) totalWords / selectedCount);
-            stats.put("avgTags", (double) uniqueTags.size() / selectedCount); // This is absolute unique tags / dreams, or sum of tag counts? User said "Avg per dream", usually means total tags recorded / dreams.
+            stats.put("avgTags", (double) uniqueTags.size() / selectedCount);
         } else {
             stats.put("avgWords", 0.0);
             stats.put("avgTags", 0.0);

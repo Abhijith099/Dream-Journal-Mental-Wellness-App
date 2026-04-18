@@ -16,17 +16,26 @@
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:title="Patterns"
-            app:titleTextColor="#FFFFFF"
-            app:titleCentered="true" />
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp"
+            app:contentInsetStart="16dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Patterns"
+                android:textColor="#FFFFFF"
+                android:textSize="30sp"
+                android:fontFamily="@font/poppins"
+                android:textStyle="bold" />
+        </androidx.appcompat.widget.Toolbar>
 
         <com.google.android.material.button.MaterialButtonToggleGroup
             android:id="@+id/toggleGroupFilter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="20dp"
             app:checkedButton="@+id/btnMonth"
             app:singleSelection="true"
             app:selectionRequired="true">
@@ -40,7 +49,9 @@
                 android:textColor="#C5CAE9"
                 app:strokeColor="#232C61"
                 app:backgroundTint="@color/selector_filter_bg"
-                android:textSize="12sp" />
+                android:textSize="13sp"
+                android:textAllCaps="false"
+                android:fontFamily="@font/poppins" />
 
             <Button
                 android:id="@+id/btnMonth"
@@ -51,7 +62,9 @@
                 android:textColor="#C5CAE9"
                 app:strokeColor="#232C61"
                 app:backgroundTint="@color/selector_filter_bg"
-                android:textSize="12sp" />
+                android:textSize="13sp"
+                android:textAllCaps="false"
+                android:fontFamily="@font/poppins" />
 
             <Button
                 android:id="@+id/btnYear"
@@ -62,7 +75,9 @@
                 android:textColor="#C5CAE9"
                 app:strokeColor="#232C61"
                 app:backgroundTint="@color/selector_filter_bg"
-                android:textSize="12sp" />
+                android:textSize="13sp"
+                android:textAllCaps="false"
+                android:fontFamily="@font/poppins" />
 
             <Button
                 android:id="@+id/btnLifetime"
@@ -73,7 +88,9 @@
                 android:textColor="#C5CAE9"
                 app:strokeColor="#232C61"
                 app:backgroundTint="@color/selector_filter_bg"
-                android:textSize="12sp" />
+                android:textSize="13sp"
+                android:textAllCaps="false"
+                android:fontFamily="@font/poppins" />
         </com.google.android.material.button.MaterialButtonToggleGroup>
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -81,8 +98,9 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#171F4B"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:paddingBottom="80dp"
+        android:paddingBottom="100dp"
         android:clipToPadding="false">
 
         <LinearLayout
@@ -91,66 +109,49 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Emotions Section -->
+            <!-- Insight Section -->
+            <TextView
+                android:id="@+id/tvInsight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="“Your dreams this month focused on fear and transformation.”"
+                android:textColor="#C5CAE9"
+                android:textSize="16sp"
+                android:fontFamily="@font/poppins"
+                android:textStyle="italic"
+                android:gravity="center"
+                android:layout_marginBottom="24dp" />
+
+            <!-- Mood Summary Section -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardBackgroundColor="#232C61"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="4dp"
-                android:layout_marginBottom="16dp">
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                android:layout_marginBottom="20dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="20dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Most Frequent Emotions"
+                        android:text="Mood Summary"
                         android:textColor="#FFFFFF"
-                        android:textSize="18sp"
+                        android:textSize="20sp"
+                        android:fontFamily="@font/poppins"
                         android:textStyle="bold"
-                        android:layout_marginBottom="16dp" />
+                        android:layout_marginBottom="18dp" />
 
                     <LinearLayout
-                        android:id="@+id/llEmotionsContainer"
+                        android:id="@+id/llMoodSummaryContainer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Keywords Section -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardBackgroundColor="#232C61"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="4dp"
-                android:layout_marginBottom="16dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Most Used Keywords"
-                        android:textColor="#FFFFFF"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:layout_marginBottom="16dp" />
-
-                    <com.google.android.material.chip.ChipGroup
-                        android:id="@+id/cgKeywords"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -159,133 +160,31 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardBackgroundColor="#232C61"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="4dp"
-                android:layout_marginBottom="16dp">
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                android:layout_marginBottom="20dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="20dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Dream Factors"
                         android:textColor="#FFFFFF"
-                        android:textSize="18sp"
+                        android:textSize="20sp"
+                        android:fontFamily="@font/poppins"
                         android:textStyle="bold"
-                        android:layout_marginBottom="16dp" />
+                        android:layout_marginBottom="12dp" />
 
-                    <GridLayout
+                    <LinearLayout
+                        android:id="@+id/llFactorsContainer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:columnCount="2"
-                        android:rowCount="2"
-                        android:alignmentMode="alignMargins">
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_columnWeight="1"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:padding="8dp">
-                            <com.google.android.material.progressindicator.CircularProgressIndicator
-                                android:id="@+id/cpClarity"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                app:indicatorColor="#39C6FF"
-                                app:trackColor="#1AFFFFFF"
-                                app:indicatorSize="64dp"
-                                app:trackThickness="6dp" />
-                            <TextView
-                                android:id="@+id/tvClarityLabel"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="74% Clarity"
-                                android:textColor="#C5CAE9"
-                                android:textSize="12sp"
-                                android:layout_marginTop="8dp" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_columnWeight="1"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:padding="8dp">
-
-                            <com.google.android.material.progressindicator.CircularProgressIndicator
-                                android:id="@+id/cpLucidity"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                app:indicatorColor="#9A63FF"
-                                app:trackColor="#1AFFFFFF"
-                                app:indicatorSize="64dp"
-                                app:trackThickness="6dp" />
-                            <TextView
-                                android:id="@+id/tvLucidityLabel"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="52% Lucidity"
-                                android:textColor="#C5CAE9"
-                                android:textSize="12sp"
-                                android:layout_marginTop="8dp" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_columnWeight="1"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:padding="8dp">
-                            <com.google.android.material.progressindicator.CircularProgressIndicator
-                                android:id="@+id/cpNightmare"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                app:indicatorColor="#FF5252"
-                                app:trackColor="#1AFFFFFF"
-                                app:indicatorSize="64dp"
-                                app:trackThickness="6dp" />
-                            <TextView
-                                android:id="@+id/tvNightmareLabel"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="18% Nightmare"
-                                android:textColor="#C5CAE9"
-                                android:textSize="12sp"
-                                android:layout_marginTop="8dp" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_columnWeight="1"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:padding="8dp">
-                            <com.google.android.material.progressindicator.CircularProgressIndicator
-                                android:id="@+id/cpRecurring"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                app:indicatorColor="#F6C65B"
-                                app:trackColor="#1AFFFFFF"
-                                app:indicatorSize="64dp"
-                                app:trackThickness="6dp" />
-                            <TextView
-                                android:id="@+id/tvRecurringLabel"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="12% Recurring"
-                                android:textColor="#C5CAE9"
-                                android:textSize="12sp"
-                                android:layout_marginTop="8dp" />
-                        </LinearLayout>
-                    </GridLayout>
+                        android:orientation="vertical" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -294,189 +193,154 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardBackgroundColor="#232C61"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="4dp"
-                android:layout_marginBottom="16dp">
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                android:layout_marginBottom="24dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="20dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="How I Felt"
                         android:textColor="#FFFFFF"
-                        android:textSize="18sp"
+                        android:textSize="20sp"
+                        android:fontFamily="@font/poppins"
                         android:textStyle="bold"
-                        android:layout_marginBottom="16dp" />
+                        android:layout_marginBottom="20dp" />
 
                     <com.github.mikephil.charting.charts.LineChart
                         android:id="@+id/moodChart"
                         android:layout_width="match_parent"
-                        android:layout_height="250dp" />
+                        android:layout_height="320dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Numbers Section -->
+            <!-- Recurring Themes/Keywords Section -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardBackgroundColor="#232C61"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="4dp"
-                android:layout_marginBottom="16dp">
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                android:layout_marginBottom="20dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="20dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="In Numbers"
+                        android:text="Keywords &amp; Themes"
                         android:textColor="#FFFFFF"
-                        android:textSize="18sp"
+                        android:textSize="20sp"
+                        android:fontFamily="@font/poppins"
                         android:textStyle="bold"
                         android:layout_marginBottom="16dp" />
 
-                    <GridLayout
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/cgKeywords"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:columnCount="2"
-                        android:rowCount="2">
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_columnWeight="1"
-                            android:orientation="vertical"
-                            android:padding="8dp">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Dreams"
-                                android:textColor="#39C6FF"
-                                android:textSize="14sp"
-                                android:textStyle="bold" />
-                            <TextView
-                                android:id="@+id/tvTotalDreams"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Total: 0"
-                                android:textColor="#FFFFFF"
-                                android:textSize="12sp" />
-                            <TextView
-                                android:id="@+id/tvPeriodDreams"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="In period: 0"
-                                android:textColor="#C5CAE9"
-                                android:textSize="12sp" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_columnWeight="1"
-                            android:orientation="vertical"
-                            android:padding="8dp">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Tags"
-                                android:textColor="#9A63FF"
-                                android:textSize="14sp"
-                                android:textStyle="bold" />
-                            <TextView
-                                android:id="@+id/tvUniqueTags"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Unique: 0"
-                                android:textColor="#FFFFFF"
-                                android:textSize="12sp" />
-                            <TextView
-                                android:id="@+id/tvAvgTags"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Avg: 0.0"
-                                android:textColor="#C5CAE9"
-                                android:textSize="12sp" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_columnWeight="1"
-                            android:orientation="vertical"
-                            android:padding="8dp">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Words"
-                                android:textColor="#F6C65B"
-                                android:textSize="14sp"
-                                android:textStyle="bold" />
-                            <TextView
-                                android:id="@+id/tvTotalWords"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Total: 0"
-                                android:textColor="#FFFFFF"
-                                android:textSize="12sp" />
-                            <TextView
-                                android:id="@+id/tvAvgWords"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Avg: 0.0"
-                                android:textColor="#C5CAE9"
-                                android:textSize="12sp" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_columnWeight="1"
-                            android:orientation="vertical"
-                            android:padding="8dp">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Nightmares"
-                                android:textColor="#FF5252"
-                                android:textSize="14sp"
-                                android:textStyle="bold" />
-                            <TextView
-                                android:id="@+id/tvPeriodNightmares"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Total: 0"
-                                android:textColor="#FFFFFF"
-                                android:textSize="12sp" />
-                        </LinearLayout>
-                    </GridLayout>
+                        app:chipSpacingVertical="10dp"
+                        app:chipSpacingHorizontal="10dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Insight Section -->
-            <TextView
-                android:id="@+id/tvInsight"
+            <!-- Stats Grid Section -->
+            <GridLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Your dreams this month focused on growth and uncertainty."
-                android:textColor="#C5CAE9"
-                android:textSize="14sp"
-                android:fontFamily="sans-serif-light"
-                android:textStyle="italic"
-                android:gravity="center"
-                android:layout_marginTop="8dp" />
+                android:columnCount="2"
+                android:rowCount="1"
+                android:layout_marginBottom="40dp">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_marginEnd="8dp"
+                    app:cardBackgroundColor="#232C61"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="In Period"
+                            android:textColor="#39C6FF"
+                            android:textSize="14sp"
+                            android:fontFamily="@font/poppins" />
+                        <TextView
+                            android:id="@+id/tvPeriodDreams"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0 Dreams"
+                            android:textColor="#FFFFFF"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/poppins" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_marginStart="8dp"
+                    app:cardBackgroundColor="#232C61"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Total Dreams"
+                            android:textColor="#9A63FF"
+                            android:textSize="14sp"
+                            android:fontFamily="@font/poppins" />
+                        <TextView
+                            android:id="@+id/tvTotalDreams"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0 Total"
+                            android:textColor="#FFFFFF"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/poppins" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </GridLayout>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <!-- Bottom Navigation Bar -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="#222B52"
+        app:itemIconTint="@color/nav_item_color_patterns"
+        app:itemTextColor="@color/nav_item_color_patterns"
+        app:menu="@menu/bottom_nav_menu"
+        app:labelVisibilityMode="labeled" />
 
     <!-- Empty State Overlay -->
     <LinearLayout
@@ -491,18 +355,12 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Not enough dream data yet"
+            android:text="Keep journaling to unlock insights"
             android:textColor="#FFFFFF"
             android:textSize="20sp"
+            android:fontFamily="@font/poppins"
             android:textStyle="bold"
             android:layout_marginBottom="8dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Keep journaling to unlock patterns."
-            android:textColor="#C5CAE9"
-            android:textSize="14sp" />
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
