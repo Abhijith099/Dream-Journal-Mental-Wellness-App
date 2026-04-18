@@ -57,4 +57,11 @@
         <item name="backgroundTint">#39C6FF</item>
         <item name="android:textColor">#171F4B</item>
     </style>
+    <!-- Patterns Dashboard Theme -->
+    <style name="Theme.LucidDreams.Patterns" parent="Theme.LucidDreams">
+        <item name="android:windowBackground">#171F4B</item>
+        <item name="android:colorBackground">#171F4B</item>
+        <item name="android:statusBarColor">#171F4B</item>
+        <item name="android:navigationBarColor">#222B52</item>
+    </style>
 </resources>

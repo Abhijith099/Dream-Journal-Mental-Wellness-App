@@ -174,8 +174,12 @@ public class PatternsActivity extends AppCompatActivity {
 
             String mood = entry.getKey();
             ivIcon.setImageResource(getMoodDrawable(mood));
-            tvLabel.setText(getMoodName(mood));
-            tvCount.setText(entry.getValue() + (entry.getValue() == 1 ? " time" : " times"));
+            
+            // Format: 😄 Happy — 6 dreams
+            String emoji = getMoodEmoji(mood);
+            String name = getMoodName(mood);
+            tvLabel.setText(emoji + " " + name + " — " + entry.getValue() + (entry.getValue() == 1 ? " dream" : " dreams"));
+            tvCount.setVisibility(View.GONE); // Hide separate count if using combined string
             
             pb.setMax(max);
             ObjectAnimator.ofInt(pb, "progress", 0, entry.getValue()).setDuration(1200).start();
@@ -184,36 +188,28 @@ public class PatternsActivity extends AppCompatActivity {
         }
     }
 
-    private void updateFactors(Map<String, Double> factors) {
-        llFactorsContainer.removeAllViews();
-        
-        addFactorRow("Average Clarity", factors.getOrDefault("avgClarity", 0.0).intValue());
-        addFactorRow("Average Lucidity", factors.getOrDefault("avgLucidity", 0.0).intValue());
-        addFactorRow("Nightmare Rate", factors.getOrDefault("nightmarePercent", 0.0).intValue());
-        addFactorRow("Recurring Rate", factors.getOrDefault("recurringPercent", 0.0).intValue());
-    }
-
-    private void addFactorRow(String label, int value) {
-        View row = LayoutInflater.from(this).inflate(R.layout.item_factor_row, llFactorsContainer, false);
-        ((TextView)row.findViewById(R.id.tvFactorLabel)).setText(label);
-        ((TextView)row.findViewById(R.id.tvFactorValue)).setText(value + "%");
-        ProgressBar pb = row.findViewById(R.id.pbFactor);
-        pb.setMax(100);
-        ObjectAnimator.ofInt(pb, "progress", 0, value).setDuration(1500).start();
-        llFactorsContainer.addView(row);
-    }
-
     private void updateKeywords(List<Map.Entry<String, Integer>> keywords) {
         cgKeywords.removeAllViews();
+        int count = 0;
         for (Map.Entry<String, Integer> entry : keywords) {
             Chip chip = new Chip(this);
             chip.setText(entry.getKey());
             chip.setTextColor(Color.WHITE);
-            chip.setChipBackgroundColorResource(R.color.accent_purple);
-            chip.setChipCornerRadius(44f); // 22dp
+            
+            if (count == 0) {
+                // Top keyword: Larger and accented
+                chip.setChipBackgroundColorResource(R.color.glow_primary);
+                chip.setTextSize(17f);
+            } else {
+                chip.setChipBackgroundColorResource(R.color.accent_purple);
+                chip.setTextSize(15f);
+            }
+            
+            chip.setChipCornerRadius(44f);
             chip.setChipStrokeWidth(0);
-            chip.setPadding(20, 10, 20, 10);
+            chip.setPadding(24, 12, 24, 12);
             cgKeywords.addView(chip);
+            count++;
         }
     }
 
@@ -221,15 +217,22 @@ public class PatternsActivity extends AppCompatActivity {
         moodChart.getDescription().setEnabled(false);
         moodChart.getLegend().setEnabled(false);
         moodChart.setDrawGridBackground(false);
-        moodChart.setExtraOffsets(10, 10, 10, 10);
+        
+        // Increase padding to prevent crowding
+        moodChart.setExtraOffsets(16, 16, 16, 12);
+
+        // Load Poppins font
+        android.graphics.Typeface poppins = androidx.core.content.res.ResourcesCompat.getFont(this, R.font.poppins);
 
         XAxis xAxis = moodChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setTextColor(Color.parseColor("#C5CAE9"));
+        xAxis.setTextSize(15f);
+        if (poppins != null) xAxis.setTypeface(poppins);
         xAxis.setDrawGridLines(false);
         xAxis.setLabelCount(4);
         xAxis.setValueFormatter(new ValueFormatter() {
-            private final SimpleDateFormat mFormat = new SimpleDateFormat("MMM d", Locale.getDefault());
+            private final SimpleDateFormat mFormat = new SimpleDateFormat("d MMM", Locale.getDefault());
             @Override
             public String getFormattedValue(float value) {
                 return mFormat.format(new Date((long) value));
@@ -238,27 +241,19 @@ public class PatternsActivity extends AppCompatActivity {
 
         YAxis leftAxis = moodChart.getAxisLeft();
         leftAxis.setTextColor(Color.parseColor("#C5CAE9"));
+        leftAxis.setTextSize(16f);
+        if (poppins != null) leftAxis.setTypeface(poppins);
         leftAxis.setAxisMaximum(5.5f);
         leftAxis.setAxisMinimum(0.5f);
         leftAxis.setLabelCount(5, true);
         leftAxis.setDrawGridLines(true);
-        leftAxis.setGridColor(Color.parseColor("#1AFFFFFF"));
+        leftAxis.setGridColor(Color.parseColor("#32407A")); // Subtle grid line color
         
-        // Custom Mood Labels (Unicode for now as clean approximation, or override renderer if needed)
-        // User said "Custom mood icons instead of standard emoji text"
-        // Since custom renderer is complex, I will use high-quality Unicode which is often rendered as assets in Android.
         leftAxis.setValueFormatter(new ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {
                 int val = Math.round(value);
-                switch (val) {
-                    case 5: return "😄"; 
-                    case 4: return "🙂";
-                    case 3: return "😐";
-                    case 2: return "🙁";
-                    case 1: return "😢";
-                    default: return "";
-                }
+                return getMoodEmoji(getMoodFromValue(val));
             }
         });
 
@@ -285,21 +280,46 @@ public class PatternsActivity extends AppCompatActivity {
 
         LineDataSet dataSet = new LineDataSet(entries, "Mood");
         dataSet.setColor(Color.parseColor("#39C6FF"));
-        dataSet.setLineWidth(4f);
+        dataSet.setLineWidth(3f); // Thicker line
         dataSet.setCircleColor(Color.parseColor("#39C6FF"));
-        dataSet.setCircleRadius(6f);
+        dataSet.setCircleRadius(8f); // Larger dots
         dataSet.setDrawCircleHole(true);
         dataSet.setCircleHoleColor(Color.parseColor("#171F4B"));
         dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        
+        // Premium Glow effect using duplicate set or fill
         dataSet.setDrawFilled(true);
         dataSet.setFillColor(Color.parseColor("#39C6FF"));
-        dataSet.setFillAlpha(40);
+        dataSet.setFillAlpha(35);
+        
         dataSet.setDrawValues(false);
 
         LineData lineData = new LineData(dataSet);
         moodChart.setData(lineData);
-        moodChart.animateX(1200);
+        moodChart.animateX(1500); // Smooth animation
         moodChart.invalidate();
+    }
+
+    private String getMoodEmoji(String mood) {
+        switch (mood) {
+            case "✨": return "😄"; 
+            case "🌙": return "🙂";
+            case "☁": return "😐";
+            case "⚡": return "🙁";
+            case "🔥": return "😢";
+            default: return "😐";
+        }
+    }
+
+    private String getMoodFromValue(int val) {
+        switch (val) {
+            case 5: return "✨";
+            case 4: return "🌙";
+            case 3: return "☁";
+            case 2: return "⚡";
+            case 1: return "🔥";
+            default: return "☁";
+        }
     }
 
     private int getMoodDrawable(String mood) {
@@ -315,11 +335,11 @@ public class PatternsActivity extends AppCompatActivity {
 
     private String getMoodName(String mood) {
         switch (mood) {
-            case "✨": return "Lucid";
+            case "✨": return "Happy";
             case "🌙": return "Calm";
             case "☁": return "Neutral";
-            case "⚡": return "Stressed";
-            case "🔥": return "Intense";
+            case "⚡": return "Sad";
+            case "🔥": return "Fearful";
             default: return "Unknown";
         }
     }

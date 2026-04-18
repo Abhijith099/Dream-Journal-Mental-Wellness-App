@@ -99,6 +99,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#171F4B"
+        android:overScrollMode="never"
+        android:fillViewport="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:paddingBottom="100dp"
         android:clipToPadding="false">
@@ -208,7 +210,7 @@
                         android:layout_height="wrap_content"
                         android:text="How I Felt"
                         android:textColor="#FFFFFF"
-                        android:textSize="20sp"
+                        android:textSize="22sp"
                         android:fontFamily="@font/poppins"
                         android:textStyle="bold"
                         android:layout_marginBottom="20dp" />
@@ -216,7 +218,7 @@
                     <com.github.mikephil.charting.charts.LineChart
                         android:id="@+id/moodChart"
                         android:layout_width="match_parent"
-                        android:layout_height="320dp" />
+                        android:layout_height="350dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -238,7 +240,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Keywords &amp; Themes"
+                        android:text="Top 5 Keywords"
                         android:textColor="#FFFFFF"
                         android:textSize="20sp"
                         android:fontFamily="@font/poppins"

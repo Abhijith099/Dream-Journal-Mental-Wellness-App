@@ -337,7 +337,7 @@ public class DreamRepository {
 
         List<java.util.Map.Entry<String, Integer>> sortedWords = new ArrayList<>(wordCounts.entrySet());
         sortedWords.sort((a, b) -> b.getValue().compareTo(a.getValue()));
-        return sortedWords.size() > 12 ? sortedWords.subList(0, 12) : sortedWords;
+        return sortedWords.size() > 5 ? sortedWords.subList(0, 5) : sortedWords;
     }
 
     public List<java.util.Map.Entry<String, Integer>> getMoodSummary(long startTime) {
