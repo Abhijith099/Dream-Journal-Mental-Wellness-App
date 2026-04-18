@@ -471,7 +471,7 @@
                 android:textColor="#C5CAE9"
                 android:textSize="14sp"
                 android:fontFamily="sans-serif-light"
-                android:italic="true"
+                android:textStyle="italic"
                 android:gravity="center"
                 android:layout_marginTop="8dp" />
 
