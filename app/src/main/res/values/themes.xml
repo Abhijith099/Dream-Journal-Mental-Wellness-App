@@ -5,5 +5,14 @@
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
 
-    <style name="Theme.LucidDreams" parent="Base.Theme.LucidDreams" />
+    <style name="Theme.LucidDreams" parent="Base.Theme.LucidDreams">
+        <item name="materialCalendarTheme">@style/CustomDatePickerTheme</item>
+    </style>
+
+    <style name="CustomDatePickerTheme" parent="ThemeOverlay.Material3.MaterialCalendar">
+        <item name="colorPrimary">#39C6FF</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSurface">#232C61</item>
+        <item name="colorOnSurface">#FFFFFF</item>
+    </style>
 </resources>

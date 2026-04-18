@@ -86,19 +86,42 @@ public class DreamRepository {
         return dream;
     }
 
-    public List<Dream> searchDreamsByTag(String tagQuery) {
+    public List<Dream> getDreamsFiltered(Long specificDateMillis, String tagQuery) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         List<Dream> dreams = new ArrayList<>();
 
-        String selection = DreamDbHelper.COLUMN_TAGS + " LIKE ?";
-        String[] selectionArgs = { "%" + tagQuery + "%" };
+        StringBuilder selection = new StringBuilder("1=1");
+        List<String> selectionArgs = new ArrayList<>();
+
+        if (specificDateMillis != null) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTimeInMillis(specificDateMillis);
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+            long startOfDay = cal.getTimeInMillis();
+            
+            cal.add(Calendar.DAY_OF_YEAR, 1);
+            long endOfDay = cal.getTimeInMillis();
+
+            selection.append(" AND ").append(DreamDbHelper.COLUMN_TIMESTAMP).append(" >= ? AND ").append(DreamDbHelper.COLUMN_TIMESTAMP).append(" < ?");
+            selectionArgs.add(String.valueOf(startOfDay));
+            selectionArgs.add(String.valueOf(endOfDay));
+        }
+
+        if (tagQuery != null && !tagQuery.trim().isEmpty()) {
+            selection.append(" AND ").append(DreamDbHelper.COLUMN_TAGS).append(" LIKE ?");
+            selectionArgs.add("%" + tagQuery.trim() + "%");
+        }
+
         String sortOrder = DreamDbHelper.COLUMN_TIMESTAMP + " DESC";
 
         Cursor cursor = db.query(
                 DreamDbHelper.TABLE_DREAMS,
                 null,
-                selection,
-                selectionArgs,
+                selection.toString(),
+                selectionArgs.toArray(new String[0]),
                 null,
                 null,
                 sortOrder
@@ -110,5 +133,39 @@ public class DreamRepository {
         cursor.close();
         db.close();
         return dreams;
+    }
+
+    public List<Long> getDatesWithDreams() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        List<Long> dates = new ArrayList<>();
+        
+        Cursor cursor = db.query(
+                true,
+                DreamDbHelper.TABLE_DREAMS,
+                new String[]{DreamDbHelper.COLUMN_TIMESTAMP},
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        Calendar cal = Calendar.getInstance();
+        while (cursor.moveToNext()) {
+            long timestamp = cursor.getLong(cursor.getColumnIndexOrThrow(DreamDbHelper.COLUMN_TIMESTAMP));
+            cal.setTimeInMillis(timestamp);
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+            long startOfDay = cal.getTimeInMillis();
+            if (!dates.contains(startOfDay)) {
+                dates.add(startOfDay);
+            }
+        }
+        cursor.close();
+        db.close();
+        return dates;
     }
 }

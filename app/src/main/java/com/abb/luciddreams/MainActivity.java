@@ -1,6 +1,5 @@
 package com.abb.luciddreams;
 
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -19,10 +18,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,16 +35,20 @@ public class MainActivity extends AppCompatActivity {
 
     private EditText etSearchTags;
     private ImageView ivClearSearch;
+    private ImageView ivCalendar;
+    private TextView tvTitle;
+    private TextView tvTodayReset;
+
+    private Long selectedDateMillis = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        // Setup transparent status bar to blend with gradient
         Window window = getWindow();
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(Color.parseColor("#1C2552")); // theme_background
+        window.setStatusBarColor(Color.parseColor("#1C2552"));
         
         setContentView(R.layout.activity_main);
         
@@ -50,6 +57,9 @@ public class MainActivity extends AppCompatActivity {
 
         etSearchTags = findViewById(R.id.etSearchTags);
         ivClearSearch = findViewById(R.id.ivClearSearch);
+        ivCalendar = findViewById(R.id.ivCalendar);
+        tvTitle = findViewById(R.id.tvTitle);
+        tvTodayReset = findViewById(R.id.tvTodayReset);
 
         rvDreams.setLayoutManager(new LinearLayoutManager(this));
         
@@ -64,6 +74,46 @@ public class MainActivity extends AppCompatActivity {
         });
 
         setupSearch();
+        setupCalendar();
+    }
+
+    private void setupCalendar() {
+        ivCalendar.setOnClickListener(v -> {
+            List<Long> datesWithDreams = repository.getDatesWithDreams();
+            DreamDayViewDecorator decorator = new DreamDayViewDecorator(datesWithDreams);
+
+            MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
+                    .setTitleText("Select Date")
+                    .setTheme(R.style.CustomDatePickerTheme)
+                    .setSelection(selectedDateMillis != null ? selectedDateMillis : MaterialDatePicker.todayInUtcMilliseconds())
+                    .setDayViewDecorator(decorator)
+                    .build();
+
+            datePicker.addOnPositiveButtonClickListener(selection -> {
+                selectedDateMillis = selection;
+                updateHeader();
+                reloadDreams();
+            });
+
+            datePicker.show(getSupportFragmentManager(), "DREAM_CALENDAR");
+        });
+
+        tvTodayReset.setOnClickListener(v -> {
+            selectedDateMillis = null;
+            updateHeader();
+            reloadDreams();
+        });
+    }
+
+    private void updateHeader() {
+        if (selectedDateMillis != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd MMM", Locale.getDefault());
+            tvTitle.setText("Dreams • " + sdf.format(new Date(selectedDateMillis)));
+            tvTodayReset.setVisibility(View.VISIBLE);
+        } else {
+            tvTitle.setText("Dreams");
+            tvTodayReset.setVisibility(View.GONE);
+        }
     }
 
     private void setupSearch() {
@@ -74,13 +124,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String query = s.toString().trim();
-                if (query.isEmpty()) {
-                    ivClearSearch.setVisibility(View.GONE);
-                    loadDreams(); // Revert to today's dreams
-                } else {
-                    ivClearSearch.setVisibility(View.VISIBLE);
-                    performSearch(query);
-                }
+                ivClearSearch.setVisibility(query.isEmpty() ? View.GONE : View.VISIBLE);
+                reloadDreams();
             }
 
             @Override
@@ -90,7 +135,6 @@ public class MainActivity extends AppCompatActivity {
         ivClearSearch.setOnClickListener(v -> {
             etSearchTags.setText("");
             etSearchTags.clearFocus();
-            // close keyboard
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             if (imm != null) {
                 imm.hideSoftInputFromWindow(etSearchTags.getWindowToken(), 0);
@@ -101,16 +145,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // If there is an active search, perform it, otherwise load today's dreams
-        if (etSearchTags != null && !etSearchTags.getText().toString().trim().isEmpty()) {
-            performSearch(etSearchTags.getText().toString().trim());
-        } else {
-            loadDreams();
-        }
+        reloadDreams();
     }
 
-    private void loadDreams() {
-        dreamList = repository.getTodayDreams();
+    private void reloadDreams() {
+        String query = etSearchTags.getText().toString().trim();
+        
+        if (selectedDateMillis == null && query.isEmpty()) {
+            dreamList = repository.getTodayDreams();
+        } else {
+            dreamList = repository.getDreamsFiltered(selectedDateMillis, query);
+        }
+        
         adapter.updateList(dreamList);
 
         RecyclerView rvDreams = findViewById(R.id.rvDreams);
@@ -120,25 +166,20 @@ public class MainActivity extends AppCompatActivity {
         if (dreamList.isEmpty()) {
             rvDreams.setVisibility(View.GONE);
             llEmptyState.setVisibility(View.VISIBLE);
-            tvEmptyStatus.setText("No dreams recorded today");
-        } else {
-            llEmptyState.setVisibility(View.GONE);
-            rvDreams.setVisibility(View.VISIBLE);
-        }
-    }
-
-    private void performSearch(String query) {
-        dreamList = repository.searchDreamsByTag(query);
-        adapter.updateList(dreamList);
-
-        RecyclerView rvDreams = findViewById(R.id.rvDreams);
-        View llEmptyState = findViewById(R.id.llEmptyState);
-        TextView tvEmptyStatus = findViewById(R.id.tvEmptyStatus);
-
-        if (dreamList.isEmpty()) {
-            rvDreams.setVisibility(View.GONE);
-            llEmptyState.setVisibility(View.VISIBLE);
-            tvEmptyStatus.setText("No dreams found for this tag");
+            
+            if (selectedDateMillis != null) {
+                if (!query.isEmpty()) {
+                    tvEmptyStatus.setText("No dreams found for this tag on this date");
+                } else {
+                    tvEmptyStatus.setText("No dreams recorded on this day");
+                }
+            } else {
+                if (!query.isEmpty()) {
+                    tvEmptyStatus.setText("No dreams found for this tag");
+                } else {
+                    tvEmptyStatus.setText("No dreams recorded today");
+                }
+            }
         } else {
             llEmptyState.setVisibility(View.GONE);
             rvDreams.setVisibility(View.VISIBLE);
