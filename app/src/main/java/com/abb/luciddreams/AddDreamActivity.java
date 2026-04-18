@@ -37,9 +37,12 @@ public class AddDreamActivity extends AppCompatActivity {
     private static final String DRAFT_KEY = "DraftJournal";
 
     private EditText etDreamJournal;
-    private FloatingActionButton fabMic;
+    private android.widget.LinearLayout btnHoldToTalk;
     private TextView tvMicStatus;
     private CheckBox cbNightmare;
+    private Button btnAnalyze;
+    private TextView tvCharCount;
+    private TextView tvDescription;
     private SpeechRecognizer speechRecognizer;
 
     @SuppressLint("ClickableViewAccessibility")
@@ -56,12 +59,43 @@ public class AddDreamActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_dream);
 
         etDreamJournal = findViewById(R.id.etDreamJournal);
-        fabMic = findViewById(R.id.fabMic);
+        btnHoldToTalk = findViewById(R.id.btnHoldToTalk);
         tvMicStatus = findViewById(R.id.tvMicStatus);
         cbNightmare = findViewById(R.id.cbNightmare);
-        Button btnSaveDraft = findViewById(R.id.btnSaveDraft);
-        Button btnContinue = findViewById(R.id.btnContinue);
-        ImageView ivBack = findViewById(R.id.ivBack);
+        btnAnalyze = findViewById(R.id.btnAnalyze);
+        tvCharCount = findViewById(R.id.tvCharCount);
+        tvDescription = findViewById(R.id.tvDescription);
+
+        com.google.android.material.bottomnavigation.BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
+        if (bottomNav != null) {
+            bottomNav.setOnItemSelectedListener(item -> {
+                finish();
+                return true;
+            });
+        }
+
+        String userName = "Nicolas"; 
+        tvDescription.setText(userName + ", describe your dream as precisely as possible. Lumina will then offer a symbolic and emotional analysis.");
+
+        etDreamJournal.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (tvCharCount != null) {
+                    tvCharCount.setText(s.length() + "/5000");
+                }
+                if (s.length() > 0) {
+                    btnHoldToTalk.setVisibility(android.view.View.GONE);
+                    btnAnalyze.setVisibility(android.view.View.VISIBLE);
+                } else {
+                    btnHoldToTalk.setVisibility(android.view.View.VISIBLE);
+                    btnAnalyze.setVisibility(android.view.View.GONE);
+                }
+            }
+            @Override
+            public void afterTextChanged(android.text.Editable s) {}
+        });
 
         // Load Draft
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
@@ -70,15 +104,7 @@ public class AddDreamActivity extends AppCompatActivity {
             etDreamJournal.setText(draft);
         }
 
-        ivBack.setOnClickListener(v -> finish());
-
-        btnSaveDraft.setOnClickListener(v -> {
-            saveDraft();
-            Toast.makeText(this, "Draft saved!", Toast.LENGTH_SHORT).show();
-            finish();
-        });
-
-        btnContinue.setOnClickListener(v -> {
+        btnAnalyze.setOnClickListener(v -> {
             String journal = etDreamJournal.getText().toString().trim();
             if (journal.isEmpty()) {
                 Toast.makeText(this, "Please write something about your dream.", Toast.LENGTH_SHORT).show();
@@ -115,6 +141,8 @@ public class AddDreamActivity extends AppCompatActivity {
             @Override
             public void onEndOfSpeech() {
                 tvMicStatus.setText("Processing...");
+                btnHoldToTalk.setVisibility(android.view.View.GONE);
+                btnAnalyze.setVisibility(android.view.View.VISIBLE);
             }
 
             @Override
@@ -145,7 +173,7 @@ public class AddDreamActivity extends AppCompatActivity {
             public void onEvent(int eventType, Bundle params) {}
         });
 
-        fabMic.setOnTouchListener((v, event) -> {
+        btnHoldToTalk.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 if (checkAudioPermission()) {
                     speechRecognizer.startListening(speechIntent);
