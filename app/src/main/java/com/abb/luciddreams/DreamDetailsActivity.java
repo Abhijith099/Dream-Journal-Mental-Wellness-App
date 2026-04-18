@@ -27,7 +27,7 @@ public class DreamDetailsActivity extends AppCompatActivity {
     private boolean initialNightmareState;
     private String selectedMood = "Unclear"; // Default
  
-    private LinearLayout moodIntense, moodStressed, moodUnclear, moodCalm, moodLucid;
+    private LinearLayout moodCalm, moodStressed, moodUnclear, moodLucid, moodIntense;
     private SeekBar sbClarity, sbLucidity;
     private TextInputEditText etTagInput;
     private ChipGroup chipGroupTags;
@@ -51,11 +51,11 @@ public class DreamDetailsActivity extends AppCompatActivity {
         ivBack.setOnClickListener(v -> finish());
 
         // Mood Selectors
-        moodIntense = findViewById(R.id.moodIntense);
+        moodCalm = findViewById(R.id.moodCalm);
         moodStressed = findViewById(R.id.moodStressed);
         moodUnclear = findViewById(R.id.moodUnclear);
-        moodCalm = findViewById(R.id.moodCalm);
         moodLucid = findViewById(R.id.moodLucid);
+        moodIntense = findViewById(R.id.moodIntense);
 
         setupMoodClickListeners();
 
@@ -119,22 +119,22 @@ public class DreamDetailsActivity extends AppCompatActivity {
     }
 
     private void setupMoodClickListeners() {
-        moodIntense.setOnClickListener(v -> updateMoodSelection("Intense", moodIntense));
-        moodStressed.setOnClickListener(v -> updateMoodSelection("Stressed", moodStressed));
-        moodUnclear.setOnClickListener(v -> updateMoodSelection("Unclear", moodUnclear));
-        moodCalm.setOnClickListener(v -> updateMoodSelection("Calm", moodCalm));
-        moodLucid.setOnClickListener(v -> updateMoodSelection("Lucid", moodLucid));
-        updateMoodSelection("Unclear", moodUnclear); // Default
+        moodCalm.setOnClickListener(v -> updateMoodSelection("🌙", moodCalm));
+        moodStressed.setOnClickListener(v -> updateMoodSelection("⚡", moodStressed));
+        moodUnclear.setOnClickListener(v -> updateMoodSelection("☁", moodUnclear));
+        moodLucid.setOnClickListener(v -> updateMoodSelection("✨", moodLucid));
+        moodIntense.setOnClickListener(v -> updateMoodSelection("🔥", moodIntense));
+        updateMoodSelection("☁", moodUnclear); // Default
     }
 
     private void updateMoodSelection(String moodText, LinearLayout selectedCard) {
         this.selectedMood = moodText;
         
-        moodIntense.setBackgroundResource(R.drawable.bg_mood_unselected);
+        moodCalm.setBackgroundResource(R.drawable.bg_mood_unselected);
         moodStressed.setBackgroundResource(R.drawable.bg_mood_unselected);
         moodUnclear.setBackgroundResource(R.drawable.bg_mood_unselected);
-        moodCalm.setBackgroundResource(R.drawable.bg_mood_unselected);
         moodLucid.setBackgroundResource(R.drawable.bg_mood_unselected);
+        moodIntense.setBackgroundResource(R.drawable.bg_mood_unselected);
 
         selectedCard.setBackgroundResource(R.drawable.bg_mood_selected);
     }
