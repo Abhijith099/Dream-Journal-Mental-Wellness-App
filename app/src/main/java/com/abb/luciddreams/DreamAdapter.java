@@ -42,17 +42,7 @@ public class DreamAdapter extends RecyclerView.Adapter<DreamAdapter.DreamViewHol
         holder.tvCardDate.setText(sdf.format(new Date(dream.getTimestamp())));
 
         holder.tvDescription.setText(dream.getDescription());
-        
-        // Mood Mapping
-        int moodResId = R.drawable.ic_mood_neutral;
-        String mood = dream.getMood();
-        if ("Intense".equals(mood)) moodResId = R.drawable.ic_mood_terrible;
-        else if ("Stressed".equals(mood)) moodResId = R.drawable.ic_mood_bad;
-        else if ("Unclear".equals(mood)) moodResId = R.drawable.ic_mood_neutral;
-        else if ("Calm".equals(mood)) moodResId = R.drawable.ic_mood_good;
-        else if ("Lucid".equals(mood)) moodResId = R.drawable.ic_mood_great;
-        
-        holder.ivMoodIcon.setImageResource(moodResId);
+        holder.tvMoodIcon.setText(dream.getMood() != null ? dream.getMood() : "😐");
 
         if (dream.isNightmare()) {
             holder.tvNightmareBadge.setVisibility(View.VISIBLE);
@@ -93,15 +83,14 @@ public class DreamAdapter extends RecyclerView.Adapter<DreamAdapter.DreamViewHol
     }
 
     static class DreamViewHolder extends RecyclerView.ViewHolder {
-        TextView tvCardDate, tvDescription, tvNightmareBadge;
-        ImageView ivMoodIcon;
+        TextView tvCardDate, tvDescription, tvMoodIcon, tvNightmareBadge;
         LinearLayout llTags;
 
         public DreamViewHolder(@NonNull View itemView) {
             super(itemView);
             tvCardDate = itemView.findViewById(R.id.tvCardDate);
             tvDescription = itemView.findViewById(R.id.tvDescription);
-            ivMoodIcon = itemView.findViewById(R.id.ivMoodIcon);
+            tvMoodIcon = itemView.findViewById(R.id.tvMoodIcon);
             tvNightmareBadge = itemView.findViewById(R.id.tvNightmareBadge);
             llTags = itemView.findViewById(R.id.llTags);
         }
