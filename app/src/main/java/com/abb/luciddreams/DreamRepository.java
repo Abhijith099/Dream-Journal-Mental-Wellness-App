@@ -85,4 +85,30 @@ public class DreamRepository {
         dream.setTags(cursor.getString(cursor.getColumnIndexOrThrow(DreamDbHelper.COLUMN_TAGS)));
         return dream;
     }
+
+    public List<Dream> searchDreamsByTag(String tagQuery) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        List<Dream> dreams = new ArrayList<>();
+
+        String selection = DreamDbHelper.COLUMN_TAGS + " LIKE ?";
+        String[] selectionArgs = { "%" + tagQuery + "%" };
+        String sortOrder = DreamDbHelper.COLUMN_TIMESTAMP + " DESC";
+
+        Cursor cursor = db.query(
+                DreamDbHelper.TABLE_DREAMS,
+                null,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                sortOrder
+        );
+
+        while (cursor.moveToNext()) {
+            dreams.add(cursorToDream(cursor));
+        }
+        cursor.close();
+        db.close();
+        return dreams;
+    }
 }

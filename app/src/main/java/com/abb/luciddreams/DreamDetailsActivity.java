@@ -85,6 +85,11 @@ public class DreamDetailsActivity extends AppCompatActivity {
         });
 
         btnSaveData.setOnClickListener(v -> {
+            if (chipGroupTags.getChildCount() == 0) {
+                Toast.makeText(this, "Please add at least one tag to continue", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             // Collect Tags
             StringBuilder tagsBuilder = new StringBuilder();
             for (int i = 0; i < chipGroupTags.getChildCount(); i++) {

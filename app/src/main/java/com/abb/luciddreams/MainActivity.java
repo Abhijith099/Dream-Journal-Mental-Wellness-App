@@ -1,11 +1,18 @@
 package com.abb.luciddreams;
 
-import android.animation.ObjectAnimator;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -22,6 +29,9 @@ public class MainActivity extends AppCompatActivity {
     private DreamAdapter adapter;
     private DreamRepository repository;
 
+    private EditText etSearchTags;
+    private ImageView ivClearSearch;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,8 +45,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         
         RecyclerView rvDreams = findViewById(R.id.rvDreams);
-        View llEmptyState = findViewById(R.id.llEmptyState);
         FloatingActionButton fabAdd = findViewById(R.id.fabAdd);
+
+        etSearchTags = findViewById(R.id.etSearchTags);
+        ivClearSearch = findViewById(R.id.ivClearSearch);
 
         rvDreams.setLayoutManager(new LinearLayoutManager(this));
         
@@ -49,12 +61,51 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, AddDreamActivity.class);
             startActivity(intent);
         });
+
+        setupSearch();
+    }
+
+    private void setupSearch() {
+        etSearchTags.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String query = s.toString().trim();
+                if (query.isEmpty()) {
+                    ivClearSearch.setVisibility(View.GONE);
+                    loadDreams(); // Revert to today's dreams
+                } else {
+                    ivClearSearch.setVisibility(View.VISIBLE);
+                    performSearch(query);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        ivClearSearch.setOnClickListener(v -> {
+            etSearchTags.setText("");
+            etSearchTags.clearFocus();
+            // close keyboard
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.hideSoftInputFromWindow(etSearchTags.getWindowToken(), 0);
+            }
+        });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        loadDreams();
+        // If there is an active search, perform it, otherwise load today's dreams
+        if (etSearchTags != null && !etSearchTags.getText().toString().trim().isEmpty()) {
+            performSearch(etSearchTags.getText().toString().trim());
+        } else {
+            loadDreams();
+        }
     }
 
     private void loadDreams() {
@@ -63,11 +114,30 @@ public class MainActivity extends AppCompatActivity {
 
         RecyclerView rvDreams = findViewById(R.id.rvDreams);
         View llEmptyState = findViewById(R.id.llEmptyState);
-        TextView tvEmptyStatus = findViewById(R.id.tvEmptyStatus); // Need to add an ID to the textview in layout if not present
+        TextView tvEmptyStatus = findViewById(R.id.tvEmptyStatus);
 
         if (dreamList.isEmpty()) {
             rvDreams.setVisibility(View.GONE);
             llEmptyState.setVisibility(View.VISIBLE);
+            tvEmptyStatus.setText("No dreams recorded today");
+        } else {
+            llEmptyState.setVisibility(View.GONE);
+            rvDreams.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void performSearch(String query) {
+        dreamList = repository.searchDreamsByTag(query);
+        adapter.updateList(dreamList);
+
+        RecyclerView rvDreams = findViewById(R.id.rvDreams);
+        View llEmptyState = findViewById(R.id.llEmptyState);
+        TextView tvEmptyStatus = findViewById(R.id.tvEmptyStatus);
+
+        if (dreamList.isEmpty()) {
+            rvDreams.setVisibility(View.GONE);
+            llEmptyState.setVisibility(View.VISIBLE);
+            tvEmptyStatus.setText("No dreams found for this tag");
         } else {
             llEmptyState.setVisibility(View.GONE);
             rvDreams.setVisibility(View.VISIBLE);
