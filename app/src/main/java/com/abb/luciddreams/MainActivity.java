@@ -75,6 +75,22 @@ public class MainActivity extends AppCompatActivity {
 
         setupSearch();
         setupCalendar();
+        setupBottomNav();
+    }
+
+    private void setupBottomNav() {
+        com.google.android.material.bottomnavigation.BottomNavigationView nav = findViewById(R.id.bottomNav);
+        nav.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_patterns) {
+                Intent intent = new Intent(this, PatternsActivity.class);
+                startActivity(intent);
+                overridePendingTransition(0, 0); // Smooth transition
+                return true;
+            }
+            return id == R.id.nav_dreams;
+        });
+        nav.setSelectedItemId(R.id.nav_dreams);
     }
 
     private void setupCalendar() {

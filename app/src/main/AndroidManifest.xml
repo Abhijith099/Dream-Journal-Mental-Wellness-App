@@ -25,6 +25,7 @@
         
         <activity android:name=".AddDreamActivity" android:screenOrientation="portrait"/>
         <activity android:name=".DreamDetailsActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".PatternsActivity" android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

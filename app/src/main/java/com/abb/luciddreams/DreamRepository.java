@@ -168,4 +168,204 @@ public class DreamRepository {
         db.close();
         return dates;
     }
+
+    public java.util.Map<String, Integer> getEmotionsCount(long startTime) {
+        java.util.Map<String, Integer> counts = new java.util.HashMap<>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String selection = startTime > 0 ? DreamDbHelper.COLUMN_TIMESTAMP + " >= ?" : null;
+        String[] selectionArgs = startTime > 0 ? new String[]{String.valueOf(startTime)} : null;
+
+        Cursor cursor = db.query(
+                DreamDbHelper.TABLE_DREAMS,
+                new String[]{DreamDbHelper.COLUMN_MOOD, "COUNT(*)"},
+                selection,
+                selectionArgs,
+                DreamDbHelper.COLUMN_MOOD,
+                null,
+                null
+        );
+
+        while (cursor.moveToNext()) {
+            String mood = cursor.getString(0);
+            int count = cursor.getInt(1);
+            if (mood != null) counts.put(mood, count);
+        }
+        cursor.close();
+        db.close();
+        return counts;
+    }
+
+    public List<java.util.Map.Entry<String, Integer>> getTopTags(long startTime) {
+        java.util.Map<String, Integer> tagCounts = new java.util.HashMap<>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String selection = startTime > 0 ? DreamDbHelper.COLUMN_TIMESTAMP + " >= ?" : null;
+        String[] selectionArgs = startTime > 0 ? new String[]{String.valueOf(startTime)} : null;
+
+        Cursor cursor = db.query(
+                DreamDbHelper.TABLE_DREAMS,
+                new String[]{DreamDbHelper.COLUMN_TAGS},
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null
+        );
+
+        while (cursor.moveToNext()) {
+            String tagsString = cursor.getString(0);
+            if (tagsString != null && !tagsString.isEmpty()) {
+                String[] tags = tagsString.split(",");
+                for (String tag : tags) {
+                    String cleanTag = tag.trim().toLowerCase();
+                    if (!cleanTag.isEmpty()) {
+                        tagCounts.put(cleanTag, tagCounts.getOrDefault(cleanTag, 0) + 1);
+                    }
+                }
+            }
+        }
+        cursor.close();
+        db.close();
+
+        List<java.util.Map.Entry<String, Integer>> sortedTags = new ArrayList<>(tagCounts.entrySet());
+        sortedTags.sort((a, b) -> b.getValue().compareTo(a.getValue()));
+        return sortedTags.size() > 10 ? sortedTags.subList(0, 10) : sortedTags;
+    }
+
+    public java.util.Map<String, Double> getDreamFactors(long startTime) {
+        java.util.Map<String, Double> factors = new java.util.HashMap<>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String selection = startTime > 0 ? DreamDbHelper.COLUMN_TIMESTAMP + " >= ?" : null;
+        String[] selectionArgs = startTime > 0 ? new String[]{String.valueOf(startTime)} : null;
+
+        Cursor cursor = db.query(
+                DreamDbHelper.TABLE_DREAMS,
+                new String[]{
+                        "AVG(" + DreamDbHelper.COLUMN_CLARITY + ")",
+                        "AVG(" + DreamDbHelper.COLUMN_LUCIDITY + ")",
+                        "SUM(" + DreamDbHelper.COLUMN_IS_NIGHTMARE + ")",
+                        "SUM(" + DreamDbHelper.COLUMN_IS_RECURRING + ")",
+                        "COUNT(*)"
+                },
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null
+        );
+
+        if (cursor.moveToFirst()) {
+            int total = cursor.getInt(4);
+            factors.put("avgClarity", cursor.getDouble(0));
+            factors.put("avgLucidity", cursor.getDouble(1));
+            if (total > 0) {
+                factors.put("nightmarePercent", (cursor.getDouble(2) / total) * 100);
+                factors.put("recurringPercent", (cursor.getDouble(3) / total) * 100);
+            } else {
+                factors.put("nightmarePercent", 0.0);
+                factors.put("recurringPercent", 0.0);
+            }
+        }
+        cursor.close();
+        db.close();
+        return factors;
+    }
+
+    public List<Dream> getMoodHistory(long startTime) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        List<Dream> dreams = new ArrayList<>();
+        String selection = startTime > 0 ? DreamDbHelper.COLUMN_TIMESTAMP + " >= ?" : null;
+        String[] selectionArgs = startTime > 0 ? new String[]{String.valueOf(startTime)} : null;
+
+        Cursor cursor = db.query(
+                DreamDbHelper.TABLE_DREAMS,
+                new String[]{DreamDbHelper.COLUMN_TIMESTAMP, DreamDbHelper.COLUMN_MOOD},
+                selection,
+                selectionArgs,
+                null,
+                null,
+                DreamDbHelper.COLUMN_TIMESTAMP + " ASC"
+        );
+
+        while (cursor.moveToNext()) {
+            Dream d = new Dream();
+            d.setTimestamp(cursor.getLong(0));
+            d.setMood(cursor.getString(1));
+            dreams.add(d);
+        }
+        cursor.close();
+        db.close();
+        return dreams;
+    }
+
+    public java.util.Map<String, Object> getStatsSummary(long startTime) {
+        java.util.Map<String, Object> stats = new java.util.HashMap<>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        
+        // Total dreams (lifetime)
+        Cursor lifetimeCursor = db.rawQuery("SELECT COUNT(*) FROM " + DreamDbHelper.TABLE_DREAMS, null);
+        if (lifetimeCursor.moveToFirst()) stats.put("totalDreamsLifetime", lifetimeCursor.getInt(0));
+        lifetimeCursor.close();
+
+        // Selected period stats
+        String selection = startTime > 0 ? DreamDbHelper.COLUMN_TIMESTAMP + " >= ?" : null;
+        String[] selectionArgs = startTime > 0 ? new String[]{String.valueOf(startTime)} : null;
+
+        Cursor cursor = db.query(
+                DreamDbHelper.TABLE_DREAMS,
+                new String[]{"COUNT(*)", DreamDbHelper.COLUMN_DESCRIPTION, DreamDbHelper.COLUMN_TAGS},
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null
+        );
+
+        int selectedCount = 0;
+        long totalWords = 0;
+        java.util.Set<String> uniqueTags = new java.util.HashSet<>();
+        int nightmaresInPeriod = 0;
+
+        // Reset cursor and fetch more details if needed, or query again.
+        // Let's do a more detailed fetch if selected period is small, or specific aggregate queries.
+        
+        Cursor detailedCursor = db.query(
+                DreamDbHelper.TABLE_DREAMS,
+                new String[]{DreamDbHelper.COLUMN_DESCRIPTION, DreamDbHelper.COLUMN_TAGS, DreamDbHelper.COLUMN_IS_NIGHTMARE},
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null
+        );
+
+        while (detailedCursor.moveToNext()) {
+            selectedCount++;
+            String desc = detailedCursor.getString(0);
+            if (desc != null) {
+                totalWords += desc.trim().split("\\s+").length;
+            }
+            String tags = detailedCursor.getString(1);
+            if (tags != null && !tags.isEmpty()) {
+                String[] tagArray = tags.split(",");
+                for (String t : tagArray) uniqueTags.add(t.trim().toLowerCase());
+            }
+            if (detailedCursor.getInt(2) == 1) nightmaresInPeriod++;
+        }
+        detailedCursor.close();
+
+        stats.put("totalDreamsPeriod", selectedCount);
+        stats.put("totalWords", totalWords);
+        stats.put("uniqueTagsCount", uniqueTags.size());
+        stats.put("totalNightmares", nightmaresInPeriod);
+        if (selectedCount > 0) {
+            stats.put("avgWords", (double) totalWords / selectedCount);
+            stats.put("avgTags", (double) uniqueTags.size() / selectedCount); // This is absolute unique tags / dreams, or sum of tag counts? User said "Avg per dream", usually means total tags recorded / dreams.
+        } else {
+            stats.put("avgWords", 0.0);
+            stats.put("avgTags", 0.0);
+        }
+
+        db.close();
+        return stats;
+    }
 }
