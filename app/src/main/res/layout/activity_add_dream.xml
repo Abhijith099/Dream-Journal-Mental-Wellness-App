@@ -100,14 +100,15 @@
                     app:trackTint="#232C61"/>
             </LinearLayout>
 
-            <!-- Journal Text Box -->
+            <!-- Huge Journal Text Box (45-55% logical height via weighting) -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cvJournal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 android:layout_marginHorizontal="24dp"
                 android:layout_marginTop="16dp"
-                android:minHeight="250dp"
+                android:minHeight="350dp"
                 app:cardBackgroundColor="#232C61"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="0dp">
@@ -120,7 +121,6 @@
                         android:id="@+id/etDreamJournal"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:minHeight="250dp"
                         android:background="@android:color/transparent"
                         android:gravity="top|start"
                         android:hint="Describe your dream..."
@@ -129,9 +129,10 @@
                         android:textColor="#FFFFFF"
                         android:textColorHint="#C5CAE9"
                         android:textSize="18sp"
+                        android:lineSpacingExtra="8dp"
                         android:fontFamily="@font/poppins"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent" />
+                        app:layout_constraintBottom_toTopOf="@id/tvCharCount" />
 
                     <TextView
                         android:id="@+id/tvCharCount"
@@ -147,7 +148,7 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Save Draft Button -->
+            <!-- Save Draft Options row just below text area -->
             <Button
                 android:id="@+id/btnSaveDraft"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
@@ -161,204 +162,12 @@
                 app:strokeColor="#C5CAE9"
                 android:fontFamily="@font/poppins" />
 
-            <!-- Mood Selector -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Mood"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                android:fontFamily="@font/poppins"
-                android:layout_marginHorizontal="24dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="12dp" />
-
-            <LinearLayout
-                android:id="@+id/llMoodSelector"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginHorizontal="24dp"
-                android:weightSum="5"
-                android:layout_marginBottom="24dp">
-
-                <!-- Mood 1: Calm -->
-                <LinearLayout
-                    android:id="@+id/moodCalm"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:paddingTop="12dp"
-                    android:paddingBottom="12dp"
-                    android:layout_marginEnd="4dp"
-                    android:background="@drawable/bg_mood_unselected">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🌙" android:textSize="24sp" />
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Calm" android:textColor="#FFFFFF" android:textSize="12sp" android:layout_marginTop="4dp" android:fontFamily="@font/poppins" />
-                </LinearLayout>
-
-                <!-- Mood 2: Stressed -->
-                <LinearLayout
-                    android:id="@+id/moodStressed"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:paddingTop="12dp"
-                    android:paddingBottom="12dp"
-                    android:layout_marginHorizontal="2dp"
-                    android:background="@drawable/bg_mood_unselected">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="⚡" android:textSize="24sp" />
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Stressed" android:textColor="#FFFFFF" android:textSize="12sp" android:layout_marginTop="4dp" android:fontFamily="@font/poppins" />
-                </LinearLayout>
-
-                <!-- Mood 3: Unclear -->
-                <LinearLayout
-                    android:id="@+id/moodUnclear"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:paddingTop="12dp"
-                    android:paddingBottom="12dp"
-                    android:layout_marginHorizontal="2dp"
-                    android:background="@drawable/bg_mood_selected">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="☁" android:textSize="24sp" />
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Unclear" android:textColor="#FFFFFF" android:textSize="12sp" android:layout_marginTop="4dp" android:fontFamily="@font/poppins" />
-                </LinearLayout>
-
-                <!-- Mood 4: Lucid -->
-                <LinearLayout
-                    android:id="@+id/moodLucid"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:paddingTop="12dp"
-                    android:paddingBottom="12dp"
-                    android:layout_marginHorizontal="2dp"
-                    android:background="@drawable/bg_mood_unselected">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="✨" android:textSize="24sp" />
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Lucid" android:textColor="#FFFFFF" android:textSize="12sp" android:layout_marginTop="4dp" android:fontFamily="@font/poppins" />
-                </LinearLayout>
-
-                <!-- Mood 5: Intense -->
-                <LinearLayout
-                    android:id="@+id/moodIntense"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:paddingTop="12dp"
-                    android:paddingBottom="12dp"
-                    android:layout_marginStart="4dp"
-                    android:background="@drawable/bg_mood_unselected">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🔥" android:textSize="24sp" />
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Intense" android:textColor="#FFFFFF" android:textSize="12sp" android:layout_marginTop="4dp" android:fontFamily="@font/poppins" />
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <!-- Clarity Slider -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Clarity"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                android:fontFamily="@font/poppins"
-                android:layout_marginHorizontal="24dp"
-                android:layout_marginBottom="8dp" />
-            <SeekBar
-                android:id="@+id/sbClarity"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:max="100"
-                android:progress="50"
-                android:progressTint="#39C6FF"
-                android:thumbTint="#39C6FF"
-                android:layout_marginBottom="24dp"/>
-
-            <!-- Lucidity Slider -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Lucidity"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                android:fontFamily="@font/poppins"
-                android:layout_marginHorizontal="24dp"
-                android:layout_marginBottom="8dp" />
-            <SeekBar
-                android:id="@+id/sbLucidity"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:max="100"
-                android:progress="10"
-                android:progressTint="#9A63FF"
-                android:thumbTint="#9A63FF"
-                android:layout_marginBottom="24dp"/>
-
-            <!-- Tags -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tags"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                android:fontFamily="@font/poppins"
-                android:layout_marginHorizontal="24dp"
-                android:layout_marginBottom="8dp" />
-            
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="24dp"
-                app:hintEnabled="false"
-                app:boxBackgroundMode="filled"
-                app:boxBackgroundColor="#232C61"
-                app:boxCornerRadiusTopStart="12dp"
-                app:boxCornerRadiusTopEnd="12dp"
-                app:boxCornerRadiusBottomStart="12dp"
-                app:boxCornerRadiusBottomEnd="12dp"
-                app:boxStrokeWidth="0dp">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etTagInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Add a tag and press Enter"
-                    android:textColorHint="#C5CAE9"
-                    android:textColor="#FFFFFF"
-                    android:fontFamily="@font/poppins"
-                    android:inputType="text"
-                    android:imeOptions="actionDone"
-                    android:background="@android:color/transparent"
-                    android:paddingTop="16dp"
-                    android:paddingBottom="16dp" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chipGroupTags"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="24dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="24dp" />
-
-            <!-- Bottom Area (Hold to talk OR Analyze Dream OR Save) -->
+            <!-- Bottom Area (Hold to talk OR Analyze Dream) -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginTop="8dp">
+                android:layout_marginTop="24dp">
 
                 <FrameLayout
                     android:id="@+id/bottomActionArea"
@@ -400,7 +209,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="56dp"
                         android:layout_marginHorizontal="24dp"
-                        android:backgroundTint="#8B5CFF"
+                        android:backgroundTint="#9A63FF"
                         android:text="✨ Analyze Dream"
                         android:textColor="#FFFFFF"
                         android:textSize="18sp"
@@ -408,20 +217,6 @@
                         app:cornerRadius="28dp"
                         android:visibility="gone" />
                 </FrameLayout>
-
-                <Button
-                    android:id="@+id/btnSaveDream"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:layout_marginHorizontal="24dp"
-                    android:backgroundTint="#39C6FF"
-                    android:text="✔ Save Dream"
-                    android:textColor="#FFFFFF"
-                    android:textSize="18sp"
-                    android:fontFamily="@font/poppins"
-                    android:textStyle="bold"
-                    app:cornerRadius="16dp" 
-                    android:layout_marginBottom="32dp"/>
             </LinearLayout>
 
         </LinearLayout>

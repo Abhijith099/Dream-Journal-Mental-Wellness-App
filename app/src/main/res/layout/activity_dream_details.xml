@@ -1,27 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_main_gradient"
+    android:background="#171F4B"
     android:fitsSystemWindows="true">
 
     <!-- Top Bar -->
     <FrameLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="72dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/ivBack"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:layout_gravity="center_vertical|start"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="24dp"
             android:src="@drawable/ic_back"
-            android:tint="@color/white"
+            app:tint="#FFFFFF"
             android:contentDescription="Back" />
 
         <TextView
@@ -29,37 +28,34 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Dream Details"
-            android:textColor="@color/white"
-            android:textSize="20sp"
+            android:textColor="#FFFFFF"
+            android:textSize="26sp"
+            android:fontFamily="@font/poppins"
             android:textStyle="bold" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_gravity="bottom"
-            android:background="#20FFFFFF" />
     </FrameLayout>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintTop_toBottomOf="@id/topBar"
-        app:layout_constraintBottom_toTopOf="@id/btnSaveData">
+        app:layout_constraintBottom_toTopOf="@id/bottomButtonsContainer">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:paddingBottom="42dp">
 
             <!-- Mood Selector -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Mood"
-                android:textColor="@color/text_secondary"
-                android:textSize="16sp"
-                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:fontFamily="@font/poppins"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="24dp"
                 android:layout_marginBottom="12dp" />
 
             <LinearLayout
@@ -67,54 +63,84 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:layout_marginHorizontal="24dp"
                 android:weightSum="5"
-                android:layout_marginBottom="24dp">
+                android:layout_marginBottom="32dp">
 
-                <TextView
-                    android:id="@+id/tvMood1"
+                <LinearLayout
+                    android:id="@+id/moodCalm"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="😢"
-                    android:textSize="32sp"
+                    android:orientation="vertical"
                     android:gravity="center"
-                    android:alpha="0.5"/>
-                <TextView
-                    android:id="@+id/tvMood2"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:layout_marginEnd="4dp"
+                    android:background="@drawable/bg_mood_unselected">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🌙" android:textSize="24sp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Calm" android:textColor="#FFFFFF" android:textSize="12sp" android:layout_marginTop="4dp" android:fontFamily="@font/poppins" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/moodStressed"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="😟"
-                    android:textSize="32sp"
+                    android:orientation="vertical"
                     android:gravity="center"
-                    android:alpha="0.5"/>
-                <TextView
-                    android:id="@+id/tvMood3"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:layout_marginHorizontal="2dp"
+                    android:background="@drawable/bg_mood_unselected">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="⚡" android:textSize="24sp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Stressed" android:textColor="#FFFFFF" android:textSize="12sp" android:layout_marginTop="4dp" android:fontFamily="@font/poppins" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/moodUnclear"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="😐"
-                    android:textSize="32sp"
+                    android:orientation="vertical"
                     android:gravity="center"
-                    android:alpha="0.5"/>
-                <TextView
-                    android:id="@+id/tvMood4"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:layout_marginHorizontal="2dp"
+                    android:background="@drawable/bg_mood_unselected">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="☁" android:textSize="24sp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Unclear" android:textColor="#FFFFFF" android:textSize="12sp" android:layout_marginTop="4dp" android:fontFamily="@font/poppins" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/moodLucid"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="🙂"
-                    android:textSize="32sp"
+                    android:orientation="vertical"
                     android:gravity="center"
-                    android:alpha="0.5"/>
-                <TextView
-                    android:id="@+id/tvMood5"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:layout_marginHorizontal="2dp"
+                    android:background="@drawable/bg_mood_unselected">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="✨" android:textSize="24sp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Lucid" android:textColor="#FFFFFF" android:textSize="12sp" android:layout_marginTop="4dp" android:fontFamily="@font/poppins" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/moodIntense"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="😄"
-                    android:textSize="32sp"
+                    android:orientation="vertical"
                     android:gravity="center"
-                    android:alpha="0.5"/>
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:layout_marginStart="4dp"
+                    android:background="@drawable/bg_mood_unselected">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🔥" android:textSize="24sp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Intense" android:textColor="#FFFFFF" android:textSize="12sp" android:layout_marginTop="4dp" android:fontFamily="@font/poppins" />
+                </LinearLayout>
             </LinearLayout>
 
             <!-- Clarity Slider -->
@@ -122,93 +148,130 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Clarity"
-                android:textColor="@color/text_secondary"
-                android:textSize="16sp"
-                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:fontFamily="@font/poppins"
+                android:layout_marginHorizontal="24dp"
                 android:layout_marginBottom="8dp" />
             <SeekBar
                 android:id="@+id/sbClarity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
                 android:max="100"
                 android:progress="50"
-                android:progressTint="@color/glow_primary"
-                android:thumbTint="@color/glow_light"
-                android:layout_marginBottom="24dp"/>
+                android:progressTint="#39C6FF"
+                android:thumbTint="#39C6FF"
+                android:layout_marginBottom="32dp"/>
 
             <!-- Lucidity Slider -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Lucidity"
-                android:textColor="@color/text_secondary"
-                android:textSize="16sp"
-                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:fontFamily="@font/poppins"
+                android:layout_marginHorizontal="24dp"
                 android:layout_marginBottom="8dp" />
             <SeekBar
                 android:id="@+id/sbLucidity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
                 android:max="100"
                 android:progress="10"
-                android:progressTint="@color/accent_purple"
-                android:thumbTint="@color/accent_purple"
-                android:layout_marginBottom="24dp"/>
+                android:progressTint="#9A63FF"
+                android:thumbTint="#9A63FF"
+                android:layout_marginBottom="32dp"/>
 
-            <!-- Tags -->
+            <!-- Tags Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tags (comma separated)"
-                android:textColor="@color/text_secondary"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="8dp" />
+                android:text="Tags"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:fontFamily="@font/poppins"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginBottom="12dp" />
             
-            <EditText
-                android:id="@+id/etTags"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_input_area"
-                android:hint="flying, school, fear, water"
-                android:textColorHint="@color/text_secondary"
-                android:textColor="@color/text_primary"
-                android:padding="16dp"
-                android:inputType="text"
-                android:layout_marginBottom="24dp"/>
+                android:layout_marginHorizontal="24dp"
+                app:hintEnabled="false"
+                app:boxBackgroundMode="filled"
+                app:boxBackgroundColor="#232C61"
+                app:boxCornerRadiusTopStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:boxStrokeWidth="0dp">
 
-            <!-- Checkboxes -->
-            <CheckBox
-                android:id="@+id/cbDetailsNightmare"
-                android:layout_width="wrap_content"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etTagInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Add tag..."
+                    android:textColorHint="#C5CAE9"
+                    android:textColor="#FFFFFF"
+                    android:fontFamily="@font/poppins"
+                    android:inputType="text"
+                    android:imeOptions="actionDone"
+                    android:background="@android:color/transparent"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="16dp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupTags"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Nightmare"
-                android:textColor="@color/text_secondary"
-                android:buttonTint="@color/accent_purple"
-                android:layout_marginBottom="8dp"/>
-                
-            <CheckBox
-                android:id="@+id/cbRecurring"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Recurring Dream"
-                android:textColor="@color/text_secondary"
-                android:buttonTint="@color/glow_primary"
-                android:layout_marginBottom="24dp"/>
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="24dp" />
 
         </LinearLayout>
     </ScrollView>
 
-    <Button
-        android:id="@+id/btnSaveData"
+    <!-- Bottom Buttons Container -->
+    <LinearLayout
+        android:id="@+id/bottomButtonsContainer"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_margin="16dp"
-        android:backgroundTint="@color/glow_primary"
-        android:text="✔ Save Dream"
-        android:textColor="@color/white"
-        android:textStyle="bold"
-        app:cornerRadius="12dp"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="24dp"
+        android:paddingVertical="16dp"
+        android:background="#1A214D"
+        android:weightSum="2"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <Button
+            android:id="@+id/btnSaveDataDraft"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="Save Draft"
+            android:textColor="#C5CAE9"
+            app:strokeColor="#C5CAE9"
+            android:fontFamily="@font/poppins" />
+
+        <Button
+            android:id="@+id/btnSaveData"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:backgroundTint="#39C6FF"
+            android:text="✔ Save Dream"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:fontFamily="@font/poppins"
+            app:cornerRadius="12dp" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
