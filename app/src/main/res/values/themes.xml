@@ -10,9 +10,51 @@
     </style>
 
     <style name="CustomDatePickerTheme" parent="ThemeOverlay.Material3.MaterialCalendar">
-        <item name="colorPrimary">#39C6FF</item>
-        <item name="colorOnPrimary">#FFFFFF</item>
         <item name="colorSurface">#232C61</item>
-        <item name="colorOnSurface">#FFFFFF</item>
+        <item name="colorOnSurface">#C5CAE9</item>
+        <item name="colorPrimary">#39C6FF</item>
+        <item name="colorOnPrimary">#171F4B</item>
+        <item name="colorSurfaceContainerHigh">#1E2756</item>
+        
+        <item name="materialCalendarStyle">@style/CustomCalendarStyle</item>
+        
+        <!-- Buttons styling inside the picker -->
+        <item name="buttonBarPositiveButtonStyle">@style/CustomDatePickerConfirmButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/CustomDatePickerCancelButton</item>
+    </style>
+
+    <style name="CustomCalendarStyle" parent="Widget.Material3.MaterialCalendar">
+        <item name="dayStyle">@style/CustomCalendarDay</item>
+        <item name="daySelectedStyle">@style/CustomCalendarDaySelected</item>
+        <item name="dayTodayStyle">@style/CustomCalendarDayToday</item>
+        <item name="yearStyle">@style/CustomCalendarDay</item>
+        <item name="yearSelectedStyle">@style/CustomCalendarDaySelected</item>
+        <item name="yearTodayStyle">@style/CustomCalendarDayToday</item>
+    </style>
+
+    <style name="CustomCalendarDay" parent="Widget.Material3.MaterialCalendar.Day">
+        <item name="itemTextColor">#C5CAE9</item>
+    </style>
+
+    <style name="CustomCalendarDaySelected" parent="Widget.Material3.MaterialCalendar.Day.Selected">
+        <item name="itemTextColor">#171F4B</item>
+        <item name="itemFillColor">#39C6FF</item>
+    </style>
+
+    <style name="CustomCalendarDayToday" parent="Widget.Material3.MaterialCalendar.Day.Today">
+        <item name="itemTextColor">#FFFFFF</item>
+        <item name="itemStrokeColor">#39C6FF</item>
+        <item name="itemStrokeWidth">1dp</item>
+    </style>
+
+    <!-- Cancel Button -->
+    <style name="CustomDatePickerCancelButton" parent="Widget.Material3.Button.TextButton">
+        <item name="android:textColor">#C5CAE9</item>
+    </style>
+
+    <!-- Confirm Button -->
+    <style name="CustomDatePickerConfirmButton" parent="Widget.Material3.Button">
+        <item name="backgroundTint">#39C6FF</item>
+        <item name="android:textColor">#171F4B</item>
     </style>
 </resources>
