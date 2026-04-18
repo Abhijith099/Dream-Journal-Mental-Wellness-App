@@ -5,18 +5,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_main_gradient"
+    android:fitsSystemWindows="true"
     tools:context=".MainActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingBottom="80dp">
+        android:layout_height="match_parent">
 
         <!-- Custom Top Bar -->
         <FrameLayout
             android:id="@+id/topBar"
             android:layout_width="match_parent"
-            android:layout_height="64dp"
+            android:layout_height="56dp"
             app:layout_constraintTop_toTopOf="parent">
             
             <ImageView
@@ -52,29 +52,56 @@
                 android:background="#20FFFFFF"/>
         </FrameLayout>
 
-        <!-- Main Content Scroll (Illustration could go inside or behind the list) -->
-        <!-- Placing the illustration centered in the background below the list -->
-        
-        <ImageView
-            android:id="@+id/ivIllustration"
-            android:layout_width="280dp"
-            android:layout_height="280dp"
-            android:src="@drawable/ic_illustration_bed"
+        <!-- Empty State View -->
+        <LinearLayout
+            android:id="@+id/llEmptyState"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="visible"
             app:layout_constraintTop_toBottomOf="@id/topBar"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="50dp"/>
+            android:paddingBottom="100dp">
 
+            <ImageView
+                android:id="@+id/ivIllustration"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:src="@drawable/ic_illustration_bed"
+                android:layout_marginBottom="24dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No dreams recorded yet"
+                android:textColor="@color/text_primary"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tap + to add your first dream"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp"/>
+        </LinearLayout>
+
+        <!-- Dream List Layout -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvDreams"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:clipToPadding="false"
             android:paddingTop="16dp"
-            android:paddingBottom="32dp"
+            android:paddingBottom="100dp"
+            android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@id/topBar"
             app:layout_constraintBottom_toBottomOf="parent"
+            tools:visibility="gone"
             tools:listitem="@layout/item_dream_card" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -83,11 +110,11 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="#2B3C68"
-        app:itemIconTint="@color/text_nav"
-        app:itemTextColor="@color/text_nav"
+        android:background="#222B52"
+        app:itemIconTint="@color/nav_item_color"
+        app:itemTextColor="@color/nav_item_color"
         app:menu="@menu/bottom_nav_menu"
         app:labelVisibilityMode="labeled" />
 
@@ -97,7 +124,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="28dp"
+        android:layout_marginBottom="64dp"
         app:backgroundTint="@color/glow_primary"
         app:tint="@color/white"
         app:elevation="8dp"

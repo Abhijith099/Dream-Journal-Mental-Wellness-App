@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:paddingStart="16dp"
     android:paddingEnd="16dp"
-    android:paddingBottom="24dp">
+    android:paddingBottom="12dp">
 
     <!-- Month Header (Visible conditionally) -->
     <TextView
