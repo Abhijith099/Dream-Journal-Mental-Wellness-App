@@ -161,7 +161,9 @@ public class AnalysisDashboardActivity extends AppCompatActivity {
                 }
                 chip.setShapeAppearanceModel(chip.getShapeAppearanceModel().toBuilder()
                         .setAllCornerSizes(44f).build());
-                chip.setChipStrokeWidth(0);
+                if (count == 0 || count % 2 == 0) {
+                    chip.setChipStrokeWidth(0);
+                }
                 chip.setClickable(false);
                 chip.setCheckable(false);
                 cgThemeChips.addView(chip);
@@ -289,15 +291,8 @@ public class AnalysisDashboardActivity extends AppCompatActivity {
 
     private int countDreamsOnDate(String dateKey, SimpleDateFormat fmt) {
         if (datesWithDreams == null) return 0;
-        int count = 0;
-        for (Long ts : datesWithDreams) {
-            if (fmt.format(new Date(ts)).equals(dateKey)) count++;
-        }
-        // getDatesWithDreams dedups by day, so count would be 1 max per date from that list.
-        // Use getDreamsFiltered for accurate count
         try {
-            SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            Date d = parser.parse(dateKey);
+            Date d = fmt.parse(dateKey);
             if (d != null) {
                 List<Dream> dreams = repository.getDreamsFiltered(d.getTime(), "");
                 return dreams.size();
