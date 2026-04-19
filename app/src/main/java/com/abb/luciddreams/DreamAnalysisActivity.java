@@ -255,7 +255,7 @@ public class DreamAnalysisActivity extends AppCompatActivity {
             return sentences[0] + " " + sentences[1];
         }
         // Fallback: truncate at ~180 chars at word boundary
-        String truncated = trimmed.substring(0, 180);
+        String truncated = trimmed.substring(0, Math.min(trimmed.length(), 180));
         int lastSpace = truncated.lastIndexOf(' ');
         return (lastSpace > 0 ? truncated.substring(0, lastSpace) : truncated) + "…";
     }
@@ -434,8 +434,11 @@ public class DreamAnalysisActivity extends AppCompatActivity {
     private void initTts() {
         tts = new TextToSpeech(this, status -> {
             if (status == TextToSpeech.SUCCESS) {
-                tts.setLanguage(Locale.getDefault());
-                ttsReady = true;
+                int langResult = tts.setLanguage(Locale.getDefault());
+                if (langResult != TextToSpeech.LANG_MISSING_DATA
+                        && langResult != TextToSpeech.LANG_NOT_SUPPORTED) {
+                    ttsReady = true;
+                }
             }
         });
     }
