@@ -1,6 +1,7 @@
 package com.abb.luciddreams;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -12,19 +13,25 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 public class DreamAnalysisActivity extends AppCompatActivity {
 
@@ -148,23 +155,17 @@ public class DreamAnalysisActivity extends AppCompatActivity {
     }
 
     private long dreamId = -1;
-    private int vizIndex = 0;
-    private final java.util.Random vizRandom = new java.util.Random();
-
-    private static final String[][] VIZ_SCENES = {
-        {"🌙", "A moonlit realm where shadows dance across ancient stone..."},
-        {"🌌", "Swirling galaxies merge into paths of shimmering starlight..."},
-        {"🌊", "Endless ocean waves carry whispers of forgotten memories..."},
-        {"🔮", "Crystal visions spiral through dimensions beyond waking..."},
-        {"🌲", "An enchanted forest glows with ethereal bioluminescence..."},
-        {"⭐", "Stars rearrange themselves into messages just for you..."},
-        {"🌅", "Golden dawn breaks over a landscape only the mind can hold..."},
-        {"🪐", "Floating islands orbit a twin-moon sky in perfect silence..."},
-    };
+    private DreamRepository repository;
+    private DreamImageGenerator imageGenerator;
+    private Bitmap currentGeneratedBitmap;
+    private String dreamText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        repository = new DreamRepository(this);
+        imageGenerator = new DreamImageGenerator();
 
         Window window = getWindow();
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -173,7 +174,7 @@ public class DreamAnalysisActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_dream_analysis);
 
-        String dreamText = getIntent().getStringExtra("dream_text");
+        dreamText = getIntent().getStringExtra("dream_text");
         dreamId = getIntent().getLongExtra("dream_id", -1);
         if (dreamText == null || dreamText.trim().isEmpty()) {
             dreamText = "No dream text provided.";
@@ -222,34 +223,77 @@ public class DreamAnalysisActivity extends AppCompatActivity {
     }
 
     private void populateDreamVisualization(String dreamText) {
-        TextView tvEmoji = findViewById(R.id.tvDreamVizEmoji);
-        TextView tvPrompt = findViewById(R.id.tvDreamVizPrompt);
-        Button btnRegen = findViewById(R.id.btnRegenerateImage);
+        View card = findViewById(R.id.cardDreamVisualization);
+        ImageView ivGenerated = card.findViewById(R.id.ivDreamGenerated);
+        View loadingOverlay = card.findViewById(R.id.loadingOverlay);
+        Button btnRegen = card.findViewById(R.id.btnRegenerate);
+        Button btnSaveGallery = card.findViewById(R.id.btnSaveGallery);
 
-        // Pick initial scene based on dream content keywords
-        String lower = dreamText.toLowerCase(Locale.getDefault());
-        if (lower.contains("ocean") || lower.contains("water") || lower.contains("sea")) vizIndex = 2;
-        else if (lower.contains("star") || lower.contains("space") || lower.contains("galaxy")) vizIndex = 1;
-        else if (lower.contains("forest") || lower.contains("tree")) vizIndex = 4;
-        else if (lower.contains("moon")) vizIndex = 0;
-        else vizIndex = vizRandom.nextInt(VIZ_SCENES.length);
+        // Try to load existing image if available
+        if (dreamId != -1) {
+            Dream dream = repository.getDreamById(dreamId);
+            if (dream != null && dream.getImageUrl() != null) {
+                Glide.with(this)
+                        .load(new File(dream.getImageUrl()))
+                        .transform(new RoundedCorners(dp(18)))
+                        .into(ivGenerated);
+            } else {
+                generateAndDisplayImage(dreamText, ivGenerated, loadingOverlay);
+            }
+        } else {
+            generateAndDisplayImage(dreamText, ivGenerated, loadingOverlay);
+        }
 
-        setVizScene(tvEmoji, tvPrompt);
-
-        btnRegen.setOnClickListener(v -> {
-            vizIndex = (vizIndex + 1) % VIZ_SCENES.length;
-            setVizScene(tvEmoji, tvPrompt);
+        btnRegen.setOnClickListener(v -> generateAndDisplayImage(dreamText, ivGenerated, loadingOverlay));
+        
+        btnSaveGallery.setOnClickListener(v -> {
+            if (currentGeneratedBitmap != null && dreamId != -1) {
+                saveImageToInternalStorage(currentGeneratedBitmap);
+            } else {
+                Toast.makeText(this, "Wait for image to generate or save dream first", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
+    private void generateAndDisplayImage(String text, ImageView imageView, View loading) {
+        loading.setVisibility(View.VISIBLE);
+        imageGenerator.generateImage(text, new DreamImageGenerator.ImageGenerationListener() {
+            @Override
+            public void onSuccess(Bitmap bitmap) {
+                loading.setVisibility(View.GONE);
+                currentGeneratedBitmap = bitmap;
+                imageView.setImageBitmap(bitmap);
+                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            }
+
+            @Override
+            public void onError(String message) {
+                loading.setVisibility(View.GONE);
+                Toast.makeText(DreamAnalysisActivity.this, message, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void saveImageToInternalStorage(Bitmap bitmap) {
+        String fileName = "dream_" + UUID.randomUUID().toString() + ".jpg";
+        File file = new File(getFilesDir(), fileName);
+        try (FileOutputStream out = new FileOutputStream(file)) {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+            
+            // Update database
+            Dream dream = repository.getDreamById(dreamId);
+            if (dream != null) {
+                dream.setImageUrl(file.getAbsolutePath());
+                repository.updateDream(dream);
+                Toast.makeText(this, "Saved to Dream Gallery!", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "Failed to save image", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private void setVizScene(TextView tvEmoji, TextView tvPrompt) {
-        tvEmoji.setText(VIZ_SCENES[vizIndex][0]);
-        tvPrompt.setText(VIZ_SCENES[vizIndex][1]);
-        // Brief fade animation
-        tvEmoji.setAlpha(0f);
-        tvPrompt.setAlpha(0f);
-        tvEmoji.animate().alpha(1f).setDuration(400).start();
-        tvPrompt.animate().alpha(1f).setDuration(600).start();
+        // Method kept for backward compatibility if needed, but unused now
     }
 
     // ─── Analysis Engine ────────────────────────────────────────────────────────

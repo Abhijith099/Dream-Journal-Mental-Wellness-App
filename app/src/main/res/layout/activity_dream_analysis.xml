@@ -309,77 +309,9 @@
             </LinearLayout>
 
             <!-- CARD 4b: Dream Visualization -->
-            <LinearLayout
+            <include
                 android:id="@+id/cardDreamVisualization"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_analysis_card"
-                android:orientation="vertical"
-                android:padding="24dp"
-                android:layout_marginBottom="20dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="🎨  Dream Visualization"
-                    android:textColor="#FFFFFF"
-                    android:textSize="20sp"
-                    android:fontFamily="@font/poppins"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="8dp" />
-
-                <!-- Divider -->
-                <View
-                    android:layout_width="40dp"
-                    android:layout_height="2dp"
-                    android:background="#F6C65B"
-                    android:layout_marginBottom="16dp" />
-
-                <!-- Dream image placeholder -->
-                <LinearLayout
-                    android:id="@+id/llDreamImageArea"
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:background="@drawable/bg_dream_visualization"
-                    android:layout_marginBottom="14dp">
-
-                    <TextView
-                        android:id="@+id/tvDreamVizEmoji"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="🌙"
-                        android:textSize="48sp"
-                        android:layout_marginBottom="10dp" />
-
-                    <TextView
-                        android:id="@+id/tvDreamVizPrompt"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Dream atmosphere visualized"
-                        android:textColor="#C5CAE9"
-                        android:textSize="14sp"
-                        android:fontFamily="@font/poppins"
-                        android:textStyle="italic"
-                        android:gravity="center"
-                        android:paddingHorizontal="24dp" />
-
-                </LinearLayout>
-
-                <Button
-                    android:id="@+id/btnRegenerateImage"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:text="✦  Regenerate Image"
-                    android:textColor="#171F4B"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    android:fontFamily="@font/poppins"
-                    android:backgroundTint="#39C6FF"
-                    app:cornerRadius="12dp" />
-
-            </LinearLayout>
+                layout="@layout/card_dream_visualization" />
 
             <!-- CARD 5: Insight Score -->
             <LinearLayout

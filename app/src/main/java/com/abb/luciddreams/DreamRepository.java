@@ -46,6 +46,7 @@ public class DreamRepository {
         values.put(DreamDbHelper.COLUMN_IS_NIGHTMARE, dream.isNightmare() ? 1 : 0);
         values.put(DreamDbHelper.COLUMN_IS_RECURRING, dream.isRecurring() ? 1 : 0);
         values.put(DreamDbHelper.COLUMN_TAGS, dream.getTags());
+        values.put(DreamDbHelper.COLUMN_IMAGE_URL, dream.getImageUrl());
         return db.update(
                 DreamDbHelper.TABLE_DREAMS,
                 values,
@@ -65,6 +66,7 @@ public class DreamRepository {
         values.put(DreamDbHelper.COLUMN_IS_NIGHTMARE, dream.isNightmare() ? 1 : 0);
         values.put(DreamDbHelper.COLUMN_IS_RECURRING, dream.isRecurring() ? 1 : 0);
         values.put(DreamDbHelper.COLUMN_TAGS, dream.getTags());
+        values.put(DreamDbHelper.COLUMN_IMAGE_URL, dream.getImageUrl());
 
         long newRowId = db.insert(DreamDbHelper.TABLE_DREAMS, null, values);
         return newRowId;
@@ -118,6 +120,7 @@ public class DreamRepository {
         dream.setNightmare(cursor.getInt(cursor.getColumnIndexOrThrow(DreamDbHelper.COLUMN_IS_NIGHTMARE)) == 1);
         dream.setRecurring(cursor.getInt(cursor.getColumnIndexOrThrow(DreamDbHelper.COLUMN_IS_RECURRING)) == 1);
         dream.setTags(cursor.getString(cursor.getColumnIndexOrThrow(DreamDbHelper.COLUMN_TAGS)));
+        dream.setImageUrl(cursor.getString(cursor.getColumnIndexOrThrow(DreamDbHelper.COLUMN_IMAGE_URL)));
         return dream;
     }
 

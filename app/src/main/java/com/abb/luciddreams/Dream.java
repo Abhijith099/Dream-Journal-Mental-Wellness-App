@@ -14,12 +14,13 @@ public class Dream {
     private boolean isNightmare;
     private boolean isRecurring;
     private String tags; // Comma separated for SQLite
+    private String imageUrl;
 
     // Empty constructor needed for instantiating in some cases
     public Dream() {
     }
 
-    public Dream(long id, long timestamp, String description, String mood, int clarity, int lucidity, boolean isNightmare, boolean isRecurring, String tags) {
+    public Dream(long id, long timestamp, String description, String mood, int clarity, int lucidity, boolean isNightmare, boolean isRecurring, String tags, String imageUrl) {
         this.id = id;
         this.timestamp = timestamp;
         this.description = description;
@@ -29,6 +30,7 @@ public class Dream {
         this.isNightmare = isNightmare;
         this.isRecurring = isRecurring;
         this.tags = tags;
+        this.imageUrl = imageUrl;
     }
 
     public long getId() { return id; }
@@ -57,6 +59,9 @@ public class Dream {
     
     public String getTags() { return tags; }
     public void setTags(String tags) { this.tags = tags; }
+
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 
     public List<String> getTagsList() {
         if (tags == null || tags.trim().isEmpty()) {

@@ -101,8 +101,10 @@ public class PatternsActivity extends AppCompatActivity {
                 startActivity(intent);
                 overridePendingTransition(0, 0);
                 return true;
-            } else if (id == R.id.nav_profile) {
-                android.widget.Toast.makeText(this, "Profile coming soon", android.widget.Toast.LENGTH_SHORT).show();
+            } else if (id == R.id.nav_gallery) {
+                Intent intent = new Intent(this, DreamGalleryActivity.class);
+                startActivity(intent);
+                overridePendingTransition(0, 0);
                 return true;
             }
             return id == R.id.nav_patterns;

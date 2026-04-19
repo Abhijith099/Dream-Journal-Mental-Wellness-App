@@ -108,16 +108,17 @@ public class DreamDetailsActivity extends AppCompatActivity {
             dream.setTags(tagsBuilder.toString());
 
             DreamRepository repo = new DreamRepository(this);
-            repo.insertDream(dream);
+            long dreamId = repo.insertDream(dream);
 
             // Clear draft
             getSharedPreferences("DreamPrefs", Context.MODE_PRIVATE).edit().remove("DraftJournal").apply();
 
             Toast.makeText(this, "Dream saved successfully! ✨", Toast.LENGTH_SHORT).show();
 
-            // Return to MainActivity
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            // Proceed to Analysis immediately
+            Intent intent = new Intent(this, DreamAnalysisActivity.class);
+            intent.putExtra("dream_text", journalText);
+            intent.putExtra("dream_id", dreamId);
             startActivity(intent);
             finish();
         });

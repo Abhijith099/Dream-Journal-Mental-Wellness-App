@@ -39,6 +39,9 @@
         <activity android:name=".EditDreamActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.LucidDreams.EditDream"/>
+        <activity android:name=".DreamGalleryActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.LucidDreams.Patterns"/>
     </application>
 
 </manifest>
