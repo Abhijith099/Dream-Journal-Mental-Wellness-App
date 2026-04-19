@@ -17,6 +17,43 @@ public class DreamRepository {
         dbHelper = DreamDbHelper.getInstance(context);
     }
 
+    public Dream getDreamById(long id) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.query(
+                DreamDbHelper.TABLE_DREAMS,
+                null,
+                DreamDbHelper.COLUMN_ID + " = ?",
+                new String[]{String.valueOf(id)},
+                null, null, null
+        );
+        try {
+            if (cursor.moveToFirst()) {
+                return cursorToDream(cursor);
+            }
+            return null;
+        } finally {
+            cursor.close();
+        }
+    }
+
+    public int updateDream(Dream dream) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DreamDbHelper.COLUMN_DESCRIPTION, dream.getDescription());
+        values.put(DreamDbHelper.COLUMN_MOOD, dream.getMood());
+        values.put(DreamDbHelper.COLUMN_CLARITY, dream.getClarity());
+        values.put(DreamDbHelper.COLUMN_LUCIDITY, dream.getLucidity());
+        values.put(DreamDbHelper.COLUMN_IS_NIGHTMARE, dream.isNightmare() ? 1 : 0);
+        values.put(DreamDbHelper.COLUMN_IS_RECURRING, dream.isRecurring() ? 1 : 0);
+        values.put(DreamDbHelper.COLUMN_TAGS, dream.getTags());
+        return db.update(
+                DreamDbHelper.TABLE_DREAMS,
+                values,
+                DreamDbHelper.COLUMN_ID + " = ?",
+                new String[]{String.valueOf(dream.getId())}
+        );
+    }
+
     public long insertDream(Dream dream) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();

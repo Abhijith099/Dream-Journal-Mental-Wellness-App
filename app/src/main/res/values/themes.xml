@@ -63,5 +63,16 @@
         <item name="android:colorBackground">#171F4B</item>
         <item name="android:statusBarColor">#171F4B</item>
         <item name="android:navigationBarColor">#222B52</item>
+        <!-- Prevent Material3 surface tint from flashing white on scroll -->
+        <item name="colorSurface">#171F4B</item>
+        <item name="colorSurfaceVariant">#232C61</item>
+        <item name="colorSurfaceContainer">#171F4B</item>
+        <item name="colorSurfaceContainerLow">#171F4B</item>
+        <item name="colorSurfaceContainerHigh">#232C61</item>
+        <item name="colorSurfaceContainerHighest">#2A3567</item>
+        <item name="colorOnSurface">#FFFFFF</item>
     </style>
+
+    <!-- Edit Dream Activity Theme (inherits same dark palette) -->
+    <style name="Theme.LucidDreams.EditDream" parent="Theme.LucidDreams.Patterns"/>
 </resources>
