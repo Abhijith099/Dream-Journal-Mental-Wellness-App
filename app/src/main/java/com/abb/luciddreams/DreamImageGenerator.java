@@ -18,7 +18,13 @@ import java.util.concurrent.TimeUnit;
 public class DreamImageGenerator {
 
     private static final String TAG = "DreamImageGenerator";
-    private static final String API_URL = "https://api-inference.huggingface.co/models/runwayml/stable-diffusion-v1-5";
+    private static final String[] MODELS = {
+            "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell",
+            "https://api-inference.huggingface.co/models/stabilityai/sdxl-turbo",
+            "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
+            "https://api-inference.huggingface.co/models/runwayml/stable-diffusion-v1-5",
+            "https://api-inference.huggingface.co/models/Lykon/DreamShaper"
+    };
     // API key is read from local.properties via BuildConfig (HUGGING_FACE_API_KEY)
     private static final String API_KEY = "Bearer " + BuildConfig.HUGGING_FACE_API_KEY;
 
@@ -31,9 +37,9 @@ public class DreamImageGenerator {
 
     public DreamImageGenerator() {
         client = new OkHttpClient.Builder()
-                .connectTimeout(60, TimeUnit.SECONDS)
-                .readTimeout(60, TimeUnit.SECONDS)
-                .writeTimeout(60, TimeUnit.SECONDS)
+                .connectTimeout(100, TimeUnit.SECONDS)
+                .readTimeout(100, TimeUnit.SECONDS)
+                .writeTimeout(100, TimeUnit.SECONDS)
                 .build();
     }
 
@@ -44,16 +50,48 @@ public class DreamImageGenerator {
         }
 
         String enhancedPrompt = enhancePrompt(dreamDescription);
-        
+        Log.d(TAG, "Starting image generation sequence...");
+        tryModel(0, enhancedPrompt, listener);
+    }
+
+    private void tryModel(int index, String prompt, ImageGenerationListener listener) {
+        if (index >= MODELS.length) {
+            listener.onError("All models failed to generate image.");
+            return;
+        }
+
+        String url = MODELS[index];
+        Log.d(TAG, "Trying model [" + index + "]: " + url);
+
+        executeRequest(url, prompt, new ImageGenerationListener() {
+            @Override
+            public void onSuccess(Bitmap bitmap) {
+                listener.onSuccess(bitmap);
+            }
+
+            @Override
+            public void onError(String message) {
+                Log.w(TAG, "Model [" + index + "] failed: " + message);
+                // Try next model if it's a 404 or other potentially model-specific error
+                tryModel(index + 1, prompt, listener);
+            }
+        });
+    }
+
+    private void executeRequest(String url, String prompt, ImageGenerationListener listener) {
         new Thread(() -> {
-            MediaType mediaType = MediaType.parse("application/json");
-            String json = "{\"inputs\": \"" + enhancedPrompt + "\"}";
+            MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
+            // Basic JSON manual construction for simplicity, but escaped
+            String escapedPrompt = prompt.replace("\\", "\\\\").replace("\"", "\\\"");
+            String json = "{\"inputs\": \"" + escapedPrompt + "\"}";
             RequestBody body = RequestBody.create(json, mediaType);
             
             Request request = new Request.Builder()
-                    .url(API_URL)
+                    .url(url)
                     .post(body)
                     .addHeader("Authorization", API_KEY)
+                    .addHeader("X-Wait-For-Model", "true")
+                    .addHeader("X-Use-Cache", "false")
                     .build();
 
             try (Response response = client.newCall(request).execute()) {
@@ -76,33 +114,35 @@ public class DreamImageGenerator {
                     } catch (IOException e2) {
                         Log.w(TAG, "Could not read error body", e2);
                     }
-                    Log.e(TAG, "API Response Code: " + code);
-                    Log.e(TAG, "Error Body: " + errorBody);
+                    Log.e(TAG, "API Error " + code + " for " + url + ": " + errorBody);
+                    
                     String errorMsg;
                     if (code == 503) {
-                        errorMsg = "Model is loading, please try again in a moment.";
+                        errorMsg = "Model is loading, please try again.";
+                    } else if (code == 404) {
+                        errorMsg = "Error 404: Model not found at " + url;
+                    } else if (code == 401) {
+                        errorMsg = "Error 401: Invalid API Key.";
                     } else {
                         errorMsg = "HTTP " + code + ": " + response.message();
                     }
-                    String finalErrorMsg = errorMsg;
-                    new Handler(Looper.getMainLooper()).post(() -> listener.onError("API Error: " + finalErrorMsg));
+                    
+                    new Handler(Looper.getMainLooper()).post(() -> listener.onError(errorMsg));
                 }
             } catch (IOException e) {
+                Log.e(TAG, "Network Error", e);
                 new Handler(Looper.getMainLooper()).post(() -> listener.onError("Network Error: " + e.getMessage()));
             }
         }).start();
     }
 
     private String enhancePrompt(String description) {
-        // Cleaning description
+        // Cleaning description - remove newlines and quotes
         String clean = description.replaceAll("[\"\\n\\r]", " ").trim();
         if (clean.length() > 300) clean = clean.substring(0, 300);
 
-        // Visual Style Keywords from requirements
+        // Visual Style Keywords
         String style = "fantasy dreamscape, soft glowing lights, cinematic composition, rich blue tones, moonlight atmosphere, magical realism, painterly digital art, highly aesthetic, premium app artwork, soft particles, sparkles, surrealism, high resolution, 8k";
-        
-        // Escape backslashes first, then quotes, for correct JSON encoding
-        clean = clean.replace("\\", "\\\\").replace("\"", "\\\"");
         
         return "A dreamy visual representation of: " + clean + ". Style: " + style;
     }

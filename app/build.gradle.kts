@@ -22,7 +22,7 @@ android {
         if (localPropertiesFile.exists()) {
             localProperties.load(localPropertiesFile.inputStream())
         }
-        val hfKey = localProperties.getProperty("HUGGING_FACE_API_KEY") ?: ""
+        val hfKey = (localProperties.getProperty("HUGGING_FACE_API_KEY") ?: "").trim()
         buildConfigField("String", "HUGGING_FACE_API_KEY", "\"$hfKey\"")
     }
 
