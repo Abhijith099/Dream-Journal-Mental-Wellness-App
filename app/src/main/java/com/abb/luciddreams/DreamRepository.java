@@ -14,7 +14,7 @@ public class DreamRepository {
     private DreamDbHelper dbHelper;
 
     public DreamRepository(Context context) {
-        dbHelper = new DreamDbHelper(context);
+        dbHelper = DreamDbHelper.getInstance(context);
     }
 
     public long insertDream(Dream dream) {
@@ -30,7 +30,6 @@ public class DreamRepository {
         values.put(DreamDbHelper.COLUMN_TAGS, dream.getTags());
 
         long newRowId = db.insert(DreamDbHelper.TABLE_DREAMS, null, values);
-        db.close();
         return newRowId;
     }
 
@@ -68,7 +67,6 @@ public class DreamRepository {
             dreams.add(cursorToDream(cursor));
         }
         cursor.close();
-        db.close();
         return dreams;
     }
 
@@ -131,7 +129,6 @@ public class DreamRepository {
             dreams.add(cursorToDream(cursor));
         }
         cursor.close();
-        db.close();
         return dreams;
     }
 
@@ -165,7 +162,6 @@ public class DreamRepository {
             }
         }
         cursor.close();
-        db.close();
         return dates;
     }
 
@@ -191,7 +187,6 @@ public class DreamRepository {
             if (mood != null) counts.put(mood, count);
         }
         cursor.close();
-        db.close();
         return counts;
     }
 
@@ -224,7 +219,6 @@ public class DreamRepository {
             }
         }
         cursor.close();
-        db.close();
 
         List<java.util.Map.Entry<String, Integer>> sortedTags = new ArrayList<>(tagCounts.entrySet());
         sortedTags.sort((a, b) -> b.getValue().compareTo(a.getValue()));
@@ -266,7 +260,6 @@ public class DreamRepository {
             }
         }
         cursor.close();
-        db.close();
         return factors;
     }
 
@@ -293,7 +286,6 @@ public class DreamRepository {
             dreams.add(d);
         }
         cursor.close();
-        db.close();
         return dreams;
     }
 
@@ -333,7 +325,6 @@ public class DreamRepository {
             }
         }
         cursor.close();
-        db.close();
 
         List<java.util.Map.Entry<String, Integer>> sortedWords = new ArrayList<>(wordCounts.entrySet());
         sortedWords.sort((a, b) -> b.getValue().compareTo(a.getValue()));
@@ -387,7 +378,6 @@ public class DreamRepository {
             if (detailedCursor.getInt(2) == 1) nightmaresInPeriod++;
         }
         detailedCursor.close();
-        db.close();
 
         stats.put("totalDreamsPeriod", selectedCount);
         stats.put("totalWords", totalWords);

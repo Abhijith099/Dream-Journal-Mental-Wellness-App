@@ -33,7 +33,16 @@ public class DreamDbHelper extends SQLiteOpenHelper {
             COLUMN_TAGS + " TEXT" +
             ");";
 
-    public DreamDbHelper(Context context) {
+    private static DreamDbHelper instance;
+
+    public static synchronized DreamDbHelper getInstance(Context context) {
+        if (instance == null) {
+            instance = new DreamDbHelper(context.getApplicationContext());
+        }
+        return instance;
+    }
+
+    private DreamDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
