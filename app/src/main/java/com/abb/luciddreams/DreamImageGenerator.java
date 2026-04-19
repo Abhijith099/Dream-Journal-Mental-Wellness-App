@@ -1,10 +1,10 @@
 package com.abb.luciddreams;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -17,7 +17,9 @@ import java.util.concurrent.TimeUnit;
 
 public class DreamImageGenerator {
 
+    private static final String TAG = "DreamImageGenerator";
     private static final String API_URL = "https://api-inference.huggingface.co/models/runwayml/stable-diffusion-v1-5";
+    // API key is read from local.properties via BuildConfig (HUGGING_FACE_API_KEY)
     private static final String API_KEY = "Bearer " + BuildConfig.HUGGING_FACE_API_KEY;
 
     private final OkHttpClient client;
@@ -36,57 +38,57 @@ public class DreamImageGenerator {
     }
 
     public void generateImage(String dreamDescription, ImageGenerationListener listener) {
-        String apiKey = BuildConfig.HUGGING_FACE_API_KEY;
-        if (apiKey == null || apiKey.isEmpty() || apiKey.equals("null")) {
-            listener.onError("Missing API Key. Please add HUGGING_FACE_API_KEY to local.properties");
+        if (BuildConfig.HUGGING_FACE_API_KEY.isEmpty()) {
+            listener.onError("Missing API Key. Please add it to local.properties");
             return;
         }
 
         String enhancedPrompt = enhancePrompt(dreamDescription);
         
         new Thread(() -> {
-            try {
-                MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
-                String json = "{\"inputs\": \"" + enhancedPrompt + "\", \"options\": {\"wait_for_model\": true}}";
-                RequestBody body = RequestBody.create(json, mediaType);
-                
-                Request request = new Request.Builder()
-                        .url(API_URL)
-                        .post(body)
-                        .addHeader("Authorization", "Bearer " + apiKey)
-                        .build();
+            MediaType mediaType = MediaType.parse("application/json");
+            String json = "{\"inputs\": \"" + enhancedPrompt + "\"}";
+            RequestBody body = RequestBody.create(json, mediaType);
+            
+            Request request = new Request.Builder()
+                    .url(API_URL)
+                    .post(body)
+                    .addHeader("Authorization", API_KEY)
+                    .build();
 
-                try (Response response = client.newCall(request).execute()) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        byte[] bytes = response.body().bytes();
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                        
-                        new Handler(Looper.getMainLooper()).post(() -> {
-                            if (bitmap != null) {
-                                listener.onSuccess(bitmap);
-                            } else {
-                                listener.onError("Failed to decode image");
-                            }
-                        });
-                    } else {
-                        String errorMsg = response.message();
-                        int code = response.code();
-                        if (code == 503) {
-                            errorMsg = "Model is loading... This may take a minute.";
-                        } else if (code == 401) {
-                            errorMsg = "Invalid API Key. Check your Hugging Face token.";
-                        } else if (code == 429) {
-                            errorMsg = "Rate limit exceeded. Try again later.";
+            try (Response response = client.newCall(request).execute()) {
+                if (response.isSuccessful() && response.body() != null) {
+                    byte[] bytes = response.body().bytes();
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        if (bitmap != null) {
+                            listener.onSuccess(bitmap);
+                        } else {
+                            listener.onError("Failed to decode image");
                         }
-                        
-                        String finalErrorMsg = errorMsg;
-                        new Handler(Looper.getMainLooper()).post(() -> listener.onError("Error (" + code + "): " + finalErrorMsg));
+                    });
+                } else {
+                    int code = response.code();
+                    String errorBody = "";
+                    try {
+                        if (response.body() != null) errorBody = response.body().string();
+                    } catch (IOException e2) {
+                        Log.w(TAG, "Could not read error body", e2);
                     }
+                    Log.e(TAG, "API Response Code: " + code);
+                    Log.e(TAG, "Error Body: " + errorBody);
+                    String errorMsg;
+                    if (code == 503) {
+                        errorMsg = "Model is loading, please try again in a moment.";
+                    } else {
+                        errorMsg = "HTTP " + code + ": " + response.message();
+                    }
+                    String finalErrorMsg = errorMsg;
+                    new Handler(Looper.getMainLooper()).post(() -> listener.onError("API Error: " + finalErrorMsg));
                 }
             } catch (IOException e) {
-                new Handler(Looper.getMainLooper()).post(() -> listener.onError("Network error. Please check your connection."));
-            } catch (Exception e) {
-                new Handler(Looper.getMainLooper()).post(() -> listener.onError("Unexpected error: " + e.getMessage()));
+                new Handler(Looper.getMainLooper()).post(() -> listener.onError("Network Error: " + e.getMessage()));
             }
         }).start();
     }
@@ -99,7 +101,7 @@ public class DreamImageGenerator {
         // Visual Style Keywords from requirements
         String style = "fantasy dreamscape, soft glowing lights, cinematic composition, rich blue tones, moonlight atmosphere, magical realism, painterly digital art, highly aesthetic, premium app artwork, soft particles, sparkles, surrealism, high resolution, 8k";
         
-        // Escape backslashes for JSON
+        // Escape backslashes first, then quotes, for correct JSON encoding
         clean = clean.replace("\\", "\\\\").replace("\"", "\\\"");
         
         return "A dreamy visual representation of: " + clean + ". Style: " + style;
