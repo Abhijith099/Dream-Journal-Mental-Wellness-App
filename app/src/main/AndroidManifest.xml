@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <!-- Required for future AI API integration (e.g. Gemini/OpenAI for dynamic dream analysis) -->
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -26,6 +28,9 @@
         <activity android:name=".AddDreamActivity" android:screenOrientation="portrait"/>
         <activity android:name=".DreamDetailsActivity" android:screenOrientation="portrait"/>
         <activity android:name=".PatternsActivity" 
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.LucidDreams.Patterns"/>
+        <activity android:name=".DreamAnalysisActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.LucidDreams.Patterns"/>
     </application>

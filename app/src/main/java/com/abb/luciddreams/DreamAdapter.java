@@ -1,5 +1,6 @@
 package com.abb.luciddreams;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +51,13 @@ public class DreamAdapter extends RecyclerView.Adapter<DreamAdapter.DreamViewHol
             holder.tvNightmareBadge.setVisibility(View.GONE);
         }
 
+        // Make card tappable → open Dream Analysis
+        holder.cardContainer.setOnClickListener(v -> {
+            Intent intent = new Intent(v.getContext(), DreamAnalysisActivity.class);
+            intent.putExtra("dream_text", dream.getDescription());
+            v.getContext().startActivity(intent);
+        });
+
         // Tags
         holder.llTags.removeAllViews();
         List<String> tags = dream.getTagsList();
@@ -85,6 +93,7 @@ public class DreamAdapter extends RecyclerView.Adapter<DreamAdapter.DreamViewHol
     static class DreamViewHolder extends RecyclerView.ViewHolder {
         TextView tvCardDate, tvDescription, tvMoodIcon, tvNightmareBadge;
         LinearLayout llTags;
+        LinearLayout cardContainer;
 
         public DreamViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -93,6 +102,7 @@ public class DreamAdapter extends RecyclerView.Adapter<DreamAdapter.DreamViewHol
             tvMoodIcon = itemView.findViewById(R.id.tvMoodIcon);
             tvNightmareBadge = itemView.findViewById(R.id.tvNightmareBadge);
             llTags = itemView.findViewById(R.id.llTags);
+            cardContainer = itemView.findViewById(R.id.cardContainer);
         }
     }
 }
