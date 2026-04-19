@@ -147,6 +147,21 @@ public class DreamAnalysisActivity extends AppCompatActivity {
         REFLECTION_MAP.put("default",  "Are you currently navigating self-doubt or personal change? Reflect on what this dream may be trying to show you.");
     }
 
+    private long dreamId = -1;
+    private int vizIndex = 0;
+    private final java.util.Random vizRandom = new java.util.Random();
+
+    private static final String[][] VIZ_SCENES = {
+        {"🌙", "A moonlit realm where shadows dance across ancient stone..."},
+        {"🌌", "Swirling galaxies merge into paths of shimmering starlight..."},
+        {"🌊", "Endless ocean waves carry whispers of forgotten memories..."},
+        {"🔮", "Crystal visions spiral through dimensions beyond waking..."},
+        {"🌲", "An enchanted forest glows with ethereal bioluminescence..."},
+        {"⭐", "Stars rearrange themselves into messages just for you..."},
+        {"🌅", "Golden dawn breaks over a landscape only the mind can hold..."},
+        {"🪐", "Floating islands orbit a twin-moon sky in perfect silence..."},
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -159,6 +174,7 @@ public class DreamAnalysisActivity extends AppCompatActivity {
         setContentView(R.layout.activity_dream_analysis);
 
         String dreamText = getIntent().getStringExtra("dream_text");
+        dreamId = getIntent().getLongExtra("dream_id", -1);
         if (dreamText == null || dreamText.trim().isEmpty()) {
             dreamText = "No dream text provided.";
         }
@@ -174,12 +190,25 @@ public class DreamAnalysisActivity extends AppCompatActivity {
             finish();
         });
 
+        // Edit dream button
+        View btnEdit = findViewById(R.id.btnEditDream);
+        btnEdit.setOnClickListener(v -> {
+            if (dreamId >= 0) {
+                Intent intent = new Intent(this, EditDreamActivity.class);
+                intent.putExtra("dream_id", dreamId);
+                startActivity(intent);
+            } else {
+                android.widget.Toast.makeText(this, "No saved dream to edit", android.widget.Toast.LENGTH_SHORT).show();
+            }
+        });
+
         DreamAnalysis analysis = analyze(dreamText);
 
         populateSummary(analysis.summary);
         populateSymbols(analysis.symbols);
         populateEmotions(analysis.emotions, analysis.emotionDescription);
         populateReflection(analysis.reflection);
+        populateDreamVisualization(dreamText);
         populateInsights(analysis.lucidityScore, analysis.stressScore, analysis.patternScore);
 
         fullReadText = "Dream Summary. " + analysis.summary
@@ -190,6 +219,37 @@ public class DreamAnalysisActivity extends AppCompatActivity {
         ivSpeaker.setOnClickListener(v -> readAloud());
 
         initTts();
+    }
+
+    private void populateDreamVisualization(String dreamText) {
+        TextView tvEmoji = findViewById(R.id.tvDreamVizEmoji);
+        TextView tvPrompt = findViewById(R.id.tvDreamVizPrompt);
+        Button btnRegen = findViewById(R.id.btnRegenerateImage);
+
+        // Pick initial scene based on dream content keywords
+        String lower = dreamText.toLowerCase(Locale.getDefault());
+        if (lower.contains("ocean") || lower.contains("water") || lower.contains("sea")) vizIndex = 2;
+        else if (lower.contains("star") || lower.contains("space") || lower.contains("galaxy")) vizIndex = 1;
+        else if (lower.contains("forest") || lower.contains("tree")) vizIndex = 4;
+        else if (lower.contains("moon")) vizIndex = 0;
+        else vizIndex = vizRandom.nextInt(VIZ_SCENES.length);
+
+        setVizScene(tvEmoji, tvPrompt);
+
+        btnRegen.setOnClickListener(v -> {
+            vizIndex = (vizIndex + 1) % VIZ_SCENES.length;
+            setVizScene(tvEmoji, tvPrompt);
+        });
+    }
+
+    private void setVizScene(TextView tvEmoji, TextView tvPrompt) {
+        tvEmoji.setText(VIZ_SCENES[vizIndex][0]);
+        tvPrompt.setText(VIZ_SCENES[vizIndex][1]);
+        // Brief fade animation
+        tvEmoji.setAlpha(0f);
+        tvPrompt.setAlpha(0f);
+        tvEmoji.animate().alpha(1f).setDuration(400).start();
+        tvPrompt.animate().alpha(1f).setDuration(600).start();
     }
 
     // ─── Analysis Engine ────────────────────────────────────────────────────────

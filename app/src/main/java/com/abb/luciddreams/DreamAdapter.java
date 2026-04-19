@@ -55,6 +55,7 @@ public class DreamAdapter extends RecyclerView.Adapter<DreamAdapter.DreamViewHol
         holder.cardContainer.setOnClickListener(v -> {
             Intent intent = new Intent(v.getContext(), DreamAnalysisActivity.class);
             intent.putExtra("dream_text", dream.getDescription());
+            intent.putExtra("dream_id", dream.getId());
             v.getContext().startActivity(intent);
         });
 

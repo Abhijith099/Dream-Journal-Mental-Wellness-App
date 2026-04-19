@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Deep space gradient background -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="135"
+                android:startColor="#0D1035"
+                android:centerColor="#1A1060"
+                android:endColor="#0A2040"
+                android:type="linear" />
+            <corners android:radius="14dp" />
+        </shape>
+    </item>
+    <!-- Subtle overlay shimmer -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="45"
+                android:startColor="#209A63FF"
+                android:endColor="#1039C6FF"
+                android:type="linear" />
+            <corners android:radius="14dp" />
+        </shape>
+    </item>
+</layer-list>

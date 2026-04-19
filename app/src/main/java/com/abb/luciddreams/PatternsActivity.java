@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -211,22 +210,19 @@ public class PatternsActivity extends AppCompatActivity {
         LayoutInflater inflater = LayoutInflater.from(this);
         for (Map.Entry<String, Integer> entry : moods) {
             View itemView = inflater.inflate(R.layout.item_mood_summary_row, llMoodSummaryContainer, false);
-            ImageView ivIcon = itemView.findViewById(R.id.ivMoodIcon);
+            TextView tvEmoji = itemView.findViewById(R.id.tvMoodEmoji);
             TextView tvLabel = itemView.findViewById(R.id.tvMoodLabel);
             TextView tvCount = itemView.findViewById(R.id.tvMoodCount);
             ProgressBar pb = itemView.findViewById(R.id.pbMood);
 
             String mood = entry.getKey();
-            ivIcon.setImageResource(getMoodDrawable(mood));
-            
-            String emoji = getMoodEmoji(mood);
-            String name = getMoodName(mood);
-            tvLabel.setText(name); // Removed emoji from label to match modern UI
+            tvEmoji.setText(getMoodEmoji(mood));
+            tvLabel.setText(getMoodName(mood));
             tvCount.setText(entry.getValue() + (entry.getValue() == 1 ? " dream" : " dreams"));
-            
+
             pb.setMax(max);
             ObjectAnimator.ofInt(pb, "progress", 0, entry.getValue()).setDuration(1200).start();
-            
+
             llMoodSummaryContainer.addView(itemView);
         }
     }
@@ -346,12 +342,12 @@ public class PatternsActivity extends AppCompatActivity {
 
     private String getMoodEmoji(String mood) {
         switch (mood) {
-            case "✨": return "😄"; 
-            case "🌙": return "🙂";
-            case "☁": return "😐";
-            case "⚡": return "🙁";
-            case "🔥": return "😢";
-            default: return "😐";
+            case "✨": return "😊";
+            case "🌙": return "😌";
+            case "☁":  return "😐";
+            case "⚡": return "😨";
+            case "🔥": return "😰";
+            default:   return "🌀";
         }
     }
 
@@ -366,25 +362,14 @@ public class PatternsActivity extends AppCompatActivity {
         }
     }
 
-    private int getMoodDrawable(String mood) {
-        switch (mood) {
-            case "✨": return R.drawable.ic_mood_great;
-            case "🌙": return R.drawable.ic_mood_good;
-            case "☁": return R.drawable.ic_mood_neutral;
-            case "⚡": return R.drawable.ic_mood_bad;
-            case "🔥": return R.drawable.ic_mood_terrible;
-            default: return R.drawable.ic_mood_neutral;
-        }
-    }
-
     private String getMoodName(String mood) {
         switch (mood) {
             case "✨": return "Happy";
             case "🌙": return "Calm";
-            case "☁": return "Neutral";
-            case "⚡": return "Sad";
-            case "🔥": return "Fearful";
-            default: return "Unknown";
+            case "☁":  return "Neutral";
+            case "⚡": return "Fearful";
+            case "🔥": return "Intense";
+            default:   return mood.isEmpty() ? "Neutral" : "Other";
         }
     }
 }
