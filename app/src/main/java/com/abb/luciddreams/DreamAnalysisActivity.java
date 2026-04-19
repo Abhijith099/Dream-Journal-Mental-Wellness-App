@@ -260,6 +260,7 @@ public class DreamAnalysisActivity extends AppCompatActivity {
         imageGenerator.generateImage(text, new DreamImageGenerator.ImageGenerationListener() {
             @Override
             public void onSuccess(Bitmap bitmap) {
+                if (isFinishing() || isDestroyed()) return;
                 loading.setVisibility(View.GONE);
                 currentGeneratedBitmap = bitmap;
                 imageView.setImageBitmap(bitmap);
@@ -268,8 +269,9 @@ public class DreamAnalysisActivity extends AppCompatActivity {
 
             @Override
             public void onError(String message) {
+                if (isFinishing() || isDestroyed()) return;
                 loading.setVisibility(View.GONE);
-                Toast.makeText(DreamAnalysisActivity.this, message, Toast.LENGTH_SHORT).show();
+                Toast.makeText(DreamAnalysisActivity.this, "AI Image: " + message, Toast.LENGTH_SHORT).show();
             }
         });
     }

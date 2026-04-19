@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private List<Dream> dreamList = new ArrayList<>();
     private DreamAdapter adapter;
     private DreamRepository repository;
+    private RecyclerView recyclerView;
 
     private EditText etSearchTags;
     private ImageView ivClearSearch;
@@ -52,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         
         setContentView(R.layout.activity_main);
         
-        RecyclerView rvDreams = findViewById(R.id.rvDreams);
+        recyclerView = findViewById(R.id.rvDreams);
         FloatingActionButton fabAdd = findViewById(R.id.fabAdd);
 
         etSearchTags = findViewById(R.id.etSearchTags);
@@ -61,12 +62,12 @@ public class MainActivity extends AppCompatActivity {
         tvTitle = findViewById(R.id.tvTitle);
         tvTodayReset = findViewById(R.id.tvTodayReset);
 
-        rvDreams.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
         
         repository = new DreamRepository(this);
 
         adapter = new DreamAdapter(dreamList);
-        rvDreams.setAdapter(adapter);
+        recyclerView.setAdapter(adapter);
 
         fabAdd.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, AddDreamActivity.class);
@@ -178,20 +179,16 @@ public class MainActivity extends AppCompatActivity {
     private void reloadDreams() {
         String query = etSearchTags.getText().toString().trim();
         
-        if (selectedDateMillis == null && query.isEmpty()) {
-            dreamList = repository.getTodayDreams();
-        } else {
-            dreamList = repository.getDreamsFiltered(selectedDateMillis, query);
-        }
+        // Show all dreams filtered by tag, or all dreams if no tag and no date selected
+        dreamList = repository.getDreamsFiltered(selectedDateMillis, query);
         
         adapter.updateList(dreamList);
-
-        RecyclerView rvDreams = findViewById(R.id.rvDreams);
+        
         View llEmptyState = findViewById(R.id.llEmptyState);
         TextView tvEmptyStatus = findViewById(R.id.tvEmptyStatus);
 
-        if (dreamList.isEmpty()) {
-            rvDreams.setVisibility(View.GONE);
+        if (dreamList == null || dreamList.isEmpty()) {
+            recyclerView.setVisibility(View.GONE);
             llEmptyState.setVisibility(View.VISIBLE);
             
             if (selectedDateMillis != null) {
@@ -204,12 +201,12 @@ public class MainActivity extends AppCompatActivity {
                 if (!query.isEmpty()) {
                     tvEmptyStatus.setText("No dreams found for this tag");
                 } else {
-                    tvEmptyStatus.setText("No dreams recorded today");
+                    tvEmptyStatus.setText("No dreams recorded yet");
                 }
             }
         } else {
             llEmptyState.setVisibility(View.GONE);
-            rvDreams.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.VISIBLE);
         }
     }
 }

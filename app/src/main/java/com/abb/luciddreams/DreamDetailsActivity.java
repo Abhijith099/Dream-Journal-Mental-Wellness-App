@@ -119,6 +119,7 @@ public class DreamDetailsActivity extends AppCompatActivity {
             Intent intent = new Intent(this, DreamAnalysisActivity.class);
             intent.putExtra("dream_text", journalText);
             intent.putExtra("dream_id", dreamId);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             finish();
         });

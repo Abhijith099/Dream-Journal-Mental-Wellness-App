@@ -81,10 +81,13 @@ public class DreamImageGenerator {
     private String enhancePrompt(String description) {
         // Cleaning description
         String clean = description.replaceAll("[\"\\n\\r]", " ").trim();
-        if (clean.length() > 200) clean = clean.substring(0, 200);
+        if (clean.length() > 300) clean = clean.substring(0, 300);
 
         // Visual Style Keywords from requirements
         String style = "fantasy dreamscape, soft glowing lights, cinematic composition, rich blue tones, moonlight atmosphere, magical realism, painterly digital art, highly aesthetic, premium app artwork, soft particles, sparkles, surrealism, high resolution, 8k";
+        
+        // Escape backslashes for JSON
+        clean = clean.replace("\\", "\\\\").replace("\"", "\\\"");
         
         return "A dreamy visual representation of: " + clean + ". Style: " + style;
     }
