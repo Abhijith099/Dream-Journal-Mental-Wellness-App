@@ -82,10 +82,19 @@ public class MainActivity extends AppCompatActivity {
         com.google.android.material.bottomnavigation.BottomNavigationView nav = findViewById(R.id.bottomNav);
         nav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
-            if (id == R.id.nav_patterns) {
+            if (id == R.id.nav_analysis) {
+                Intent intent = new Intent(this, AnalysisDashboardActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                startActivity(intent);
+                overridePendingTransition(0, 0);
+                return true;
+            } else if (id == R.id.nav_patterns) {
                 Intent intent = new Intent(this, PatternsActivity.class);
                 startActivity(intent);
-                overridePendingTransition(0, 0); // Smooth transition
+                overridePendingTransition(0, 0);
+                return true;
+            } else if (id == R.id.nav_profile) {
+                android.widget.Toast.makeText(this, "Profile coming soon", android.widget.Toast.LENGTH_SHORT).show();
                 return true;
             }
             return id == R.id.nav_dreams;

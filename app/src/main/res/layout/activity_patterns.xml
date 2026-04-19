@@ -338,7 +338,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="#222B52"
+        android:background="#232C61"
         app:itemIconTint="@color/nav_item_color_patterns"
         app:itemTextColor="@color/nav_item_color_patterns"
         app:menu="@menu/bottom_nav_menu"

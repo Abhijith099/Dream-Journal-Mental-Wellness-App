@@ -33,6 +33,9 @@
         <activity android:name=".DreamAnalysisActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.LucidDreams.Patterns"/>
+        <activity android:name=".AnalysisDashboardActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.LucidDreams.Patterns"/>
     </application>
 
 </manifest>
