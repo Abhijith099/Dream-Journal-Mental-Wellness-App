@@ -32,7 +32,7 @@
             android:layout_gravity="center"
             android:text="Your Dream Analysis"
             android:textColor="#FFFFFF"
-            android:textSize="22sp"
+            android:textSize="30sp"
             android:fontFamily="@font/poppins"
             android:textStyle="bold" />
 
@@ -70,7 +70,7 @@
                 android:layout_height="wrap_content"
                 android:text="✨  AI-Powered Insights"
                 android:textColor="#F6C65B"
-                android:textSize="13sp"
+                android:textSize="14sp"
                 android:fontFamily="@font/poppins"
                 android:letterSpacing="0.08"
                 android:layout_marginBottom="20dp" />
@@ -82,8 +82,8 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_analysis_card"
                 android:orientation="vertical"
-                android:padding="20dp"
-                android:layout_marginBottom="16dp">
+                android:padding="24dp"
+                android:layout_marginBottom="20dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -96,9 +96,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Dream Summary"
+                        android:text="📖  Dream Summary"
                         android:textColor="#FFFFFF"
-                        android:textSize="18sp"
+                        android:textSize="20sp"
                         android:fontFamily="@font/poppins"
                         android:textStyle="bold" />
 
@@ -120,17 +120,17 @@
                     android:layout_width="40dp"
                     android:layout_height="2dp"
                     android:background="#F6C65B"
-                    android:layout_marginBottom="14dp" />
+                    android:layout_marginBottom="16dp" />
 
                 <TextView
                     android:id="@+id/tvSummary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text=""
-                    android:textColor="#C5CAE9"
-                    android:textSize="15sp"
+                    android:textColor="#FFFFFF"
+                    android:textSize="17sp"
                     android:fontFamily="@font/poppins"
-                    android:lineSpacingMultiplier="1.6" />
+                    android:lineSpacingMultiplier="1.7" />
 
             </LinearLayout>
 
@@ -141,25 +141,25 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_analysis_card"
                 android:orientation="vertical"
-                android:padding="20dp"
-                android:layout_marginBottom="16dp">
+                android:padding="24dp"
+                android:layout_marginBottom="20dp">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Symbols &amp; Meanings"
+                    android:text="🔑  Symbols &amp; Meanings"
                     android:textColor="#FFFFFF"
-                    android:textSize="18sp"
+                    android:textSize="20sp"
                     android:fontFamily="@font/poppins"
                     android:textStyle="bold"
-                    android:layout_marginBottom="6dp" />
+                    android:layout_marginBottom="8dp" />
 
                 <!-- Divider -->
                 <View
                     android:layout_width="40dp"
                     android:layout_height="2dp"
                     android:background="#F6C65B"
-                    android:layout_marginBottom="16dp" />
+                    android:layout_marginBottom="18dp" />
 
                 <!-- Symbol items injected here programmatically -->
                 <LinearLayout
@@ -175,7 +175,7 @@
                     android:layout_height="wrap_content"
                     android:text="No specific symbols detected in this dream."
                     android:textColor="#7B88C5"
-                    android:textSize="14sp"
+                    android:textSize="15sp"
                     android:fontFamily="@font/poppins"
                     android:visibility="gone" />
 
@@ -188,25 +188,25 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_analysis_card"
                 android:orientation="vertical"
-                android:padding="20dp"
-                android:layout_marginBottom="16dp">
+                android:padding="24dp"
+                android:layout_marginBottom="20dp">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Emotional Tone"
+                    android:text="💭  Emotional Tone"
                     android:textColor="#FFFFFF"
-                    android:textSize="18sp"
+                    android:textSize="20sp"
                     android:fontFamily="@font/poppins"
                     android:textStyle="bold"
-                    android:layout_marginBottom="6dp" />
+                    android:layout_marginBottom="8dp" />
 
                 <!-- Divider -->
                 <View
                     android:layout_width="40dp"
                     android:layout_height="2dp"
                     android:background="#F6C65B"
-                    android:layout_marginBottom="16dp" />
+                    android:layout_marginBottom="18dp" />
 
                 <!-- Emotion chips injected programmatically -->
                 <com.google.android.material.chip.ChipGroup
@@ -222,10 +222,10 @@
                     android:layout_height="wrap_content"
                     android:text=""
                     android:textColor="#C5CAE9"
-                    android:textSize="14sp"
+                    android:textSize="15sp"
                     android:fontFamily="@font/poppins"
-                    android:lineSpacingMultiplier="1.5"
-                    android:layout_marginTop="14dp" />
+                    android:lineSpacingMultiplier="1.6"
+                    android:layout_marginTop="16dp" />
 
             </LinearLayout>
 
@@ -236,25 +236,25 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_analysis_card"
                 android:orientation="vertical"
-                android:padding="20dp"
-                android:layout_marginBottom="16dp">
+                android:padding="24dp"
+                android:layout_marginBottom="20dp">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Reflection Prompt"
+                    android:text="🌙  Reflection Prompt"
                     android:textColor="#FFFFFF"
-                    android:textSize="18sp"
+                    android:textSize="20sp"
                     android:fontFamily="@font/poppins"
                     android:textStyle="bold"
-                    android:layout_marginBottom="6dp" />
+                    android:layout_marginBottom="8dp" />
 
                 <!-- Divider -->
                 <View
                     android:layout_width="40dp"
                     android:layout_height="2dp"
                     android:background="#F6C65B"
-                    android:layout_marginBottom="14dp" />
+                    android:layout_marginBottom="16dp" />
 
                 <!-- Decorative quote icon -->
                 <TextView
@@ -270,11 +270,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text=""
-                    android:textColor="#E8EDFF"
-                    android:textSize="16sp"
+                    android:textColor="#FFFFFF"
+                    android:textSize="17sp"
                     android:fontFamily="@font/poppins"
                     android:textStyle="italic"
-                    android:lineSpacingMultiplier="1.6" />
+                    android:lineSpacingMultiplier="1.7" />
 
             </LinearLayout>
 
@@ -285,18 +285,18 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_analysis_card"
                 android:orientation="vertical"
-                android:padding="20dp"
+                android:padding="24dp"
                 android:layout_marginBottom="8dp">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Insight Score"
+                    android:text="💡  Insight Score"
                     android:textColor="#FFFFFF"
-                    android:textSize="18sp"
+                    android:textSize="20sp"
                     android:fontFamily="@font/poppins"
                     android:textStyle="bold"
-                    android:layout_marginBottom="6dp" />
+                    android:layout_marginBottom="8dp" />
 
                 <!-- Divider -->
                 <View
