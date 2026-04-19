@@ -298,7 +298,7 @@ public class AnalysisDashboardActivity extends AppCompatActivity {
                 return dreams.size();
             }
         } catch (Exception ignored) {}
-        return count;
+        return 0;
     }
 
     private android.graphics.drawable.GradientDrawable createCircleBackground(int color) {
