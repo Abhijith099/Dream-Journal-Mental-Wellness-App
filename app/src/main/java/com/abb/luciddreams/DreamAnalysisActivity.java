@@ -2,6 +2,7 @@ package com.abb.luciddreams;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
@@ -323,16 +325,17 @@ public class DreamAnalysisActivity extends AppCompatActivity {
             TextView tvName = new TextView(this);
             tvName.setText(symbol[0]);
             tvName.setTextColor(Color.parseColor("#39C6FF"));
-            tvName.setTextSize(16);
-            tvName.setTypeface(tvName.getTypeface(), android.graphics.Typeface.BOLD);
+            tvName.setTextSize(17);
+            tvName.setTypeface(ResourcesCompat.getFont(this, R.font.poppins), android.graphics.Typeface.BOLD);
             tvName.setPadding(0, 0, 0, dp(6));
             itemLayout.addView(tvName);
 
             TextView tvMeaning = new TextView(this);
             tvMeaning.setText(symbol[1]);
             tvMeaning.setTextColor(Color.parseColor("#C5CAE9"));
-            tvMeaning.setTextSize(14);
-            tvMeaning.setLineSpacing(0, 1.5f);
+            tvMeaning.setTextSize(15);
+            tvMeaning.setTypeface(ResourcesCompat.getFont(this, R.font.poppins));
+            tvMeaning.setLineSpacing(0, 1.6f);
             itemLayout.addView(tvMeaning);
 
             llSymbols.addView(itemLayout);
@@ -355,7 +358,8 @@ public class DreamAnalysisActivity extends AppCompatActivity {
             Chip chip = new Chip(this);
             chip.setText(emotion);
             chip.setTextColor(Color.WHITE);
-            chip.setTextSize(14);
+            chip.setTextSize(15);
+            chip.setTypeface(ResourcesCompat.getFont(this, R.font.poppins));
             chip.setClickable(false);
             chip.setCheckable(false);
 
@@ -400,15 +404,16 @@ public class DreamAnalysisActivity extends AppCompatActivity {
         TextView tvLabel = new TextView(this);
         tvLabel.setText(label);
         tvLabel.setTextColor(Color.parseColor("#C5CAE9"));
-        tvLabel.setTextSize(14);
+        tvLabel.setTextSize(15);
+        tvLabel.setTypeface(ResourcesCompat.getFont(this, R.font.poppins));
         tvLabel.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
         labelRow.addView(tvLabel);
 
         TextView tvScore = new TextView(this);
         tvScore.setText(score + "%");
         tvScore.setTextColor(Color.parseColor(color));
-        tvScore.setTextSize(14);
-        tvScore.setTypeface(tvScore.getTypeface(), android.graphics.Typeface.BOLD);
+        tvScore.setTextSize(15);
+        tvScore.setTypeface(ResourcesCompat.getFont(this, R.font.poppins), android.graphics.Typeface.BOLD);
         labelRow.addView(tvScore);
 
         row.addView(labelRow);
