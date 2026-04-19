@@ -1,10 +1,10 @@
 package com.abb.luciddreams;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -17,7 +17,9 @@ import java.util.concurrent.TimeUnit;
 
 public class DreamImageGenerator {
 
+    private static final String TAG = "DreamImageGenerator";
     private static final String API_URL = "https://api-inference.huggingface.co/models/runwayml/stable-diffusion-v1-5";
+    // API key is read from local.properties via BuildConfig (HUGGING_FACE_API_KEY)
     private static final String API_KEY = "Bearer " + BuildConfig.HUGGING_FACE_API_KEY;
 
     private final OkHttpClient client;
@@ -67,8 +69,21 @@ public class DreamImageGenerator {
                         }
                     });
                 } else {
-                    String errorMsg = response.message();
-                    if (response.code() == 503) errorMsg = "Model is loading, please try again in a moment.";
+                    int code = response.code();
+                    String errorBody = "";
+                    try {
+                        if (response.body() != null) errorBody = response.body().string();
+                    } catch (IOException e2) {
+                        Log.w(TAG, "Could not read error body", e2);
+                    }
+                    Log.e(TAG, "API Response Code: " + code);
+                    Log.e(TAG, "Error Body: " + errorBody);
+                    String errorMsg;
+                    if (code == 503) {
+                        errorMsg = "Model is loading, please try again in a moment.";
+                    } else {
+                        errorMsg = "HTTP " + code + ": " + response.message();
+                    }
                     String finalErrorMsg = errorMsg;
                     new Handler(Looper.getMainLooper()).post(() -> listener.onError("API Error: " + finalErrorMsg));
                 }
@@ -86,7 +101,7 @@ public class DreamImageGenerator {
         // Visual Style Keywords from requirements
         String style = "fantasy dreamscape, soft glowing lights, cinematic composition, rich blue tones, moonlight atmosphere, magical realism, painterly digital art, highly aesthetic, premium app artwork, soft particles, sparkles, surrealism, high resolution, 8k";
         
-        // Escape backslashes for JSON
+        // Escape backslashes first, then quotes, for correct JSON encoding
         clean = clean.replace("\\", "\\\\").replace("\"", "\\\"");
         
         return "A dreamy visual representation of: " + clean + ". Style: " + style;
