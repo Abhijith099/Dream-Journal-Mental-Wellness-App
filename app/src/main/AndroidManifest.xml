@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -26,6 +27,9 @@
         <activity android:name=".AddDreamActivity" android:screenOrientation="portrait"/>
         <activity android:name=".DreamDetailsActivity" android:screenOrientation="portrait"/>
         <activity android:name=".PatternsActivity" 
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.LucidDreams.Patterns"/>
+        <activity android:name=".DreamAnalysisActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.LucidDreams.Patterns"/>
     </application>
