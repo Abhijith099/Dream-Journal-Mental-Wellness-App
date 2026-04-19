@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#171F4B"
+    android:fitsSystemWindows="true">
+
+    <!-- Top Bar -->
+    <FrameLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:id="@+id/ivBack"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="center_vertical|start"
+            android:layout_marginStart="24dp"
+            android:src="@drawable/ic_back"
+            app:tint="#FFFFFF"
+            android:contentDescription="Back" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="✏️  Edit Dream"
+            android:textColor="#FFFFFF"
+            android:textSize="22sp"
+            android:fontFamily="@font/poppins"
+            android:textStyle="bold" />
+
+    </FrameLayout>
+
+    <!-- Divider -->
+    <View
+        android:id="@+id/dividerTop"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#1AFFFFFF"
+        app:layout_constraintTop_toBottomOf="@id/topBar" />
+
+    <!-- Scrollable content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:scrollbars="none"
+        android:overScrollMode="never"
+        android:background="#171F4B"
+        app:layout_constraintTop_toBottomOf="@id/dividerTop"
+        app:layout_constraintBottom_toTopOf="@id/bottomButtons">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="20dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="24dp">
+
+            <!-- Description -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dream Description"
+                android:textColor="#39C6FF"
+                android:textSize="15sp"
+                android:fontFamily="@font/poppins"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:boxBackgroundColor="#232C61"
+                app:boxStrokeColor="#39C6FF"
+                app:hintTextColor="#C5CAE9">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etEditDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minLines="5"
+                    android:gravity="top|start"
+                    android:hint="Describe your dream..."
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#7B88C5"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/poppins"
+                    android:background="@null"
+                    android:padding="14dp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Hidden title field (used internally, not shown) -->
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etEditTitle"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone" />
+
+            <!-- Mood Selection -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mood"
+                android:textColor="#39C6FF"
+                android:textSize="15sp"
+                android:fontFamily="@font/poppins"
+                android:textStyle="bold"
+                android:layout_marginBottom="12dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_horizontal"
+                android:layout_marginBottom="24dp">
+
+                <LinearLayout
+                    android:id="@+id/editMoodCalm"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:background="@drawable/bg_mood_unselected"
+                    android:layout_marginEnd="6dp"
+                    android:clickable="true"
+                    android:focusable="true">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🌙" android:textSize="22sp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Calm" android:textColor="#C5CAE9" android:textSize="11sp" android:fontFamily="@font/poppins"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/editMoodStressed"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:background="@drawable/bg_mood_unselected"
+                    android:layout_marginEnd="6dp"
+                    android:clickable="true"
+                    android:focusable="true">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="⚡" android:textSize="22sp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Fearful" android:textColor="#C5CAE9" android:textSize="11sp" android:fontFamily="@font/poppins"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/editMoodUnclear"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:background="@drawable/bg_mood_unselected"
+                    android:layout_marginEnd="6dp"
+                    android:clickable="true"
+                    android:focusable="true">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="☁️" android:textSize="22sp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Neutral" android:textColor="#C5CAE9" android:textSize="11sp" android:fontFamily="@font/poppins"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/editMoodLucid"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:background="@drawable/bg_mood_unselected"
+                    android:layout_marginEnd="6dp"
+                    android:clickable="true"
+                    android:focusable="true">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="✨" android:textSize="22sp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Happy" android:textColor="#C5CAE9" android:textSize="11sp" android:fontFamily="@font/poppins"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/editMoodIntense"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:background="@drawable/bg_mood_unselected"
+                    android:clickable="true"
+                    android:focusable="true">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🔥" android:textSize="22sp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Intense" android:textColor="#C5CAE9" android:textSize="11sp" android:fontFamily="@font/poppins"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Tags -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tags"
+                android:textColor="#39C6FF"
+                android:textSize="15sp"
+                android:fontFamily="@font/poppins"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:boxBackgroundColor="#232C61"
+                app:boxStrokeColor="#39C6FF"
+                app:hintTextColor="#C5CAE9">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etEditTagInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Add a tag and press Enter"
+                    android:imeOptions="actionDone"
+                    android:inputType="text"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#7B88C5"
+                    android:textSize="15sp"
+                    android:fontFamily="@font/poppins"
+                    android:background="@null"
+                    android:padding="14dp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupEditTags"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:chipSpacingHorizontal="8dp"
+                app:chipSpacingVertical="6dp" />
+
+            <!-- Nightmare toggle -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/bg_analysis_card"
+                android:padding="16dp"
+                android:layout_marginBottom="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="🌑  Nightmare"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/poppins" />
+
+                <Switch
+                    android:id="@+id/switchEditNightmare"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="#39C6FF"
+                    android:trackTint="#2A3567" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Bottom Buttons -->
+    <LinearLayout
+        android:id="@+id/bottomButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#1A214D"
+        android:paddingHorizontal="24dp"
+        android:paddingVertical="16dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <Button
+            android:id="@+id/btnCancelEdit"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="12dp"
+            android:text="Cancel"
+            android:textColor="#C5CAE9"
+            android:textSize="15sp"
+            android:fontFamily="@font/poppins"
+            android:backgroundTint="#2A3567"
+            app:cornerRadius="16dp" />
+
+        <Button
+            android:id="@+id/btnSaveChanges"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_weight="1"
+            android:text="Save Changes"
+            android:textColor="#1A214D"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/poppins"
+            android:backgroundTint="#F6C65B"
+            app:cornerRadius="16dp" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
