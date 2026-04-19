@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
@@ -15,7 +16,11 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
@@ -34,15 +39,26 @@ public class DreamDetailsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
 
-        // Transparent status bar setup
-        Window window = getWindow();
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(Color.parseColor("#1C2552"));
-
         setContentView(R.layout.activity_dream_details);
+
+        View bottomButtons = findViewById(R.id.bottomButtonsContainer);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.dream_details_root), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0);
+            
+            if (bottomButtons != null) {
+                bottomButtons.setPadding(
+                    bottomButtons.getPaddingLeft(),
+                    bottomButtons.getPaddingTop(),
+                    bottomButtons.getPaddingRight(),
+                    systemBars.bottom
+                );
+            }
+            return insets;
+        });
 
         journalText = getIntent().getStringExtra("journal_text");
         initialNightmareState = getIntent().getBooleanExtra("is_nightmare", false);

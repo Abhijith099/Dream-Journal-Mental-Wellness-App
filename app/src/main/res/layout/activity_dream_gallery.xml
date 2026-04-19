@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/gallery_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#171F4B">
@@ -10,45 +11,89 @@
     <FrameLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
-        android:layout_height="72dp"
+        android:layout_height="64dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/ivBack"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_gravity="center_vertical|start"
-            android:layout_marginStart="24dp"
+            android:layout_marginStart="16dp"
+            android:padding="8dp"
             android:src="@drawable/ic_back"
             app:tint="#FFFFFF"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Back" />
 
         <TextView
+            android:id="@+id/tvGalleryTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Dream Gallery"
             android:textColor="#FFFFFF"
-            android:textSize="22sp"
+            android:textSize="24sp"
             android:fontFamily="@font/poppins"
             android:textStyle="bold" />
 
+        <ImageView
+            android:id="@+id/ivGalleryCalendar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_vertical|end"
+            android:layout_marginEnd="16dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_calendar"
+            app:tint="#39C6FF"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Calendar" />
+
     </FrameLayout>
 
-    <View
-        android:id="@+id/divider"
+    <LinearLayout
+        android:id="@+id/filterHeader"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#1AFFFFFF"
-        app:layout_constraintTop_toBottomOf="@id/topBar" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="20dp"
+        android:paddingBottom="12dp"
+        android:gravity="center_vertical"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/topBar">
+
+        <TextView
+            android:id="@+id/tvFilterDate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Showing: 18 Apr"
+            android:textColor="#39C6FF"
+            android:fontFamily="@font/poppins"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/btnSeeAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="See All Images"
+            android:textColor="#FFFFFF"
+            android:background="#33FFFFFF"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            android:textSize="12sp"
+            android:fontFamily="@font/poppins" />
+
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvGallery"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:padding="8dp"
+        android:paddingHorizontal="12dp"
+        android:paddingBottom="24dp"
         android:clipToPadding="false"
-        app:layout_constraintTop_toBottomOf="@id/divider"
+        app:layout_constraintTop_toBottomOf="@id/filterHeader"
         app:layout_constraintBottom_toBottomOf="parent" />
 
     <!-- Empty State -->

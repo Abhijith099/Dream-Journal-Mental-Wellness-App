@@ -2,6 +2,7 @@ package com.abb.luciddreams;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -10,7 +11,11 @@ import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
@@ -32,14 +37,26 @@ public class EditDreamActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
 
-        Window window = getWindow();
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(Color.parseColor("#171F4B"));
-
         setContentView(R.layout.activity_edit_dream);
+
+        View bottomButtons = findViewById(R.id.bottomButtons);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.edit_dream_root), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0);
+            
+            if (bottomButtons != null) {
+                bottomButtons.setPadding(
+                    bottomButtons.getPaddingLeft(),
+                    bottomButtons.getPaddingTop(),
+                    bottomButtons.getPaddingRight(),
+                    systemBars.bottom
+                );
+            }
+            return insets;
+        });
 
         long dreamId = getIntent().getLongExtra("dream_id", -1);
         if (dreamId < 0) {

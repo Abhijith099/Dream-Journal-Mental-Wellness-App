@@ -21,9 +21,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.materialswitch.MaterialSwitch;
@@ -48,15 +52,22 @@ public class AddDreamActivity extends AppCompatActivity {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
 
-        // Transparent status bar setup
-        Window window = getWindow();
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(Color.parseColor("#1C2552"));
-
         setContentView(R.layout.activity_add_dream);
+
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.add_dream_root), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0);
+            
+            if (bottomNav != null) {
+                // Remove padding if any, and let BottomNavigationView handle it or apply bottom inset
+                bottomNav.setPadding(0, 0, 0, systemBars.bottom);
+            }
+            return insets;
+        });
 
         // Initialize UI Elements
         etDreamJournal = findViewById(R.id.etDreamJournal);

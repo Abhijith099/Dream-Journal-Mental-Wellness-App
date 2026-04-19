@@ -36,44 +36,57 @@ public class DreamImageGenerator {
     }
 
     public void generateImage(String dreamDescription, ImageGenerationListener listener) {
-        if (BuildConfig.HUGGING_FACE_API_KEY.isEmpty()) {
-            listener.onError("Missing API Key. Please add it to local.properties");
+        String apiKey = BuildConfig.HUGGING_FACE_API_KEY;
+        if (apiKey == null || apiKey.isEmpty() || apiKey.equals("null")) {
+            listener.onError("Missing API Key. Please add HUGGING_FACE_API_KEY to local.properties");
             return;
         }
 
         String enhancedPrompt = enhancePrompt(dreamDescription);
         
         new Thread(() -> {
-            MediaType mediaType = MediaType.parse("application/json");
-            String json = "{\"inputs\": \"" + enhancedPrompt + "\"}";
-            RequestBody body = RequestBody.create(json, mediaType);
-            
-            Request request = new Request.Builder()
-                    .url(API_URL)
-                    .post(body)
-                    .addHeader("Authorization", API_KEY)
-                    .build();
+            try {
+                MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
+                String json = "{\"inputs\": \"" + enhancedPrompt + "\", \"options\": {\"wait_for_model\": true}}";
+                RequestBody body = RequestBody.create(json, mediaType);
+                
+                Request request = new Request.Builder()
+                        .url(API_URL)
+                        .post(body)
+                        .addHeader("Authorization", "Bearer " + apiKey)
+                        .build();
 
-            try (Response response = client.newCall(request).execute()) {
-                if (response.isSuccessful() && response.body() != null) {
-                    byte[] bytes = response.body().bytes();
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                    
-                    new Handler(Looper.getMainLooper()).post(() -> {
-                        if (bitmap != null) {
-                            listener.onSuccess(bitmap);
-                        } else {
-                            listener.onError("Failed to decode image");
+                try (Response response = client.newCall(request).execute()) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        byte[] bytes = response.body().bytes();
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            if (bitmap != null) {
+                                listener.onSuccess(bitmap);
+                            } else {
+                                listener.onError("Failed to decode image");
+                            }
+                        });
+                    } else {
+                        String errorMsg = response.message();
+                        int code = response.code();
+                        if (code == 503) {
+                            errorMsg = "Model is loading... This may take a minute.";
+                        } else if (code == 401) {
+                            errorMsg = "Invalid API Key. Check your Hugging Face token.";
+                        } else if (code == 429) {
+                            errorMsg = "Rate limit exceeded. Try again later.";
                         }
-                    });
-                } else {
-                    String errorMsg = response.message();
-                    if (response.code() == 503) errorMsg = "Model is loading, please try again in a moment.";
-                    String finalErrorMsg = errorMsg;
-                    new Handler(Looper.getMainLooper()).post(() -> listener.onError("API Error: " + finalErrorMsg));
+                        
+                        String finalErrorMsg = errorMsg;
+                        new Handler(Looper.getMainLooper()).post(() -> listener.onError("Error (" + code + "): " + finalErrorMsg));
+                    }
                 }
             } catch (IOException e) {
-                new Handler(Looper.getMainLooper()).post(() -> listener.onError("Network Error: " + e.getMessage()));
+                new Handler(Looper.getMainLooper()).post(() -> listener.onError("Network error. Please check your connection."));
+            } catch (Exception e) {
+                new Handler(Looper.getMainLooper()).post(() -> listener.onError("Unexpected error: " + e.getMessage()));
             }
         }).start();
     }

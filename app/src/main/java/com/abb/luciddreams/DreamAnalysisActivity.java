@@ -15,8 +15,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
@@ -162,17 +166,29 @@ public class DreamAnalysisActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
 
         repository = new DreamRepository(this);
         imageGenerator = new DreamImageGenerator();
 
-        Window window = getWindow();
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(Color.parseColor("#171F4B"));
-
         setContentView(R.layout.activity_dream_analysis);
+
+        View bottomContainer = findViewById(R.id.bottomContainer);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.analysis_root), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0);
+            
+            if (bottomContainer != null) {
+                bottomContainer.setPadding(
+                    bottomContainer.getPaddingLeft(),
+                    bottomContainer.getPaddingTop(),
+                    bottomContainer.getPaddingRight(),
+                    systemBars.bottom
+                );
+            }
+            return insets;
+        });
 
         dreamText = getIntent().getStringExtra("dream_text");
         dreamId = getIntent().getLongExtra("dream_id", -1);
@@ -257,6 +273,9 @@ public class DreamAnalysisActivity extends AppCompatActivity {
 
     private void generateAndDisplayImage(String text, ImageView imageView, View loading) {
         loading.setVisibility(View.VISIBLE);
+        View errorOverlay = findViewById(R.id.errorOverlay);
+        if (errorOverlay != null) errorOverlay.setVisibility(View.GONE);
+
         imageGenerator.generateImage(text, new DreamImageGenerator.ImageGenerationListener() {
             @Override
             public void onSuccess(Bitmap bitmap) {
@@ -271,7 +290,14 @@ public class DreamAnalysisActivity extends AppCompatActivity {
             public void onError(String message) {
                 if (isFinishing() || isDestroyed()) return;
                 loading.setVisibility(View.GONE);
-                Toast.makeText(DreamAnalysisActivity.this, "AI Image: " + message, Toast.LENGTH_SHORT).show();
+                if (errorOverlay != null) {
+                    errorOverlay.setVisibility(View.VISIBLE);
+                    TextView tvError = errorOverlay.findViewById(R.id.tvErrorStatus);
+                    if (tvError != null) tvError.setText(message);
+                    Button btnRetry = errorOverlay.findViewById(R.id.btnRetry);
+                    if (btnRetry != null) btnRetry.setOnClickListener(v -> generateAndDisplayImage(text, imageView, loading));
+                }
+                Toast.makeText(DreamAnalysisActivity.this, message, Toast.LENGTH_LONG).show();
             }
         });
     }

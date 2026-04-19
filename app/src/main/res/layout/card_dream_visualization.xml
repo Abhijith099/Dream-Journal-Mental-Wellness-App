@@ -52,7 +52,7 @@
                 android:id="@+id/loadingOverlay"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#CC171F4B"
+                android:background="#E6171F4B"
                 android:visibility="gone">
 
                 <LinearLayout
@@ -63,20 +63,56 @@
                     android:gravity="center">
 
                     <ProgressBar
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
                         android:indeterminateTint="#39C6FF"
-                        android:layout_marginBottom="12dp" />
+                        android:layout_marginBottom="16dp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Creating your dream image..."
+                        android:text="Creating your dream vision..."
                         android:textColor="#FFFFFF"
                         android:fontFamily="@font/poppins"
-                        android:textSize="14sp" />
+                        android:textStyle="bold"
+                        android:textSize="15sp" />
                 </LinearLayout>
             </FrameLayout>
+
+            <!-- Error Overlay -->
+            <LinearLayout
+                android:id="@+id/errorOverlay"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#F2171F4B"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="24dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tvErrorStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Unable to generate image."
+                    android:textColor="#FFFFFF"
+                    android:fontFamily="@font/poppins"
+                    android:textSize="14sp"
+                    android:gravity="center"
+                    android:layout_marginBottom="16dp" />
+
+                <Button
+                    android:id="@+id/btnRetry"
+                    android:layout_width="wrap_content"
+                    android:layout_height="44dp"
+                    android:text="Retry Generation"
+                    android:textColor="#171F4B"
+                    android:backgroundTint="#FF6B9D"
+                    app:cornerRadius="22dp"
+                    android:textAllCaps="false"
+                    android:fontFamily="@font/poppins"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
         </RelativeLayout>
 
