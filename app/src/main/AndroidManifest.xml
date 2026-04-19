@@ -45,6 +45,9 @@
         <activity android:name=".FullImageActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.LucidDreams.Patterns"/>
+        <activity android:name=".ProfileActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.LucidDreams.Patterns"/>
     </application>
 
 </manifest>

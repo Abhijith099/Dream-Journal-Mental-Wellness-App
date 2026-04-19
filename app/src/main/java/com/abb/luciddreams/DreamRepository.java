@@ -109,6 +109,11 @@ public class DreamRepository {
         return dreams;
     }
 
+    public void deleteAllDreams() {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.delete(DreamDbHelper.TABLE_DREAMS, null, null);
+    }
+
     private Dream cursorToDream(Cursor cursor) {
         Dream dream = new Dream();
         dream.setId(cursor.getLong(cursor.getColumnIndexOrThrow(DreamDbHelper.COLUMN_ID)));

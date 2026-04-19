@@ -12,7 +12,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -23,26 +22,18 @@ import java.util.concurrent.TimeUnit;
 public class DreamImageGenerator {
 
     private static final String TAG = "DreamImageGenerator";
+    
+    // Standard Inference API base URL - ensure no trailing slash here for cleaner concatenation
+    private static final String BASE_URL = "https://api-inference.huggingface.co/models";
 
-    // Newer HuggingFace Inference Router endpoint (avoids "Cannot POST" errors from legacy endpoint)
-    private static final String BASE_URL = "https://router.huggingface.co/hf-inference/models/";
-
-    // API key is read from local.properties via BuildConfig (HUGGING_FACE_API_KEY)
-    private static final String API_KEY = "Bearer " + BuildConfig.HUGGING_FACE_API_KEY;
-
-    // Fallback models tried in priority order; first successfully responding model wins
+    // Re-ordered fallback list to prioritize models that are more likely to be active on the free tier.
     private static final List<String> FALLBACK_MODELS = Arrays.asList(
+            "runwayml/stable-diffusion-v1-5",
+            "stabilityai/stable-diffusion-xl-base-1.0",
             "stabilityai/stable-diffusion-2-1",
-            "CompVis/stable-diffusion-v1-4",
             "prompthero/openjourney",
-            "dreamlike-art/dreamlike-diffusion-1.0",
-            "Lykon/DreamShaper"
+            "black-forest-labs/FLUX.1-schnell"
     );
-
-    // Maximum number of retries when a model returns 503 (model still loading)
-    private static final int MAX_RETRY_503 = 2;
-    // Delay between 503 retries (milliseconds)
-    private static final long RETRY_DELAY_MS = 5000;
 
     private final OkHttpClient client;
 
@@ -52,133 +43,124 @@ public class DreamImageGenerator {
     }
 
     public DreamImageGenerator() {
+        // High timeouts to handle model "cold starts"
         client = new OkHttpClient.Builder()
-                .connectTimeout(60, TimeUnit.SECONDS)
+                .connectTimeout(120, TimeUnit.SECONDS)
                 .readTimeout(120, TimeUnit.SECONDS)
-                .writeTimeout(60, TimeUnit.SECONDS)
+                .writeTimeout(120, TimeUnit.SECONDS)
+                .followRedirects(true)
+                .followSslRedirects(true)
                 .build();
     }
 
     public void generateImage(String dreamDescription, ImageGenerationListener listener) {
-        if (BuildConfig.HUGGING_FACE_API_KEY.isEmpty()) {
-            listener.onError("Missing API Key. Please add it to local.properties");
+        String apiKey = BuildConfig.HUGGING_FACE_API_KEY;
+        if (apiKey == null || apiKey.trim().isEmpty()) {
+            listener.onError("API Key missing. Please check local.properties");
             return;
         }
 
-        String enhancedPrompt = enhancePrompt(dreamDescription);
+        String prompt = enhancePrompt(dreamDescription);
+        Log.d(TAG, "Starting generation with prompt: " + prompt);
 
         new Thread(() -> {
-            String lastError = "All models failed";
+            String lastError = "Image generation failed";
 
-            for (int modelIndex = 0; modelIndex < FALLBACK_MODELS.size(); modelIndex++) {
-                String modelId = FALLBACK_MODELS.get(modelIndex);
-                String url = BASE_URL + modelId;
-                Log.d(TAG, "Trying model [" + (modelIndex + 1) + "]: " + url);
+            for (int i = 0; i < FALLBACK_MODELS.size(); i++) {
+                String modelId = FALLBACK_MODELS.get(i).trim();
+                String url = BASE_URL + "/" + modelId;
+                Log.d(TAG, ">>> Attempting Model [" + (i + 1) + "/" + FALLBACK_MODELS.size() + "]: " + url);
 
-                byte[] imageBytes = null;
-                String modelError = null;
-
-                for (int attempt = 0; attempt <= MAX_RETRY_503; attempt++) {
-                    if (attempt > 0) {
-                        Log.d(TAG, "503 retry " + attempt + "/" + MAX_RETRY_503 + " for model: " + modelId);
-                        try {
-                            Thread.sleep(RETRY_DELAY_MS);
-                        } catch (InterruptedException ie) {
+                // Try each model with up to 2 retries for 503 "Loading" errors
+                for (int attempt = 1; attempt <= 2; attempt++) {
+                    if (attempt > 1) {
+                        Log.d(TAG, "Retrying " + modelId + " (Attempt " + attempt + "/2)...");
+                        try { Thread.sleep(8000); } catch (InterruptedException e) { 
                             Thread.currentThread().interrupt();
-                            break;
+                            break; 
                         }
                     }
 
-                    String json = buildJsonPayload(enhancedPrompt);
-                    RequestBody body = RequestBody.create(json, MediaType.parse("application/json"));
-                    Request request = new Request.Builder()
-                            .url(url)
-                            .post(body)
-                            .addHeader("Authorization", API_KEY)
-                            .addHeader("Accept", "image/*")
-                            .build();
+                    try {
+                        JSONObject json = new JSONObject();
+                        json.put("inputs", prompt);
+                        
+                        // Use application/json explicitly
+                        RequestBody body = RequestBody.create(json.toString(), MediaType.parse("application/json; charset=utf-8"));
+                        
+                        Request request = new Request.Builder()
+                                .url(url)
+                                .post(body)
+                                .addHeader("Authorization", "Bearer " + apiKey.trim())
+                                // Standard browser User-Agent to avoid CloudFront routing issues with generic ones
+                                .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+                                .addHeader("Accept", "image/*")
+                                .addHeader("X-Wait-For-Model", "true")
+                                .addHeader("X-Use-Cache", "false")
+                                .build();
 
-                    try (Response response = client.newCall(request).execute()) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            imageBytes = response.body().bytes();
-                            modelError = null;
-                            break; // success — stop retrying this model
-                        }
+                        try (Response response = client.newCall(request).execute()) {
+                            int code = response.code();
+                            String contentType = response.header("Content-Type", "");
+                            Log.d(TAG, "Response from " + modelId + " | Code: " + code + " | Content-Type: " + contentType);
 
-                        int code = response.code();
-                        String errorBody = "";
-                        try {
-                            if (response.body() != null) errorBody = response.body().string();
-                        } catch (IOException e2) {
-                            Log.w(TAG, "Could not read error body", e2);
-                        }
-                        Log.e(TAG, "API Error " + code + " for " + url + ": " + errorBody);
-
-                        if (code == 503) {
-                            modelError = "Model loading (503)";
-                            // will retry up to MAX_RETRY_503 times
-                        } else if (code == 404) {
-                            modelError = "Model not found (404): " + modelId;
-                            break; // 404 is definitive — skip to next model immediately
-                        } else {
-                            modelError = "HTTP " + code + " from " + modelId;
-                            break; // other errors are not retryable
+                            if (response.isSuccessful() && response.body() != null) {
+                                byte[] bytes = response.body().bytes();
+                                // Real images are usually > 10KB, while error JSONs/HTML are small
+                                if (contentType.startsWith("image/") || bytes.length > 1000) {
+                                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                                    if (bitmap != null) {
+                                        Log.d(TAG, "SUCCESS! Image generated via " + modelId + " (" + bytes.length + " bytes)");
+                                        new Handler(Looper.getMainLooper()).post(() -> listener.onSuccess(bitmap));
+                                        return; 
+                                    }
+                                }
+                                
+                                String bodyStr = new String(bytes);
+                                Log.w(TAG, "Unexpected response from " + modelId + ": " + bodyStr);
+                                if (bodyStr.contains("error")) {
+                                    lastError = "API Error: " + bodyStr;
+                                    if (code == 503 || bodyStr.contains("loading")) continue; 
+                                }
+                            } else {
+                                String errorBody = response.body() != null ? response.body().string() : "No error body";
+                                Log.e(TAG, "Failure (" + code + ") for " + modelId + ": " + errorBody);
+                                
+                                if (code == 503 || code == 429) {
+                                    lastError = "Model busy (" + code + ")";
+                                    continue; 
+                                } else if (code == 401 || code == 403) {
+                                    lastError = "Auth failed. Check API key.";
+                                    final String authErr = lastError;
+                                    new Handler(Looper.getMainLooper()).post(() -> listener.onError(authErr));
+                                    return; 
+                                } else {
+                                    lastError = "Error " + code + ": " + modelId;
+                                    break; // Try next model for 404s or other hard errors
+                                }
+                            }
                         }
                     } catch (IOException e) {
-                        modelError = "Network error: " + e.getMessage();
-                        Log.e(TAG, "Network error for " + url, e);
+                        Log.e(TAG, "Network error for " + modelId, e);
+                        lastError = "Network: " + e.getMessage();
+                        break; // Try next model
+                    } catch (Exception e) {
+                        Log.e(TAG, "Critical error for " + modelId, e);
+                        lastError = "Error: " + e.getMessage();
                         break;
                     }
                 }
-
-                if (imageBytes != null) {
-                    byte[] finalBytes = imageBytes;
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(finalBytes, 0, finalBytes.length);
-                    new Handler(Looper.getMainLooper()).post(() -> {
-                        if (bitmap != null) {
-                            listener.onSuccess(bitmap);
-                        } else {
-                            listener.onError("Failed to decode image");
-                        }
-                    });
-                    return; // done — exit thread
-                }
-
-                lastError = modelError;
-                Log.w(TAG, "Model [" + (modelIndex + 1) + "] failed: " + lastError);
             }
 
-            String finalError = lastError;
-            new Handler(Looper.getMainLooper()).post(() ->
-                    listener.onError("Image generation failed: " + finalError));
+            final String finalErr = lastError;
+            new Handler(Looper.getMainLooper()).post(() -> listener.onError("Generation failed: " + finalErr));
         }).start();
     }
 
-    private String buildJsonPayload(String prompt) {
-        try {
-            JSONObject parameters = new JSONObject();
-            parameters.put("negative_prompt", "blurry, ugly, distorted, low quality");
-            parameters.put("num_inference_steps", 25);
-            parameters.put("guidance_scale", 7.5);
-
-            JSONObject payload = new JSONObject();
-            payload.put("inputs", prompt);
-            payload.put("parameters", parameters);
-            return payload.toString();
-        } catch (JSONException e) {
-            // Fallback to minimal payload; prompt has already been sanitised in enhancePrompt
-            return "{\"inputs\": \"\"}";
-        }
-    }
-
     private String enhancePrompt(String description) {
-        // Clean and truncate description
-        String clean = description.replaceAll("[\n\r]", " ").trim();
+        // Sanitize and enhance the prompt for a "dreamy" aesthetic
+        String clean = description.replaceAll("[^a-zA-Z0-9\\s,.!]", "").trim();
         if (clean.length() > 300) clean = clean.substring(0, 300);
-
-        // Visual Style Keywords from requirements
-        String style = "fantasy dreamscape, soft glowing lights, cinematic composition, rich blue tones, moonlight atmosphere, magical realism, painterly digital art, highly aesthetic, premium app artwork, soft particles, sparkles, surrealism, high resolution, 8k";
-
-        return "A dreamy visual representation of: " + clean + ". Style: " + style;
+        return clean + ", dreamscape fantasy style, ethereal lighting, high detailed digital art, cinematic masterpiece, 4k resolution";
     }
 }

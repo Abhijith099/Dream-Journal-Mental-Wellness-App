@@ -20,12 +20,15 @@
             app:layout_constraintTop_toTopOf="parent">
             
             <ImageView
+                android:id="@+id/ivProfile"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_menu"
+                android:src="@drawable/ic_profile"
                 android:layout_gravity="center_vertical|start"
                 android:layout_marginStart="16dp"
-                android:contentDescription="Menu"/>
+                android:contentDescription="Profile"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:tint="#F6C65B" />
                 
             <TextView
                 android:id="@+id/tvTitle"
@@ -37,7 +40,7 @@
                 android:textStyle="bold"
                 android:fontFamily="@font/poppins"
                 android:layout_gravity="center_vertical"
-                android:layout_marginStart="64dp"/>
+                android:layout_marginStart="52dp"/>
 
             <TextView
                 android:id="@+id/tvTodayReset"

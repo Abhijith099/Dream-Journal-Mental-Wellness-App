@@ -39,8 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
 
     private EditText etSearchTags;
-    private ImageView ivClearSearch;
-    private ImageView ivCalendar;
+    private ImageView ivClearSearch, ivCalendar, ivProfile;
     private TextView tvTitle;
     private TextView tvTodayReset;
 
@@ -65,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         etSearchTags = findViewById(R.id.etSearchTags);
         ivClearSearch = findViewById(R.id.ivClearSearch);
         ivCalendar = findViewById(R.id.ivCalendar);
+        ivProfile = findViewById(R.id.ivProfile);
         tvTitle = findViewById(R.id.tvTitle);
         tvTodayReset = findViewById(R.id.tvTodayReset);
 
@@ -77,6 +77,11 @@ public class MainActivity extends AppCompatActivity {
 
         fabAdd.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, AddDreamActivity.class);
+            startActivity(intent);
+        });
+
+        ivProfile.setOnClickListener(v -> {
+            Intent intent = new Intent(this, ProfileActivity.class);
             startActivity(intent);
         });
 
@@ -100,8 +105,8 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 overridePendingTransition(0, 0);
                 return true;
-            } else if (id == R.id.nav_gallery) {
-                Intent intent = new Intent(this, DreamGalleryActivity.class);
+            } else if (id == R.id.nav_profile) {
+                Intent intent = new Intent(this, ProfileActivity.class);
                 startActivity(intent);
                 overridePendingTransition(0, 0);
                 return true;

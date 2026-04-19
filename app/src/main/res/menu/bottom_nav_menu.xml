@@ -22,7 +22,7 @@
         android:title="Patterns" />
 
     <item
-        android:id="@+id/nav_gallery"
-        android:icon="@drawable/ic_gallery"
-        android:title="Gallery" />
+        android:id="@+id/nav_profile"
+        android:icon="@drawable/ic_profile"
+        android:title="Profile" />
 </menu>

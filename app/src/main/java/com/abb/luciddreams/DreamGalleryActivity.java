@@ -79,7 +79,44 @@ public class DreamGalleryActivity extends AppCompatActivity {
         });
 
         rvGallery.setLayoutManager(new GridLayoutManager(this, 2));
+        setupBottomNav();
         loadGallery();
+    }
+
+    private void setupBottomNav() {
+        com.google.android.material.bottomnavigation.BottomNavigationView nav = findViewById(R.id.bottomNav);
+        nav.setSelectedItemId(R.id.nav_profile); // If you'd rather highlight gallery, keep it. 
+        // But requested: final order: Dreams, Analysis, Add, Patterns, Profile. 
+        // We'll map Gallery to something else or just not highlight.
+        
+        nav.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_dreams) {
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                startActivity(intent);
+                finish();
+                return true;
+            } else if (id == R.id.nav_analysis) {
+                Intent intent = new Intent(this, AnalysisDashboardActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                startActivity(intent);
+                finish();
+                return true;
+            } else if (id == R.id.nav_patterns) {
+                Intent intent = new Intent(this, PatternsActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                startActivity(intent);
+                finish();
+                return true;
+            } else if (id == R.id.nav_profile) {
+                Intent intent = new Intent(this, ProfileActivity.class);
+                startActivity(intent);
+                finish();
+                return true;
+            }
+            return false;
+        });
     }
 
     private void showCalendarPicker() {

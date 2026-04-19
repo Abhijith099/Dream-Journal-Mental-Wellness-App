@@ -118,8 +118,8 @@ public class AnalysisDashboardActivity extends AppCompatActivity {
                 startActivity(intent);
                 overridePendingTransition(0, 0);
                 return true;
-            } else if (id == R.id.nav_gallery) {
-                Intent intent = new Intent(this, DreamGalleryActivity.class);
+            } else if (id == R.id.nav_profile) {
+                Intent intent = new Intent(this, ProfileActivity.class);
                 startActivity(intent);
                 overridePendingTransition(0, 0);
                 return true;
