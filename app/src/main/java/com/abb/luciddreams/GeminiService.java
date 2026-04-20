@@ -19,7 +19,7 @@ import okhttp3.Response;
 
 public class GeminiService {
     private static final String TAG = "GeminiService";
-    private static final String API_URL = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=";
+    private static final String API_URL = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=";
     private final String apiKey;
     private final OkHttpClient client;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
