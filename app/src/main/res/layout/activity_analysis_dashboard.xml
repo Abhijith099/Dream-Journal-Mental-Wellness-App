@@ -601,11 +601,11 @@
                         android:layout_marginTop="12dp"
                         android:gravity="center">
                         <View android:layout_width="8dp" android:layout_height="8dp" android:background="#39C6FF" android:layout_marginEnd="4dp"/>
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sadness" android:textColor="#C5CAE9" android:textSize="11sp" android:layout_marginEnd="16dp"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Lucidity" android:textColor="#C5CAE9" android:textSize="11sp" android:layout_marginEnd="16dp"/>
                         <View android:layout_width="8dp" android:layout_height="8dp" android:background="#8B5CFF" android:layout_marginEnd="4dp"/>
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Anxiety" android:textColor="#C5CAE9" android:textSize="11sp" android:layout_marginEnd="16dp"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Clarity" android:textColor="#C5CAE9" android:textSize="11sp" android:layout_marginEnd="16dp"/>
                         <View android:layout_width="8dp" android:layout_height="8dp" android:background="#4CAF82" android:layout_marginEnd="4dp"/>
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sleep Quality" android:textColor="#C5CAE9" android:textSize="11sp"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Nightmares" android:textColor="#C5CAE9" android:textSize="11sp"/>
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

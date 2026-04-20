@@ -30,6 +30,7 @@ public class EditDreamActivity extends AppCompatActivity {
     private TextInputEditText etTagInput;
     private ChipGroup chipGroupTags;
     private Switch switchNightmare;
+    private android.widget.SeekBar sbLucidity, sbClarity;
     private LinearLayout moodCalm, moodStressed, moodUnclear, moodLucid, moodIntense;
 
     private String selectedMood = "Unclear";
@@ -85,6 +86,8 @@ public class EditDreamActivity extends AppCompatActivity {
         etTagInput    = findViewById(R.id.etEditTagInput);
         chipGroupTags = findViewById(R.id.chipGroupEditTags);
         switchNightmare = findViewById(R.id.switchEditNightmare);
+        sbLucidity    = findViewById(R.id.sbEditLucidity);
+        sbClarity     = findViewById(R.id.sbEditClarity);
 
         moodCalm     = findViewById(R.id.editMoodCalm);
         moodStressed = findViewById(R.id.editMoodStressed);
@@ -124,6 +127,8 @@ public class EditDreamActivity extends AppCompatActivity {
         etDescription.setText(description);
 
         switchNightmare.setChecked(dream.isNightmare());
+        sbLucidity.setProgress(dream.getLucidity());
+        sbClarity.setProgress(dream.getClarity());
 
         selectedMood = dream.getMood() != null ? dream.getMood() : "Unclear";
         updateMoodHighlight(selectedMood);
@@ -200,6 +205,8 @@ public class EditDreamActivity extends AppCompatActivity {
         dream.setDescription(description);
         dream.setMood(selectedMood);
         dream.setNightmare(switchNightmare.isChecked());
+        dream.setLucidity(sbLucidity.getProgress());
+        dream.setClarity(sbClarity.getProgress());
         dream.setTags(tagsBuilder.toString());
 
         int rows = repository.updateDream(dream);

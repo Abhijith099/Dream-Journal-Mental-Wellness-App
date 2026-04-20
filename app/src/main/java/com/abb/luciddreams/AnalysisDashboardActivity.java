@@ -562,9 +562,9 @@ public class AnalysisDashboardActivity extends AppCompatActivity {
         vTrendGraph.getAxisLeft().setGridColor(Color.parseColor("#2A3567"));
         vTrendGraph.getAxisRight().setEnabled(false);
 
-        ArrayList<Entry> stressEntries = new ArrayList<>();
-        ArrayList<Entry> anxietyEntries = new ArrayList<>();
-        ArrayList<Entry> qualityEntries = new ArrayList<>();
+        ArrayList<Entry> lucidityEntries = new ArrayList<>();
+        ArrayList<Entry> clarityEntries = new ArrayList<>();
+        ArrayList<Entry> nightmareEntries = new ArrayList<>();
 
         // Group data by day
         Calendar cal = Calendar.getInstance();
@@ -578,34 +578,34 @@ public class AnalysisDashboardActivity extends AppCompatActivity {
             long dayStart = cal.getTimeInMillis();
             long dayEnd = dayStart + (24 * 60 * 60 * 1000);
 
-            float stressDay = 0, anxietyDay = 0, qualityDay = 0;
+            float lucidityDay = 0, clarityDay = 0, nightmaresDay = 0;
             int count = 0;
 
             for (Dream d : dreams) {
                 if (d.getTimestamp() >= dayStart && d.getTimestamp() < dayEnd) {
-                    stressDay += (d.isNightmare() ? 80 : 20);
-                    anxietyDay += (d.isRecurring() ? 70 : 30);
-                    qualityDay += (d.getClarity() * 10);
+                    lucidityDay += d.getLucidity() * 10;
+                    clarityDay += d.getClarity() * 10;
+                    nightmaresDay += (d.isNightmare() ? 100 : 0);
                     count++;
                 }
             }
 
             if (count > 0) {
-                stressEntries.add(new Entry(i, stressDay / count));
-                anxietyEntries.add(new Entry(i, anxietyDay / count));
-                qualityEntries.add(new Entry(i, qualityDay / count));
+                lucidityEntries.add(new Entry(i, lucidityDay / count));
+                clarityEntries.add(new Entry(i, clarityDay / count));
+                nightmareEntries.add(new Entry(i, nightmaresDay / count));
             } else {
-                stressEntries.add(new Entry(i, 20f));
-                anxietyEntries.add(new Entry(i, 30f));
-                qualityEntries.add(new Entry(i, 50f));
+                lucidityEntries.add(new Entry(i, 0f));
+                clarityEntries.add(new Entry(i, 0f));
+                nightmareEntries.add(new Entry(i, 0f));
             }
         }
 
-        LineDataSet stressSet = createDataSet(stressEntries, "Stress", "#39C6FF");
-        LineDataSet anxietySet = createDataSet(anxietyEntries, "Anxiety", "#8B5CFF");
-        LineDataSet qualitySet = createDataSet(qualityEntries, "Quality", "#4CAF82");
+        LineDataSet luciditySet = createDataSet(lucidityEntries, "Lucidity", "#39C6FF");
+        LineDataSet claritySet = createDataSet(clarityEntries, "Clarity", "#8B5CFF");
+        LineDataSet nightmareSet = createDataSet(nightmareEntries, "Nightmares", "#FF5252");
 
-        vTrendGraph.setData(new LineData(stressSet, anxietySet, qualitySet));
+        vTrendGraph.setData(new LineData(luciditySet, claritySet, nightmareSet));
         vTrendGraph.animateX(1000);
     }
 

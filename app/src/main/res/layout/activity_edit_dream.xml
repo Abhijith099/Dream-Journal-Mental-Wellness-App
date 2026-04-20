@@ -259,7 +259,7 @@
                 android:gravity="center_vertical"
                 android:background="@drawable/bg_analysis_card"
                 android:padding="16dp"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="16dp">
 
                 <TextView
                     android:layout_width="0dp"
@@ -278,6 +278,48 @@
                     android:trackTint="#2A3567" />
 
             </LinearLayout>
+
+            <!-- Lucidity Slider -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Lucidity Level"
+                android:textColor="#39C6FF"
+                android:textSize="15sp"
+                android:fontFamily="@font/poppins"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp" />
+
+            <SeekBar
+                android:id="@+id/sbEditLucidity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="10"
+                android:progress="5"
+                android:progressTint="#39C6FF"
+                android:thumbTint="#39C6FF"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Clarity Slider -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Clarity Level"
+                android:textColor="#8B5CFF"
+                android:textSize="15sp"
+                android:fontFamily="@font/poppins"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp" />
+
+            <SeekBar
+                android:id="@+id/sbEditClarity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="10"
+                android:progress="5"
+                android:progressTint="#8B5CFF"
+                android:thumbTint="#8B5CFF"
+                android:layout_marginBottom="24dp" />
 
         </LinearLayout>
     </ScrollView>

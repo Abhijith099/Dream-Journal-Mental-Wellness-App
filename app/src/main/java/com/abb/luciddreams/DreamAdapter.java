@@ -44,6 +44,18 @@ public class DreamAdapter extends RecyclerView.Adapter<DreamAdapter.DreamViewHol
         holder.tvCardDate.setText(sdf.format(new Date(dream.getTimestamp())));
 
         holder.tvDescription.setText(dream.getDescription());
+        holder.tvLucidityValue.setText(String.valueOf(dream.getLucidity()));
+        holder.tvClarityValue.setText(String.valueOf(dream.getClarity()));
+        
+        // Color coding for lucidity
+        if (dream.getLucidity() >= 7) {
+            holder.tvLucidityValue.setTextColor(holder.itemView.getContext().getResources().getColor(R.color.glow_primary, null));
+        } else if (dream.getLucidity() >= 4) {
+            holder.tvLucidityValue.setTextColor(holder.itemView.getContext().getResources().getColor(R.color.text_tag, null));
+        } else {
+            holder.tvLucidityValue.setTextColor(holder.itemView.getContext().getResources().getColor(R.color.text_secondary, null));
+        }
+
         setMoodIcon(holder.ivMoodIcon, dream.getMood());
 
         if (dream.isNightmare()) {
@@ -126,7 +138,7 @@ public class DreamAdapter extends RecyclerView.Adapter<DreamAdapter.DreamViewHol
     }
 
     static class DreamViewHolder extends RecyclerView.ViewHolder {
-        TextView tvCardDate, tvDescription, tvNightmareBadge;
+        TextView tvCardDate, tvDescription, tvNightmareBadge, tvLucidityValue, tvClarityValue;
         android.widget.ImageView ivMoodIcon;
         LinearLayout llTags;
         LinearLayout cardContainer;
@@ -135,6 +147,8 @@ public class DreamAdapter extends RecyclerView.Adapter<DreamAdapter.DreamViewHol
             super(itemView);
             tvCardDate = itemView.findViewById(R.id.tvCardDate);
             tvDescription = itemView.findViewById(R.id.tvDescription);
+            tvLucidityValue = itemView.findViewById(R.id.tvLucidityValue);
+            tvClarityValue = itemView.findViewById(R.id.tvClarityValue);
             ivMoodIcon = itemView.findViewById(R.id.ivMoodIcon);
             tvNightmareBadge = itemView.findViewById(R.id.tvNightmareBadge);
             llTags = itemView.findViewById(R.id.llTags);

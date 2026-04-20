@@ -159,6 +159,9 @@ public class DreamDetailsActivity extends AppCompatActivity {
         moodIntense.setBackgroundResource(R.drawable.bg_mood_unselected);
 
         selectedCard.setBackgroundResource(R.drawable.bg_mood_selected);
+
+        // Auto-update Lucidity/Clarity based on mood presets if user hasn't touched sliders?
+        // For now, let's just make sure "Happy" maps to "Happy" and "Intense" to "Fearful" consistent with Edit activity
     }
 
     private void setupTagInput() {

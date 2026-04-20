@@ -152,8 +152,11 @@ public class DreamAnalysisActivity extends AppCompatActivity {
         REFLECTION_MAP.put("Stressed", "Are you placing too much pressure on yourself to perform or meet expectations? What one step could bring relief?");
         REFLECTION_MAP.put("Curious",  "Your subconscious is drawn to the unknown. What unexplored part of your life or self is calling for your attention?");
         REFLECTION_MAP.put("Peaceful", "What in your waking life gives you this same sense of peace? How can you invite more of it into your daily routine?");
+        REFLECTION_MAP.put("Calm",     "What in your waking life gives you this same sense of peace? How can you invite more of it into your daily routine?");
         REFLECTION_MAP.put("Hopeful",  "Something within you is ready to grow or begin anew. What positive change are you hoping to bring into your life?");
+        REFLECTION_MAP.put("Happy",    "Something within you is ready to grow or begin anew. What positive change are you hoping to bring into your life?");
         REFLECTION_MAP.put("Confused", "Are you currently navigating a crossroads or dealing with mixed signals? Taking time to journal or meditate may bring clarity.");
+        REFLECTION_MAP.put("Unclear",  "Are you currently navigating a crossroads or dealing with mixed signals? Taking time to journal or meditate may bring clarity.");
         REFLECTION_MAP.put("default",  "Are you currently navigating self-doubt or personal change? Reflect on what this dream may be trying to show you.");
     }
 
@@ -218,14 +221,19 @@ public class DreamAnalysisActivity extends AppCompatActivity {
             }
         });
 
-        DreamAnalysis analysis = analyze(dreamText);
+        Dream dream = null;
+        if (dreamId != -1) {
+            dream = repository.getDreamById(dreamId);
+        }
+
+        DreamAnalysis analysis = analyze(dreamText, dream);
 
         populateSummary(analysis.summary);
         populateSymbols(analysis.symbols);
         populateEmotions(analysis.emotions, analysis.emotionDescription);
         populateReflection(analysis.reflection);
         populateDreamVisualization(dreamText);
-        populateInsights(analysis.lucidityScore, analysis.stressScore, analysis.patternScore);
+        populateInsights(analysis);
 
         fullReadText = "Dream Summary. " + analysis.summary
                 + " Emotional Tone: " + String.join(", ", analysis.emotions) + ". "
@@ -325,7 +333,7 @@ public class DreamAnalysisActivity extends AppCompatActivity {
 
     // ─── Analysis Engine ────────────────────────────────────────────────────────
 
-    private DreamAnalysis analyze(String text) {
+    private DreamAnalysis analyze(String text, Dream savedDream) {
         String lower = text.toLowerCase(Locale.getDefault());
         String[] words = lower.replaceAll("[^a-z\\s]", " ").split("\\s+");
         List<String> wordList = Arrays.asList(words);
@@ -354,12 +362,24 @@ public class DreamAnalysisActivity extends AppCompatActivity {
             }
         }
 
-        // Sort by frequency, take top 3
+        // Sort by frequency
         List<String> sortedEmotions = new ArrayList<>(emotionCount.keySet());
         sortedEmotions.sort((a, b) -> emotionCount.getOrDefault(b, 0) - emotionCount.getOrDefault(a, 0));
-        result.emotions = sortedEmotions.isEmpty()
-                ? Arrays.asList("Curious", "Peaceful")
-                : sortedEmotions.subList(0, Math.min(3, sortedEmotions.size()));
+
+        if (savedDream != null && savedDream.getMood() != null) {
+            result.emotions = new ArrayList<>();
+            result.emotions.add(savedDream.getMood());
+            // Add some other ones from keywords if they don't match
+            for (String e : sortedEmotions) {
+                if (!e.equalsIgnoreCase(savedDream.getMood()) && result.emotions.size() < 3) {
+                    result.emotions.add(e);
+                }
+            }
+        } else {
+            result.emotions = sortedEmotions.isEmpty()
+                    ? Arrays.asList("Curious", "Peaceful")
+                    : sortedEmotions.subList(0, Math.min(3, sortedEmotions.size()));
+        }
 
         // Emotion description
         result.emotionDescription = buildEmotionDescription(result.emotions);
@@ -368,10 +388,17 @@ public class DreamAnalysisActivity extends AppCompatActivity {
         String dominant = result.emotions.isEmpty() ? "default" : result.emotions.get(0);
         result.reflection = REFLECTION_MAP.getOrDefault(dominant, REFLECTION_MAP.get("default"));
 
-        // 5. Insight scores
-        result.lucidityScore = computeLucidityScore(lower);
-        result.stressScore   = computeStressScore(lower, emotionCount);
-        result.patternScore  = Math.min(100, result.symbols.size() * 15 + 20);
+        // 5. Insight scores - Use saved values if available, otherwise heuristic
+        if (savedDream != null) {
+            result.lucidityScore = savedDream.getLucidity() * 10;
+            result.clarityScore = savedDream.getClarity() * 10;
+            result.stressScore = savedDream.isNightmare() ? 85 : computeStressScore(lower, emotionCount);
+        } else {
+            result.lucidityScore = computeLucidityScore(lower);
+            result.clarityScore = 50; // Default if not saved
+            result.stressScore = computeStressScore(lower, emotionCount);
+        }
+        result.patternScore = Math.min(100, result.symbols.size() * 15 + 20);
 
         return result;
     }
@@ -400,9 +427,12 @@ public class DreamAnalysisActivity extends AppCompatActivity {
             case "Fearful":  return "This dream carries a fearful undertone, suggesting your subconscious may be processing hidden anxieties or unresolved tensions.";
             case "Stressed": return "The dream reflects underlying stress or pressure. Your mind may be working through challenges it faces during waking hours.";
             case "Curious":  return "A spirit of wonder and exploration runs through this dream, hinting at a desire for discovery or new experiences.";
-            case "Peaceful": return "This dream emanates calm and serenity, suggesting inner harmony or a longing for peaceful resolution.";
-            case "Hopeful":  return "Hopeful energy fills this dream — your subconscious is looking forward, drawn to growth and new possibilities.";
-            case "Confused": return "A sense of confusion or disorientation runs through this dream, reflecting uncertainty you may be navigating in waking life.";
+            case "Peaceful": 
+            case "Calm":     return "This dream emanates calm and serenity, suggesting inner harmony or a longing for peaceful resolution.";
+            case "Hopeful":  
+            case "Happy":    return "Positive energy fills this dream — your subconscious is looking forward, drawn to growth and new possibilities.";
+            case "Confused": 
+            case "Unclear":  return "A sense of confusion or disorientation runs through this dream, reflecting uncertainty you may be navigating in waking life.";
             default:         return "Your dream carries a blend of emotions, reflecting the complex tapestry of your inner life.";
         }
     }
@@ -482,8 +512,11 @@ public class DreamAnalysisActivity extends AppCompatActivity {
         emotionStyles.put("Stressed", new String[]{"#4A2A00", "#F6A84B"});
         emotionStyles.put("Curious",  new String[]{"#1A3A5C", "#39C6FF"});
         emotionStyles.put("Peaceful", new String[]{"#1A3D2B", "#4CAF82"});
+        emotionStyles.put("Calm",     new String[]{"#1A3D2B", "#4CAF82"});
         emotionStyles.put("Hopeful",  new String[]{"#3A3A00", "#F6C65B"});
+        emotionStyles.put("Happy",    new String[]{"#3A3A00", "#F6C65B"});
         emotionStyles.put("Confused", new String[]{"#2A1A4A", "#9C7CFF"});
+        emotionStyles.put("Unclear",  new String[]{"#2A1A4A", "#9C7CFF"});
 
         for (String emotion : emotions) {
             Chip chip = new Chip(this);
@@ -511,11 +544,13 @@ public class DreamAnalysisActivity extends AppCompatActivity {
         tvReflection.setText(reflection);
     }
 
-    private void populateInsights(int lucidityScore, int stressScore, int patternScore) {
+    private void populateInsights(DreamAnalysis analysis) {
         LinearLayout llInsights = findViewById(R.id.llInsightScores);
-        addInsightRow(llInsights, "Lucidity Likelihood", lucidityScore, "#39C6FF");
-        addInsightRow(llInsights, "Stress Signal",       stressScore,   "#F6A84B");
-        addInsightRow(llInsights, "Pattern Confidence",  patternScore,  "#9C7CFF");
+        llInsights.removeAllViews();
+        addInsightRow(llInsights, "Lucidity Likelihood", analysis.lucidityScore, "#39C6FF");
+        addInsightRow(llInsights, "Clarity Level",        analysis.clarityScore,  "#8B5CFF");
+        addInsightRow(llInsights, "Stress Signal",       analysis.stressScore,   "#F6A84B");
+        addInsightRow(llInsights, "Pattern Confidence",  analysis.patternScore,  "#9C7CFF");
     }
 
     private void addInsightRow(LinearLayout parent, String label, int score, String color) {
@@ -613,6 +648,7 @@ public class DreamAnalysisActivity extends AppCompatActivity {
         String emotionDescription = "";
         String reflection = "";
         int lucidityScore = 10;
+        int clarityScore = 50;
         int stressScore   = 10;
         int patternScore  = 20;
     }
