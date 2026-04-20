@@ -28,11 +28,10 @@ public class DreamImageGenerator {
 
     // Re-ordered fallback list to prioritize models that are more likely to be active on the free tier.
     private static final List<String> FALLBACK_MODELS = Arrays.asList(
+            "black-forest-labs/FLUX.1-schnell",
             "stabilityai/stable-diffusion-xl-base-1.0",
             "runwayml/stable-diffusion-v1-5",
-            "stabilityai/stable-diffusion-2-1",
-            "prompthero/openjourney",
-            "black-forest-labs/FLUX.1-schnell"
+            "prompthero/openjourney"
     );
 
     private final OkHttpClient client;
