@@ -28,8 +28,8 @@ public class DreamImageGenerator {
 
     // Re-ordered fallback list to prioritize models that are more likely to be active on the free tier.
     private static final List<String> FALLBACK_MODELS = Arrays.asList(
-            "runwayml/stable-diffusion-v1-5",
             "stabilityai/stable-diffusion-xl-base-1.0",
+            "runwayml/stable-diffusion-v1-5",
             "stabilityai/stable-diffusion-2-1",
             "prompthero/openjourney",
             "black-forest-labs/FLUX.1-schnell"
@@ -118,8 +118,8 @@ public class DreamImageGenerator {
                                 
                                 String bodyStr = new String(bytes);
                                 Log.w(TAG, "Unexpected response from " + modelId + ": " + bodyStr);
-                                if (bodyStr.contains("error")) {
-                                    lastError = "API Error: " + bodyStr;
+                                if (bodyStr.contains("error") || bodyStr.contains("Cannot POST")) {
+                                    lastError = "Model error: " + modelId;
                                     if (code == 503 || bodyStr.contains("loading")) continue; 
                                 }
                             } else {
@@ -136,7 +136,8 @@ public class DreamImageGenerator {
                                     return; 
                                 } else {
                                     lastError = "Error " + code + ": " + modelId;
-                                    break; // Try next model for 404s or other hard errors
+                                    // If it's a 404, the model endpoint might be wrong, but try others
+                                    continue;
                                 }
                             }
                         }

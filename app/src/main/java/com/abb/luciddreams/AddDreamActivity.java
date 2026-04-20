@@ -19,7 +19,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -114,14 +113,14 @@ public class AddDreamActivity extends AppCompatActivity {
 
         btnSaveDraft.setOnClickListener(v -> {
             saveDraft();
-            Toast.makeText(this, "Draft saved!", Toast.LENGTH_SHORT).show();
+            PremiumToast.show(this, "Draft saved!");
             finish();
         });
 
         btnAnalyze.setOnClickListener(v -> {
             String journal = etDreamJournal.getText().toString().trim();
             if (journal.isEmpty()) {
-                Toast.makeText(this, "Please describe your dream first.", Toast.LENGTH_SHORT).show();
+                PremiumToast.show(this, "Please describe your dream first.");
                 return;
             }
             saveDraft(); // Auto save state if user jumps navigation
@@ -176,7 +175,7 @@ public class AddDreamActivity extends AppCompatActivity {
             @Override
             public void onError(int error) {
                 tvMicStatus.setText("Hold to Talk");
-                Toast.makeText(AddDreamActivity.this, "Speech recognition error", Toast.LENGTH_SHORT).show();
+                PremiumToast.show(AddDreamActivity.this, "Speech recognition error");
             }
 
             @Override

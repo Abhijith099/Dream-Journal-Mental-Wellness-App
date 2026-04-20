@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -223,13 +224,13 @@ public class PatternsActivity extends AppCompatActivity {
         LayoutInflater inflater = LayoutInflater.from(this);
         for (Map.Entry<String, Integer> entry : moods) {
             View itemView = inflater.inflate(R.layout.item_mood_summary_row, llMoodSummaryContainer, false);
-            TextView tvEmoji = itemView.findViewById(R.id.tvMoodEmoji);
+            ImageView ivIcon = itemView.findViewById(R.id.ivMoodIcon);
             TextView tvLabel = itemView.findViewById(R.id.tvMoodLabel);
             TextView tvCount = itemView.findViewById(R.id.tvMoodCount);
             ProgressBar pb = itemView.findViewById(R.id.pbMood);
 
             String mood = entry.getKey();
-            tvEmoji.setText(getMoodEmoji(mood));
+            ivIcon.setImageResource(getMoodIcon(mood));
             tvLabel.setText(getMoodName(mood));
             tvCount.setText(entry.getValue() + (entry.getValue() == 1 ? " dream" : " dreams"));
 
@@ -323,7 +324,12 @@ public class PatternsActivity extends AppCompatActivity {
         for (Dream d : history) {
             float val = 3f;
             String m = d.getMood();
-            if ("✨".equals(m)) val = 5f;
+            if ("Happy".equals(m)) val = 5f;
+            else if ("Calm".equals(m)) val = 4f;
+            else if ("Neutral".equals(m) || "Unclear".equals(m)) val = 3f;
+            else if ("Stressed".equals(m)) val = 2f;
+            else if ("Fearful".equals(m)) val = 1f;
+            else if ("✨".equals(m)) val = 5f;
             else if ("🌙".equals(m)) val = 4f;
             else if ("☁".equals(m)) val = 3f;
             else if ("⚡".equals(m)) val = 2f;
@@ -353,36 +359,62 @@ public class PatternsActivity extends AppCompatActivity {
         moodChart.invalidate();
     }
 
-    private String getMoodEmoji(String mood) {
+    private int getMoodIcon(String mood) {
+        if (mood == null) return R.drawable.ic_mood_unclear;
         switch (mood) {
-            case "✨": return "😊";
-            case "🌙": return "😌";
-            case "☁":  return "😐";
-            case "⚡": return "😨";
-            case "🔥": return "😰";
-            default:   return "🌀";
+            case "Happy":
+            case "✨":
+                return R.drawable.ic_mood_lucid;
+            case "Calm":
+            case "🌙":
+                return R.drawable.ic_mood_calm;
+            case "Neutral":
+            case "Unclear":
+            case "☁":
+                return R.drawable.ic_mood_neutral;
+            case "Stressed":
+            case "⚡":
+                return R.drawable.ic_mood_stressed;
+            case "Fearful":
+            case "🔥":
+                return R.drawable.ic_mood_intense;
+            default:
+                return R.drawable.ic_mood_unclear;
         }
     }
 
     private String getMoodFromValue(int val) {
         switch (val) {
-            case 5: return "✨";
-            case 4: return "🌙";
-            case 3: return "☁";
-            case 2: return "⚡";
-            case 1: return "🔥";
-            default: return "☁";
+            case 5: return "Happy";
+            case 4: return "Calm";
+            case 3: return "Neutral";
+            case 2: return "Stressed";
+            case 1: return "Fearful";
+            default: return "Neutral";
         }
     }
 
     private String getMoodName(String mood) {
+        if (mood == null) return "Neutral";
         switch (mood) {
-            case "✨": return "Happy";
-            case "🌙": return "Calm";
-            case "☁":  return "Neutral";
-            case "⚡": return "Fearful";
-            case "🔥": return "Intense";
-            default:   return mood.isEmpty() ? "Neutral" : "Other";
+            case "Happy":
+            case "✨":
+                return "Happy";
+            case "Calm":
+            case "🌙":
+                return "Calm";
+            case "Neutral":
+            case "Unclear":
+            case "☁":
+                return "Neutral";
+            case "Stressed":
+            case "⚡":
+                return "Stressed";
+            case "Fearful":
+            case "🔥":
+                return "Fearful";
+            default:
+                return mood.isEmpty() ? "Neutral" : mood;
         }
     }
 }

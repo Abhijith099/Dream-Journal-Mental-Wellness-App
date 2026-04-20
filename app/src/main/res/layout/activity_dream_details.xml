@@ -78,7 +78,7 @@
                     android:paddingBottom="12dp"
                     android:layout_marginEnd="4dp"
                     android:background="@drawable/bg_mood_unselected">
-                    <ImageView android:layout_width="28dp" android:layout_height="28dp" android:src="@drawable/ic_mood_calm" />
+                    <ImageView android:layout_width="28dp" android:layout_height="28dp" android:src="@drawable/ic_calm" />
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Calm" android:textColor="#FFFFFF" android:textSize="10dp" android:layout_marginTop="4dp" android:fontFamily="@font/poppins" />
                 </LinearLayout>
 
@@ -93,7 +93,7 @@
                     android:paddingBottom="12dp"
                     android:layout_marginHorizontal="2dp"
                     android:background="@drawable/bg_mood_unselected">
-                    <ImageView android:layout_width="28dp" android:layout_height="28dp" android:src="@drawable/ic_mood_stressed" />
+                    <ImageView android:layout_width="28dp" android:layout_height="28dp" android:src="@drawable/ic_stressed" />
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Stressed" android:textColor="#FFFFFF" android:textSize="10dp" android:layout_marginTop="4dp" android:fontFamily="@font/poppins" />
                 </LinearLayout>
 
@@ -108,7 +108,7 @@
                     android:paddingBottom="12dp"
                     android:layout_marginHorizontal="2dp"
                     android:background="@drawable/bg_mood_unselected">
-                    <ImageView android:layout_width="28dp" android:layout_height="28dp" android:src="@drawable/ic_mood_unclear" />
+                    <ImageView android:layout_width="28dp" android:layout_height="28dp" android:src="@drawable/ic_neutral" />
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Unclear" android:textColor="#FFFFFF" android:textSize="10dp" android:layout_marginTop="4dp" android:fontFamily="@font/poppins" />
                 </LinearLayout>
 
@@ -123,7 +123,7 @@
                     android:paddingBottom="12dp"
                     android:layout_marginHorizontal="2dp"
                     android:background="@drawable/bg_mood_unselected">
-                    <ImageView android:layout_width="28dp" android:layout_height="28dp" android:src="@drawable/ic_mood_lucid" />
+                    <ImageView android:layout_width="28dp" android:layout_height="28dp" android:src="@drawable/ic_lucid_happy" />
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Lucid" android:textColor="#FFFFFF" android:textSize="10dp" android:layout_marginTop="4dp" android:fontFamily="@font/poppins" />
                 </LinearLayout>
 
@@ -138,7 +138,7 @@
                     android:paddingBottom="12dp"
                     android:layout_marginStart="4dp"
                     android:background="@drawable/bg_mood_unselected">
-                    <ImageView android:layout_width="28dp" android:layout_height="28dp" android:src="@drawable/ic_mood_intense" />
+                    <ImageView android:layout_width="28dp" android:layout_height="28dp" android:src="@drawable/ic_fearful" />
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Intense" android:textColor="#FFFFFF" android:textSize="10dp" android:layout_marginTop="4dp" android:fontFamily="@font/poppins" />
                 </LinearLayout>
             </LinearLayout>
@@ -266,7 +266,7 @@
             android:layout_weight="1"
             android:layout_marginStart="8dp"
             android:backgroundTint="#39C6FF"
-            android:text="✔ Save Dream"
+            android:text="Save Dream"
             android:textColor="#FFFFFF"
             android:textStyle="bold"
             android:fontFamily="@font/poppins"

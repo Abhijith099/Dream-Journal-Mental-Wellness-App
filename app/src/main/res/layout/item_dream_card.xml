@@ -86,13 +86,12 @@
             android:gravity="center_vertical">
 
             <!-- Mood Icon -->
-            <TextView
-                android:id="@+id/tvMoodIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="😐"
-                android:textSize="18sp"
-                android:layout_marginEnd="8dp"/>
+            <ImageView
+                android:id="@+id/ivMoodIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/ic_neutral" />
 
             <!-- Tags Container -->
             <LinearLayout

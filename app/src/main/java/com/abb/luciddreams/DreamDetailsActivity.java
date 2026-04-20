@@ -14,7 +14,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -92,7 +91,7 @@ public class DreamDetailsActivity extends AppCompatActivity {
             editor.putString("DraftJournal", journalText);
             editor.apply();
             
-            Toast.makeText(this, "Draft saved!", Toast.LENGTH_SHORT).show();
+            PremiumToast.show(this, "Draft saved!");
             // Return to main
             Intent intent = new Intent(this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -102,7 +101,7 @@ public class DreamDetailsActivity extends AppCompatActivity {
 
         btnSaveData.setOnClickListener(v -> {
             if (chipGroupTags.getChildCount() == 0) {
-                Toast.makeText(this, "Please add at least one tag to continue", Toast.LENGTH_SHORT).show();
+                PremiumToast.show(this, "Please add at least one tag to continue");
                 return;
             }
 
@@ -129,7 +128,7 @@ public class DreamDetailsActivity extends AppCompatActivity {
             // Clear draft
             getSharedPreferences("DreamPrefs", Context.MODE_PRIVATE).edit().remove("DraftJournal").apply();
 
-            Toast.makeText(this, "Dream saved successfully! ✨", Toast.LENGTH_SHORT).show();
+            PremiumToast.show(this, "Dream saved successfully!");
 
             // Proceed to Analysis immediately
             Intent intent = new Intent(this, DreamAnalysisActivity.class);
@@ -142,12 +141,12 @@ public class DreamDetailsActivity extends AppCompatActivity {
     }
 
     private void setupMoodClickListeners() {
-        moodCalm.setOnClickListener(v -> updateMoodSelection("🌙", moodCalm));
-        moodStressed.setOnClickListener(v -> updateMoodSelection("⚡", moodStressed));
-        moodUnclear.setOnClickListener(v -> updateMoodSelection("☁", moodUnclear));
-        moodLucid.setOnClickListener(v -> updateMoodSelection("✨", moodLucid));
-        moodIntense.setOnClickListener(v -> updateMoodSelection("🔥", moodIntense));
-        updateMoodSelection("☁", moodUnclear); // Default
+        moodCalm.setOnClickListener(v -> updateMoodSelection("Calm", moodCalm));
+        moodStressed.setOnClickListener(v -> updateMoodSelection("Stressed", moodStressed));
+        moodUnclear.setOnClickListener(v -> updateMoodSelection("Unclear", moodUnclear));
+        moodLucid.setOnClickListener(v -> updateMoodSelection("Happy", moodLucid));
+        moodIntense.setOnClickListener(v -> updateMoodSelection("Fearful", moodIntense));
+        updateMoodSelection("Unclear", moodUnclear); // Default
     }
 
     private void updateMoodSelection(String moodText, LinearLayout selectedCard) {

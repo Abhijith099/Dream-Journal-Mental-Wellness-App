@@ -38,12 +38,13 @@ public class DreamAdapter extends RecyclerView.Adapter<DreamAdapter.DreamViewHol
     public void onBindViewHolder(@NonNull DreamViewHolder holder, int position) {
         Dream dream = dreamList.get(position);
 
-        // Date format
-        SimpleDateFormat sdf = new SimpleDateFormat("h:mm a", Locale.getDefault());
+        // Date format - Show full date if it's not today? 
+        // Or just show time since the header handles the date.
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM, h:mm a", Locale.getDefault());
         holder.tvCardDate.setText(sdf.format(new Date(dream.getTimestamp())));
 
         holder.tvDescription.setText(dream.getDescription());
-        holder.tvMoodIcon.setText(dream.getMood() != null ? dream.getMood() : "😐");
+        setMoodIcon(holder.ivMoodIcon, dream.getMood());
 
         if (dream.isNightmare()) {
             holder.tvNightmareBadge.setVisibility(View.VISIBLE);
@@ -86,13 +87,47 @@ public class DreamAdapter extends RecyclerView.Adapter<DreamAdapter.DreamViewHol
         }
     }
 
+    private void setMoodIcon(android.widget.ImageView imageView, String mood) {
+        if (mood == null) {
+            imageView.setImageResource(R.drawable.ic_neutral);
+            return;
+        }
+        switch (mood) {
+            case "Happy":
+            case "✨":
+                imageView.setImageResource(R.drawable.ic_lucid_happy);
+                break;
+            case "Calm":
+            case "🌙":
+                imageView.setImageResource(R.drawable.ic_calm);
+                break;
+            case "Unclear":
+            case "Neutral":
+            case "☁":
+                imageView.setImageResource(R.drawable.ic_neutral);
+                break;
+            case "Stressed":
+            case "⚡":
+                imageView.setImageResource(R.drawable.ic_stressed);
+                break;
+            case "Fearful":
+            case "🔥":
+                imageView.setImageResource(R.drawable.ic_fearful);
+                break;
+            default:
+                imageView.setImageResource(R.drawable.ic_neutral);
+                break;
+        }
+    }
+
     @Override
     public int getItemCount() {
         return dreamList == null ? 0 : dreamList.size();
     }
 
     static class DreamViewHolder extends RecyclerView.ViewHolder {
-        TextView tvCardDate, tvDescription, tvMoodIcon, tvNightmareBadge;
+        TextView tvCardDate, tvDescription, tvNightmareBadge;
+        android.widget.ImageView ivMoodIcon;
         LinearLayout llTags;
         LinearLayout cardContainer;
 
@@ -100,7 +135,7 @@ public class DreamAdapter extends RecyclerView.Adapter<DreamAdapter.DreamViewHol
             super(itemView);
             tvCardDate = itemView.findViewById(R.id.tvCardDate);
             tvDescription = itemView.findViewById(R.id.tvDescription);
-            tvMoodIcon = itemView.findViewById(R.id.tvMoodIcon);
+            ivMoodIcon = itemView.findViewById(R.id.ivMoodIcon);
             tvNightmareBadge = itemView.findViewById(R.id.tvNightmareBadge);
             llTags = itemView.findViewById(R.id.llTags);
             cardContainer = itemView.findViewById(R.id.cardContainer);

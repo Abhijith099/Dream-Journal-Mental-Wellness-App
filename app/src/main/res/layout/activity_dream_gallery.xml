@@ -121,11 +121,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="🖼️"
-            android:textSize="64sp"
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/ic_gallery"
+            app:tint="#39C6FF"
+            android:alpha="0.5"
             android:layout_marginBottom="16dp" />
 
         <TextView

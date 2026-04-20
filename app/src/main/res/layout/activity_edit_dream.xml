@@ -30,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="✏️  Edit Dream"
+            android:text="Edit Dream"
             android:textColor="#FFFFFF"
             android:textSize="22sp"
             android:fontFamily="@font/poppins"
@@ -138,7 +138,7 @@
                     android:layout_marginEnd="6dp"
                     android:clickable="true"
                     android:focusable="true">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🌙" android:textSize="22sp" />
+                    <ImageView android:layout_width="28dp" android:layout_height="28dp" android:src="@drawable/ic_calm" />
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Calm" android:textColor="#C5CAE9" android:textSize="11sp" android:fontFamily="@font/poppins"/>
                 </LinearLayout>
 
@@ -154,7 +154,7 @@
                     android:layout_marginEnd="6dp"
                     android:clickable="true"
                     android:focusable="true">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="⚡" android:textSize="22sp" />
+                    <ImageView android:layout_width="28dp" android:layout_height="28dp" android:src="@drawable/ic_stressed" />
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Fearful" android:textColor="#C5CAE9" android:textSize="11sp" android:fontFamily="@font/poppins"/>
                 </LinearLayout>
 
@@ -170,7 +170,7 @@
                     android:layout_marginEnd="6dp"
                     android:clickable="true"
                     android:focusable="true">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="☁️" android:textSize="22sp" />
+                    <ImageView android:layout_width="28dp" android:layout_height="28dp" android:src="@drawable/ic_neutral" />
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Neutral" android:textColor="#C5CAE9" android:textSize="11sp" android:fontFamily="@font/poppins"/>
                 </LinearLayout>
 
@@ -186,7 +186,7 @@
                     android:layout_marginEnd="6dp"
                     android:clickable="true"
                     android:focusable="true">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="✨" android:textSize="22sp" />
+                    <ImageView android:layout_width="28dp" android:layout_height="28dp" android:src="@drawable/ic_lucid_happy" />
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Happy" android:textColor="#C5CAE9" android:textSize="11sp" android:fontFamily="@font/poppins"/>
                 </LinearLayout>
 
@@ -201,7 +201,7 @@
                     android:background="@drawable/bg_mood_unselected"
                     android:clickable="true"
                     android:focusable="true">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🔥" android:textSize="22sp" />
+                    <ImageView android:layout_width="28dp" android:layout_height="28dp" android:src="@drawable/ic_fearful" />
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Intense" android:textColor="#C5CAE9" android:textSize="11sp" android:fontFamily="@font/poppins"/>
                 </LinearLayout>
 
@@ -265,7 +265,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="🌑  Nightmare"
+                    android:text="Nightmare"
                     android:textColor="#FFFFFF"
                     android:textSize="16sp"
                     android:fontFamily="@font/poppins" />

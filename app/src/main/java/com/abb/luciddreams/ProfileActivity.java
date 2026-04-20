@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
@@ -63,10 +62,10 @@ public class ProfileActivity extends AppCompatActivity {
         findViewById(R.id.itemSignOut).setOnClickListener(v -> showSignOutDialog());
         findViewById(R.id.itemDeleteAccount).setOnClickListener(v -> showDeleteAccountDialog());
         findViewById(R.id.itemAnalysisPrefs).setOnClickListener(v -> {
-            Toast.makeText(this, "Analysis Preferences coming soon", Toast.LENGTH_SHORT).show();
+            PremiumToast.show(this, "Analysis Preferences coming soon");
         });
         findViewById(R.id.ivUserAvatar).setOnClickListener(v -> {
-            Toast.makeText(this, "Avatar upload coming soon", Toast.LENGTH_SHORT).show();
+            PremiumToast.show(this, "Avatar upload coming soon");
         });
     }
 

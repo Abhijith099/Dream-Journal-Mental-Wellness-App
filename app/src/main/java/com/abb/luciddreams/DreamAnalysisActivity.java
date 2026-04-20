@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -47,53 +46,53 @@ public class DreamAnalysisActivity extends AppCompatActivity {
     private static final Map<String, String[]> SYMBOL_MAP = new LinkedHashMap<>();
 
     static {
-        SYMBOL_MAP.put("mirror",     new String[]{"🪞 Mirror",     "Mirrors often symbolize self-image, reflection, identity, or how you perceive yourself."});
-        SYMBOL_MAP.put("fall",       new String[]{"🌊 Falling",    "Falling in dreams often signals insecurity, a fear of losing control, or feeling overwhelmed in waking life."});
-        SYMBOL_MAP.put("falling",    new String[]{"🌊 Falling",    "Falling in dreams often signals insecurity, a fear of losing control, or feeling overwhelmed in waking life."});
-        SYMBOL_MAP.put("ocean",      new String[]{"🌊 Ocean",      "The ocean represents your emotions, subconscious depths, and the unknown aspects of your inner world."});
-        SYMBOL_MAP.put("sea",        new String[]{"🌊 Ocean",      "The ocean represents your emotions, subconscious depths, and the unknown aspects of your inner world."});
-        SYMBOL_MAP.put("water",      new String[]{"💧 Water",      "Water symbolizes emotions, the flow of life, and cleansing. Calm water suggests peace; turbulent water signals turmoil."});
-        SYMBOL_MAP.put("dark",       new String[]{"🌑 Darkness",   "Darkness may reflect uncertainty, stress, or unacknowledged fears lurking beneath the surface."});
-        SYMBOL_MAP.put("darkness",   new String[]{"🌑 Darkness",   "Darkness may reflect uncertainty, stress, or unacknowledged fears lurking beneath the surface."});
-        SYMBOL_MAP.put("run",        new String[]{"🏃 Running",    "Running often represents avoidance, pressure, or the urge to escape a stressful situation in your life."});
-        SYMBOL_MAP.put("running",    new String[]{"🏃 Running",    "Running often represents avoidance, pressure, or the urge to escape a stressful situation in your life."});
-        SYMBOL_MAP.put("fly",        new String[]{"🕊️ Flying",     "Flying symbolizes freedom, liberation, ambition, and personal growth above everyday limitations."});
-        SYMBOL_MAP.put("flying",     new String[]{"🕊️ Flying",     "Flying symbolizes freedom, liberation, ambition, and personal growth above everyday limitations."});
-        SYMBOL_MAP.put("soar",       new String[]{"🕊️ Flying",     "Flying symbolizes freedom, liberation, ambition, and personal growth above everyday limitations."});
-        SYMBOL_MAP.put("fire",       new String[]{"🔥 Fire",       "Fire often represents passion, transformation, anger, or a powerful change burning through your life."});
-        SYMBOL_MAP.put("flame",      new String[]{"🔥 Fire",       "Fire often represents passion, transformation, anger, or a powerful change burning through your life."});
-        SYMBOL_MAP.put("death",      new String[]{"⚰️ Death",      "Dreaming of death often signals transformation, the end of one chapter, and the beginning of another."});
-        SYMBOL_MAP.put("dying",      new String[]{"⚰️ Death",      "Dreaming of death often signals transformation, the end of one chapter, and the beginning of another."});
-        SYMBOL_MAP.put("dead",       new String[]{"⚰️ Death",      "Dreaming of death often signals transformation, the end of one chapter, and the beginning of another."});
-        SYMBOL_MAP.put("house",      new String[]{"🏠 House",      "A house in dreams typically represents the self or psyche. Rooms symbolize different aspects of your mind."});
-        SYMBOL_MAP.put("home",       new String[]{"🏠 House",      "A house in dreams typically represents the self or psyche. Rooms symbolize different aspects of your mind."});
-        SYMBOL_MAP.put("snake",      new String[]{"🐍 Snake",      "Snakes represent both hidden fear and primal wisdom. They can signal a threat or a transformative healing."});
-        SYMBOL_MAP.put("chase",      new String[]{"👣 Being Chased","Being chased suggests avoidance of a problem, fear of confrontation, or anxiety about something unresolved."});
-        SYMBOL_MAP.put("chasing",    new String[]{"👣 Being Chased","Being chased suggests avoidance of a problem, fear of confrontation, or anxiety about something unresolved."});
-        SYMBOL_MAP.put("chased",     new String[]{"👣 Being Chased","Being chased suggests avoidance of a problem, fear of confrontation, or anxiety about something unresolved."});
-        SYMBOL_MAP.put("teeth",      new String[]{"🦷 Teeth",      "Teeth falling out is one of the most common dream symbols and relates to anxiety, insecurity, or fear of judgment."});
-        SYMBOL_MAP.put("school",     new String[]{"📚 School",     "School settings often indicate performance anxiety, self-evaluation, or feelings about how others judge you."});
-        SYMBOL_MAP.put("exam",       new String[]{"📝 Exam",       "Taking an exam suggests you feel tested or judged in waking life, or fear not meeting expectations."});
-        SYMBOL_MAP.put("test",       new String[]{"📝 Exam",       "Taking an exam suggests you feel tested or judged in waking life, or fear not meeting expectations."});
-        SYMBOL_MAP.put("baby",       new String[]{"👶 Baby",       "Babies in dreams often represent new beginnings, a new project, vulnerability, or a fresh emotional start."});
-        SYMBOL_MAP.put("child",      new String[]{"👶 Baby",       "Babies in dreams often represent new beginnings, a new project, vulnerability, or a fresh emotional start."});
-        SYMBOL_MAP.put("road",       new String[]{"🛤️ Road/Path",  "A road or path represents life's journey and the choices ahead. A clear road means confidence; a blocked road means hesitation."});
-        SYMBOL_MAP.put("path",       new String[]{"🛤️ Road/Path",  "A road or path represents life's journey and the choices ahead. A clear road means confidence; a blocked road means hesitation."});
-        SYMBOL_MAP.put("bridge",     new String[]{"🌉 Bridge",     "A bridge symbolizes transition, crossing from one life phase to another, or connecting two sides of yourself."});
-        SYMBOL_MAP.put("mountain",   new String[]{"⛰️ Mountain",   "Mountains represent major challenges, ambition, and achievement. Climbing one shows determination to grow."});
-        SYMBOL_MAP.put("light",      new String[]{"💡 Light",      "Light in dreams often signals hope, clarity, spiritual guidance, or a breakthrough moment approaching."});
-        SYMBOL_MAP.put("blood",      new String[]{"🩸 Blood",      "Blood can indicate vitality, life force, sacrifice, or strong emotional intensity in a current situation."});
-        SYMBOL_MAP.put("clock",      new String[]{"⏰ Clock/Time", "Clocks represent urgency, the pressure of deadlines, or anxiety about time passing too quickly."});
-        SYMBOL_MAP.put("time",       new String[]{"⏰ Clock/Time", "Clocks represent urgency, the pressure of deadlines, or anxiety about time passing too quickly."});
-        SYMBOL_MAP.put("car",        new String[]{"🚗 Car",        "A car represents your drive, direction, and sense of control in life. Who is driving reveals who feels in control."});
-        SYMBOL_MAP.put("forest",     new String[]{"🌲 Forest",     "A forest symbolizes the unconscious mind, mystery, or feeling lost and searching for direction."});
-        SYMBOL_MAP.put("tree",       new String[]{"🌳 Tree",       "Trees represent growth, stability, family roots, and your connection to the past and future."});
-        SYMBOL_MAP.put("bird",       new String[]{"🐦 Bird",       "Birds symbolize freedom, perspective, spiritual transcendence, or messages from the subconscious."});
-        SYMBOL_MAP.put("door",       new String[]{"🚪 Door",       "Doors represent opportunity, new possibilities, transitions, or secrets waiting to be revealed."});
-        SYMBOL_MAP.put("money",      new String[]{"💰 Money",      "Money in dreams reflects your sense of self-worth, power, security, or anxiety about financial matters."});
-        SYMBOL_MAP.put("rain",       new String[]{"🌧️ Rain",       "Rain symbolizes emotional release, cleansing, renewal, or the washing away of past burdens."});
-        SYMBOL_MAP.put("star",       new String[]{"⭐ Stars",      "Stars represent hopes, aspirations, guidance, and your sense of destiny or higher purpose."});
-        SYMBOL_MAP.put("stars",      new String[]{"⭐ Stars",      "Stars represent hopes, aspirations, guidance, and your sense of destiny or higher purpose."});
+        SYMBOL_MAP.put("mirror",     new String[]{"Mirror",     "Mirrors often symbolize self-image, reflection, identity, or how you perceive yourself."});
+        SYMBOL_MAP.put("fall",       new String[]{"Falling",    "Falling in dreams often signals insecurity, a fear of losing control, or feeling overwhelmed in waking life."});
+        SYMBOL_MAP.put("falling",    new String[]{"Falling",    "Falling in dreams often signals insecurity, a fear of losing control, or feeling overwhelmed in waking life."});
+        SYMBOL_MAP.put("ocean",      new String[]{"Ocean",      "The ocean represents your emotions, subconscious depths, and the unknown aspects of your inner world."});
+        SYMBOL_MAP.put("sea",        new String[]{"Ocean",      "The ocean represents your emotions, subconscious depths, and the unknown aspects of your inner world."});
+        SYMBOL_MAP.put("water",      new String[]{"Water",      "Water symbolizes emotions, the flow of life, and cleansing. Calm water suggests peace; turbulent water signals turmoil."});
+        SYMBOL_MAP.put("dark",       new String[]{"Darkness",   "Darkness may reflect uncertainty, stress, or unacknowledged fears lurking beneath the surface."});
+        SYMBOL_MAP.put("darkness",   new String[]{"Darkness",   "Darkness may reflect uncertainty, stress, or unacknowledged fears lurking beneath the surface."});
+        SYMBOL_MAP.put("run",        new String[]{"Running",    "Running often represents avoidance, pressure, or the urge to escape a stressful situation in your life."});
+        SYMBOL_MAP.put("running",    new String[]{"Running",    "Running often represents avoidance, pressure, or the urge to escape a stressful situation in your life."});
+        SYMBOL_MAP.put("fly",        new String[]{"Flying",     "Flying symbolizes freedom, liberation, ambition, and personal growth above everyday limitations."});
+        SYMBOL_MAP.put("flying",     new String[]{"Flying",     "Flying symbolizes freedom, liberation, ambition, and personal growth above everyday limitations."});
+        SYMBOL_MAP.put("soar",       new String[]{"Flying",     "Flying symbolizes freedom, liberation, ambition, and personal growth above everyday limitations."});
+        SYMBOL_MAP.put("fire",       new String[]{"Fire",       "Fire often represents passion, transformation, anger, or a powerful change burning through your life."});
+        SYMBOL_MAP.put("flame",      new String[]{"Fire",       "Fire often represents passion, transformation, anger, or a powerful change burning through your life."});
+        SYMBOL_MAP.put("death",      new String[]{"Death",      "Dreaming of death often signals transformation, the end of one chapter, and the beginning of another."});
+        SYMBOL_MAP.put("dying",      new String[]{"Death",      "Dreaming of death often signals transformation, the end of one chapter, and the beginning of another."});
+        SYMBOL_MAP.put("dead",       new String[]{"Death",      "Dreaming of death often signals transformation, the end of one chapter, and the beginning of another."});
+        SYMBOL_MAP.put("house",      new String[]{"House",      "A house in dreams typically represents the self or psyche. Rooms symbolize different aspects of your mind."});
+        SYMBOL_MAP.put("home",       new String[]{"House",      "A house in dreams typically represents the self or psyche. Rooms symbolize different aspects of your mind."});
+        SYMBOL_MAP.put("snake",      new String[]{"Snake",      "Snakes represent both hidden fear and primal wisdom. They can signal a threat or a transformative healing."});
+        SYMBOL_MAP.put("chase",      new String[]{"Being Chased","Being chased suggests avoidance of a problem, fear of confrontation, or anxiety about something unresolved."});
+        SYMBOL_MAP.put("chasing",    new String[]{"Being Chased","Being chased suggests avoidance of a problem, fear of confrontation, or anxiety about something unresolved."});
+        SYMBOL_MAP.put("chased",     new String[]{"Being Chased","Being chased suggests avoidance of a problem, fear of confrontation, or anxiety about something unresolved."});
+        SYMBOL_MAP.put("teeth",      new String[]{"Teeth",      "Teeth falling out is one of the most common dream symbols and relates to anxiety, insecurity, or fear of judgment."});
+        SYMBOL_MAP.put("school",     new String[]{"School",     "School settings often indicate performance anxiety, self-evaluation, or feelings about how others judge you."});
+        SYMBOL_MAP.put("exam",       new String[]{"Exam",       "Taking an exam suggests you feel tested or judged in waking life, or fear not meeting expectations."});
+        SYMBOL_MAP.put("test",       new String[]{"Exam",       "Taking an exam suggests you feel tested or judged in waking life, or fear not meeting expectations."});
+        SYMBOL_MAP.put("baby",       new String[]{"Baby",       "Babies in dreams often represent new beginnings, a new project, vulnerability, or a fresh emotional start."});
+        SYMBOL_MAP.put("child",      new String[]{"Baby",       "Babies in dreams often represent new beginnings, a new project, vulnerability, or a fresh emotional start."});
+        SYMBOL_MAP.put("road",       new String[]{"Road/Path",  "A road or path represents life's journey and the choices ahead. A clear road means confidence; a blocked road means hesitation."});
+        SYMBOL_MAP.put("path",       new String[]{"Road/Path",  "A road or path represents life's journey and the choices ahead. A clear road means confidence; a blocked road means hesitation."});
+        SYMBOL_MAP.put("bridge",     new String[]{"Bridge",     "A bridge symbolizes transition, crossing from one life phase to another, or connecting two sides of yourself."});
+        SYMBOL_MAP.put("mountain",   new String[]{"Mountain",   "Mountains represent major challenges, ambition, and achievement. Climbing one shows determination to grow."});
+        SYMBOL_MAP.put("light",      new String[]{"Light",      "Light in dreams often signals hope, clarity, spiritual guidance, or a breakthrough moment approaching."});
+        SYMBOL_MAP.put("blood",      new String[]{"Blood",      "Blood can indicate vitality, life force, sacrifice, or strong emotional intensity in a current situation."});
+        SYMBOL_MAP.put("clock",      new String[]{"Clock/Time", "Clocks represent urgency, the pressure of deadlines, or anxiety about time passing too quickly."});
+        SYMBOL_MAP.put("time",       new String[]{"Clock/Time", "Clocks represent urgency, the pressure of deadlines, or anxiety about time passing too quickly."});
+        SYMBOL_MAP.put("car",        new String[]{"Car",        "A car represents your drive, direction, and sense of control in life. Who is driving reveals who feels in control."});
+        SYMBOL_MAP.put("forest",     new String[]{"Forest",     "A forest symbolizes the unconscious mind, mystery, or feeling lost and searching for direction."});
+        SYMBOL_MAP.put("tree",       new String[]{"Tree",       "Trees represent growth, stability, family roots, and your connection to the past and future."});
+        SYMBOL_MAP.put("bird",       new String[]{"Bird",       "Birds symbolize freedom, perspective, spiritual transcendence, or messages from the subconscious."});
+        SYMBOL_MAP.put("door",       new String[]{"Door",       "Doors represent opportunity, new possibilities, transitions, or secrets waiting to be revealed."});
+        SYMBOL_MAP.put("money",      new String[]{"Money",      "Money in dreams reflects your sense of self-worth, power, security, or anxiety about financial matters."});
+        SYMBOL_MAP.put("rain",       new String[]{"Rain",       "Rain symbolizes emotional release, cleansing, renewal, or the washing away of past burdens."});
+        SYMBOL_MAP.put("star",       new String[]{"Stars",      "Stars represent hopes, aspirations, guidance, and your sense of destiny or higher purpose."});
+        SYMBOL_MAP.put("stars",      new String[]{"Stars",      "Stars represent hopes, aspirations, guidance, and your sense of destiny or higher purpose."});
     }
 
     // Emotional tone keyword mappings: keyword → emotion label
@@ -215,7 +214,7 @@ public class DreamAnalysisActivity extends AppCompatActivity {
                 intent.putExtra("dream_id", dreamId);
                 startActivity(intent);
             } else {
-                android.widget.Toast.makeText(this, "No saved dream to edit", android.widget.Toast.LENGTH_SHORT).show();
+                PremiumToast.show(this, "No saved dream to edit");
             }
         });
 
@@ -266,7 +265,7 @@ public class DreamAnalysisActivity extends AppCompatActivity {
             if (currentGeneratedBitmap != null && dreamId != -1) {
                 saveImageToInternalStorage(currentGeneratedBitmap);
             } else {
-                Toast.makeText(this, "Wait for image to generate or save dream first", Toast.LENGTH_SHORT).show();
+                PremiumToast.show(this, "Wait for image to generate or save dream first");
             }
         });
     }
@@ -297,7 +296,7 @@ public class DreamAnalysisActivity extends AppCompatActivity {
                     Button btnRetry = errorOverlay.findViewById(R.id.btnRetry);
                     if (btnRetry != null) btnRetry.setOnClickListener(v -> generateAndDisplayImage(text, imageView, loading));
                 }
-                Toast.makeText(DreamAnalysisActivity.this, message, Toast.LENGTH_LONG).show();
+                PremiumToast.show(DreamAnalysisActivity.this, message);
             }
         });
     }
@@ -313,10 +312,10 @@ public class DreamAnalysisActivity extends AppCompatActivity {
             if (dream != null) {
                 dream.setImageUrl(file.getAbsolutePath());
                 repository.updateDream(dream);
-                Toast.makeText(this, "Saved to Dream Gallery!", Toast.LENGTH_SHORT).show();
+                PremiumToast.show(this, "Saved to Dream Gallery!");
             }
         } catch (Exception e) {
-            Toast.makeText(this, "Failed to save image", Toast.LENGTH_SHORT).show();
+            PremiumToast.show(this, "Failed to save image");
         }
     }
 
@@ -391,7 +390,7 @@ public class DreamAnalysisActivity extends AppCompatActivity {
         // Fallback: truncate at ~180 chars at word boundary
         String truncated = trimmed.substring(0, Math.min(trimmed.length(), 180));
         int lastSpace = truncated.lastIndexOf(' ');
-        return (lastSpace > 0 ? truncated.substring(0, lastSpace) : truncated) + "…";
+        return (lastSpace > 0 ? truncated.substring(0, lastSpace) : truncated) + "...";
     }
 
     private String buildEmotionDescription(List<String> emotions) {
@@ -514,9 +513,9 @@ public class DreamAnalysisActivity extends AppCompatActivity {
 
     private void populateInsights(int lucidityScore, int stressScore, int patternScore) {
         LinearLayout llInsights = findViewById(R.id.llInsightScores);
-        addInsightRow(llInsights, "💎  Lucidity Likelihood", lucidityScore, "#39C6FF");
-        addInsightRow(llInsights, "⚡  Stress Signal",       stressScore,   "#F6A84B");
-        addInsightRow(llInsights, "🔁  Pattern Confidence",  patternScore,  "#9C7CFF");
+        addInsightRow(llInsights, "Lucidity Likelihood", lucidityScore, "#39C6FF");
+        addInsightRow(llInsights, "Stress Signal",       stressScore,   "#F6A84B");
+        addInsightRow(llInsights, "Pattern Confidence",  patternScore,  "#9C7CFF");
     }
 
     private void addInsightRow(LinearLayout parent, String label, int score, String color) {

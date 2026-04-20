@@ -23,24 +23,223 @@
             android:paddingTop="20dp">
 
             <!-- Title -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Your Dreams"
-                android:textColor="#FFFFFF"
-                android:textSize="30sp"
-                android:textStyle="bold"
-                android:fontFamily="@font/poppins"
-                android:layout_marginBottom="6dp" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="6dp">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:text="Dream Insights"
+                            android:textColor="#FFFFFF"
+                            android:textSize="30sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/poppins" />
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnRefreshAi"
+                            style="@style/Widget.Material3.Button.Icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Analyze"
+                            app:icon="@drawable/ic_insights"
+                            app:backgroundTint="#232C61"
+                            app:strokeColor="#39C6FF"
+                            app:strokeWidth="1dp"
+                            android:textColor="#39C6FF"
+                            app:iconTint="#39C6FF"
+                            android:fontFamily="@font/poppins"
+                            android:textSize="12sp" />
+                    </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
+                    <TextView
+                        android:id="@+id/tvAiStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Your personal dream intelligence"
+                        android:textColor="#C5CAE9"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/poppins"
+                        android:layout_marginBottom="24dp" />
+
+                    <!-- Loading Animation (Hidden by default) -->
+                    <ProgressBar
+                        android:id="@+id/pbAiLoading"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="24dp"
+                        android:visibility="gone"
+                        android:indeterminateTint="#39C6FF" />
+
+            <!-- NEW: Mental Wellness Score Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Your personal dream intelligence"
-                android:textColor="#C5CAE9"
-                android:textSize="14sp"
-                android:fontFamily="@font/poppins"
-                android:layout_marginBottom="24dp" />
+                app:cardBackgroundColor="#232C61"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mental Wellness Score"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/poppins"
+                        android:layout_marginBottom="16dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:baselineAligned="false">
+
+                        <FrameLayout
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:layout_marginEnd="20dp">
+
+                            <ProgressBar
+                                android:id="@+id/pbWellnessCircle"
+                                style="?android:attr/progressBarStyleHorizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:indeterminate="false"
+                                android:max="100"
+                                android:progress="78"
+                                android:progressDrawable="@drawable/bg_circle_progress" />
+
+                            <TextView
+                                android:id="@+id/tvWellnessPercentage"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:text="78%"
+                                android:textColor="#FFFFFF"
+                                android:textSize="22sp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/poppins" />
+                        </FrameLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tvMoodStability"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Mood Stability: 78%"
+                                android:textColor="#C5CAE9"
+                                android:textSize="13sp"
+                                android:fontFamily="@font/poppins" />
+                            <ProgressBar
+                                android:id="@+id/pbMoodStability"
+                                style="?android:attr/progressBarStyleHorizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="4dp"
+                                android:layout_marginTop="4dp"
+                                android:layout_marginBottom="12dp"
+                                android:progress="78"
+                                android:progressTint="#39C6FF"
+                                android:progressBackgroundTint="#171F4B" />
+
+                            <TextView
+                                android:id="@+id/tvStressLevel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Stress Level: Medium"
+                                android:textColor="#C5CAE9"
+                                android:textSize="13sp"
+                                android:fontFamily="@font/poppins" />
+                            <ProgressBar
+                                android:id="@+id/pbStressLevel"
+                                style="?android:attr/progressBarStyleHorizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="4dp"
+                                android:layout_marginTop="4dp"
+                                android:layout_marginBottom="12dp"
+                                android:progress="45"
+                                android:progressTint="#F6C65B"
+                                android:progressBackgroundTint="#171F4B" />
+
+                            <TextView
+                                android:id="@+id/tvAnxietySigns"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Anxiety Signs: Low"
+                                android:textColor="#C5CAE9"
+                                android:textSize="13sp"
+                                android:fontFamily="@font/poppins" />
+                            <ProgressBar
+                                android:id="@+id/pbAnxietySigns"
+                                style="?android:attr/progressBarStyleHorizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="4dp"
+                                android:layout_marginTop="4dp"
+                                android:progress="22"
+                                android:progressTint="#4CAF82"
+                                android:progressBackgroundTint="#171F4B" />
+
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- NEW: AI Alert Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="#2A3567"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:strokeColor="#39C6FF"
+                app:strokeWidth="1dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="AI Alert"
+                        android:textColor="#39C6FF"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/poppins"
+                        android:drawableStart="@drawable/ic_success"
+                        android:drawablePadding="8dp"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:id="@+id/tvAiAlertMessage"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Your recent journal entries show increased stress and fear-related dream patterns this week."
+                        android:textColor="#C5CAE9"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/poppins"
+                        android:lineSpacingMultiplier="1.2" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
             <!-- Stats Cards Row -->
             <LinearLayout
@@ -68,10 +267,12 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="📖 Total Dreams"
+                            android:text="Total Dreams"
                             android:textColor="#39C6FF"
                             android:textSize="13sp"
                             android:fontFamily="@font/poppins"
+                            android:drawableStart="@drawable/ic_journal"
+                            android:drawablePadding="6dp"
                             android:layout_marginBottom="8dp" />
 
                         <TextView
@@ -115,10 +316,12 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="💛 Overall Emotion"
+                            android:text="Overall Emotion"
                             android:textColor="#F6C65B"
                             android:textSize="13sp"
                             android:fontFamily="@font/poppins"
+                            android:drawableStart="@drawable/ic_emotion"
+                            android:drawablePadding="6dp"
                             android:layout_marginBottom="8dp" />
 
                         <TextView
@@ -164,7 +367,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="🧠 Dominant Themes"
+                        android:text="Dominant Themes"
                         android:textColor="#FFFFFF"
                         android:textSize="20sp"
                         android:textStyle="bold"
@@ -201,7 +404,7 @@
                 app:cardBackgroundColor="#232C61"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="0dp"
-                android:layout_marginBottom="24dp">
+                android:layout_marginBottom="16dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -221,11 +424,13 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="📅 Calendar"
+                            android:text="Calendar"
                             android:textColor="#FFFFFF"
                             android:textSize="20sp"
                             android:textStyle="bold"
-                            android:fontFamily="@font/poppins" />
+                            android:fontFamily="@font/poppins"
+                            android:drawableStart="@drawable/ic_calendar"
+                            android:drawablePadding="8dp" />
 
                         <ImageView
                             android:id="@+id/ivCalPrev"
@@ -311,11 +516,171 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         android:layout_gravity="center_horizontal"
-                        android:text="● = day with dreams"
+                        android:text="Highlighted days contain dream journals"
                         android:textColor="#39C6FF"
                         android:textSize="12sp"
                         android:fontFamily="@font/poppins" />
 
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- NEW: Trend Graph Section -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="#232C61"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Mood Trends"
+                            android:textColor="#FFFFFF"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/poppins"
+                            android:drawableStart="@drawable/ic_trends"
+                            android:drawablePadding="8dp" />
+
+                        <com.google.android.material.button.MaterialButtonToggleGroup
+                            android:id="@+id/toggleGroupTrends"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:singleSelection="true"
+                            app:selectionRequired="true"
+                            app:checkedButton="@+id/btn7Days">
+                            <Button
+                                android:id="@+id/btn7Days"
+                                style="?attr/materialButtonOutlinedStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="32dp"
+                                android:text="7 Days"
+                                android:textSize="11sp"
+                                android:paddingHorizontal="8dp"
+                                android:textColor="#C5CAE9"
+                                app:strokeColor="#39C6FF" />
+                            <Button
+                                android:id="@+id/btn30Days"
+                                style="?attr/materialButtonOutlinedStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="32dp"
+                                android:text="30 Days"
+                                android:textSize="11sp"
+                                android:paddingHorizontal="8dp"
+                                android:textColor="#C5CAE9"
+                                app:strokeColor="#39C6FF" />
+                        </com.google.android.material.button.MaterialButtonToggleGroup>
+                    </LinearLayout>
+
+                    <!-- Trend Graph -->
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@+id/vTrendGraph"
+                        android:layout_width="match_parent"
+                        android:layout_height="180dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="12dp"
+                        android:gravity="center">
+                        <View android:layout_width="8dp" android:layout_height="8dp" android:background="#39C6FF" android:layout_marginEnd="4dp"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sadness" android:textColor="#C5CAE9" android:textSize="11sp" android:layout_marginEnd="16dp"/>
+                        <View android:layout_width="8dp" android:layout_height="8dp" android:background="#8B5CFF" android:layout_marginEnd="4dp"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Anxiety" android:textColor="#C5CAE9" android:textSize="11sp" android:layout_marginEnd="16dp"/>
+                        <View android:layout_width="8dp" android:layout_height="8dp" android:background="#4CAF82" android:layout_marginEnd="4dp"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sleep Quality" android:textColor="#C5CAE9" android:textSize="11sp"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- NEW: Suggestions Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="#232C61"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Suggestions"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/poppins"
+                        android:drawableStart="@drawable/ic_suggestions"
+                        android:drawablePadding="8dp"
+                        android:layout_marginBottom="12dp" />
+
+                    <LinearLayout
+                        android:id="@+id/llSuggestions"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <!-- Populated programmatically -->
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- NEW: Emotional Health Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="#2A3567"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Emotional Health"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/poppins"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:id="@+id/tvEmotionalHealthSummary"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Stable this week. No major concern detected."
+                        android:textColor="#C5CAE9"
+                        android:textSize="15sp"
+                        android:fontFamily="@font/poppins"
+                        android:lineSpacingMultiplier="1.4" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

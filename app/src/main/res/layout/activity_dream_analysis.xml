@@ -50,11 +50,10 @@
             android:focusable="true"
             android:background="?attr/selectableItemBackgroundBorderless">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="✏️"
-                android:textSize="18sp" />
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:src="@drawable/ic_success" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -98,11 +97,13 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="✨  AI-Powered Insights"
+                android:text="AI-Powered Insights"
                 android:textColor="#F6C65B"
                 android:textSize="14sp"
                 android:fontFamily="@font/poppins"
                 android:letterSpacing="0.08"
+                android:drawableStart="@drawable/ic_insights"
+                android:drawablePadding="8dp"
                 android:layout_marginBottom="20dp" />
 
             <!-- CARD 1: Dream Summary -->
@@ -126,11 +127,13 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="📖  Dream Summary"
+                        android:text="Dream Summary"
                         android:textColor="#FFFFFF"
                         android:textSize="20sp"
                         android:fontFamily="@font/poppins"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:drawableStart="@drawable/ic_journal"
+                        android:drawablePadding="8dp" />
 
                     <ImageView
                         android:id="@+id/ivSpeaker"
@@ -177,11 +180,13 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="🔑  Symbols &amp; Meanings"
+                    android:text="Symbols &amp; Meanings"
                     android:textColor="#FFFFFF"
                     android:textSize="20sp"
                     android:fontFamily="@font/poppins"
                     android:textStyle="bold"
+                    android:drawableStart="@drawable/ic_insights"
+                    android:drawablePadding="8dp"
                     android:layout_marginBottom="8dp" />
 
                 <!-- Divider -->
@@ -224,11 +229,13 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="💭  Emotional Tone"
+                    android:text="Emotional Tone"
                     android:textColor="#FFFFFF"
                     android:textSize="20sp"
                     android:fontFamily="@font/poppins"
                     android:textStyle="bold"
+                    android:drawableStart="@drawable/ic_emotion"
+                    android:drawablePadding="8dp"
                     android:layout_marginBottom="8dp" />
 
                 <!-- Divider -->
@@ -272,11 +279,13 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="🌙  Reflection Prompt"
+                    android:text="Reflection Prompt"
                     android:textColor="#FFFFFF"
                     android:textSize="20sp"
                     android:fontFamily="@font/poppins"
                     android:textStyle="bold"
+                    android:drawableStart="@drawable/ic_calendar"
+                    android:drawablePadding="8dp"
                     android:layout_marginBottom="8dp" />
 
                 <!-- Divider -->
@@ -286,14 +295,14 @@
                     android:background="#F6C65B"
                     android:layout_marginBottom="16dp" />
 
-                <!-- Decorative quote icon -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="❝"
-                    android:textColor="#F6C65B"
-                    android:textSize="28sp"
-                    android:layout_marginBottom="4dp" />
+                <!-- Decorative quote indicator -->
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_mic"
+                    app:tint="#F6C65B"
+                    android:alpha="0.6"
+                    android:layout_marginBottom="8dp" />
 
                 <TextView
                     android:id="@+id/tvReflection"
@@ -326,11 +335,13 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="💡  Insight Score"
+                    android:text="Insight Score"
                     android:textColor="#FFFFFF"
                     android:textSize="20sp"
                     android:fontFamily="@font/poppins"
                     android:textStyle="bold"
+                    android:drawableStart="@drawable/ic_suggestions"
+                    android:drawablePadding="8dp"
                     android:layout_marginBottom="8dp" />
 
                 <!-- Divider -->

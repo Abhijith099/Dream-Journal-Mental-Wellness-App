@@ -9,7 +9,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Switch;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,7 +32,7 @@ public class EditDreamActivity extends AppCompatActivity {
     private Switch switchNightmare;
     private LinearLayout moodCalm, moodStressed, moodUnclear, moodLucid, moodIntense;
 
-    private String selectedMood = "☁";
+    private String selectedMood = "Unclear";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +59,7 @@ public class EditDreamActivity extends AppCompatActivity {
 
         long dreamId = getIntent().getLongExtra("dream_id", -1);
         if (dreamId < 0) {
-            Toast.makeText(this, "Dream not found", Toast.LENGTH_SHORT).show();
+            PremiumToast.show(this, "Dream not found");
             finish();
             return;
         }
@@ -68,7 +67,7 @@ public class EditDreamActivity extends AppCompatActivity {
         repository = new DreamRepository(this);
         dream = repository.getDreamById(dreamId);
         if (dream == null) {
-            Toast.makeText(this, "Dream not found", Toast.LENGTH_SHORT).show();
+            PremiumToast.show(this, "Dream not found");
             finish();
             return;
         }
@@ -93,11 +92,11 @@ public class EditDreamActivity extends AppCompatActivity {
         moodLucid    = findViewById(R.id.editMoodLucid);
         moodIntense  = findViewById(R.id.editMoodIntense);
 
-        moodCalm.setOnClickListener(v     -> updateMoodSelection("🌙", moodCalm));
-        moodStressed.setOnClickListener(v -> updateMoodSelection("⚡", moodStressed));
-        moodUnclear.setOnClickListener(v  -> updateMoodSelection("☁", moodUnclear));
-        moodLucid.setOnClickListener(v    -> updateMoodSelection("✨", moodLucid));
-        moodIntense.setOnClickListener(v  -> updateMoodSelection("🔥", moodIntense));
+        moodCalm.setOnClickListener(v     -> updateMoodSelection("Calm", moodCalm));
+        moodStressed.setOnClickListener(v -> updateMoodSelection("Stressed", moodStressed));
+        moodUnclear.setOnClickListener(v  -> updateMoodSelection("Unclear", moodUnclear));
+        moodLucid.setOnClickListener(v    -> updateMoodSelection("Happy", moodLucid));
+        moodIntense.setOnClickListener(v  -> updateMoodSelection("Fearful", moodIntense));
 
         etTagInput.setOnEditorActionListener((v, actionId, event) -> {
             String tag = etTagInput.getText() != null ? etTagInput.getText().toString().trim() : "";
@@ -126,7 +125,7 @@ public class EditDreamActivity extends AppCompatActivity {
 
         switchNightmare.setChecked(dream.isNightmare());
 
-        selectedMood = dream.getMood() != null ? dream.getMood() : "☁";
+        selectedMood = dream.getMood() != null ? dream.getMood() : "Unclear";
         updateMoodHighlight(selectedMood);
 
         // Populate tags
@@ -150,11 +149,25 @@ public class EditDreamActivity extends AppCompatActivity {
 
     private void updateMoodHighlight(String mood) {
         switch (mood) {
-            case "🌙": updateMoodSelection("🌙", moodCalm);    break;
-            case "⚡": updateMoodSelection("⚡", moodStressed); break;
-            case "✨": updateMoodSelection("✨", moodLucid);    break;
-            case "🔥": updateMoodSelection("🔥", moodIntense);  break;
-            default:   updateMoodSelection("☁",  moodUnclear);  break;
+            case "Calm":
+            case "🌙":
+                updateMoodSelection("Calm", moodCalm);
+                break;
+            case "Stressed":
+            case "⚡":
+                updateMoodSelection("Stressed", moodStressed);
+                break;
+            case "Happy":
+            case "✨":
+                updateMoodSelection("Happy", moodLucid);
+                break;
+            case "Fearful":
+            case "🔥":
+                updateMoodSelection("Fearful", moodIntense);
+                break;
+            default:
+                updateMoodSelection("Unclear", moodUnclear);
+                break;
         }
     }
 
@@ -172,7 +185,7 @@ public class EditDreamActivity extends AppCompatActivity {
     private void saveChanges() {
         String description = etDescription.getText() != null ? etDescription.getText().toString().trim() : "";
         if (description.isEmpty()) {
-            Toast.makeText(this, "Description cannot be empty", Toast.LENGTH_SHORT).show();
+            PremiumToast.show(this, "Description cannot be empty");
             return;
         }
 
@@ -191,11 +204,11 @@ public class EditDreamActivity extends AppCompatActivity {
 
         int rows = repository.updateDream(dream);
         if (rows > 0) {
-            Toast.makeText(this, "Dream updated ✨", Toast.LENGTH_SHORT).show();
+            PremiumToast.show(this, "Dream updated");
             setResult(RESULT_OK);
             finish();
         } else {
-            Toast.makeText(this, "Failed to update dream", Toast.LENGTH_SHORT).show();
+            PremiumToast.show(this, "Failed to update dream");
         }
     }
 }

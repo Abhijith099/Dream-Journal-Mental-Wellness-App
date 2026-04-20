@@ -27,6 +27,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -51,6 +52,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         
         setContentView(R.layout.activity_main);
+
+        // Initialize selectedDateMillis to today by default
+        selectedDateMillis = getTodayStartMillis();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main_root), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -121,15 +125,27 @@ public class MainActivity extends AppCompatActivity {
             List<Long> datesWithDreams = repository.getDatesWithDreams();
             DreamDayViewDecorator decorator = new DreamDayViewDecorator(datesWithDreams);
 
+            // Normalize current selection to UTC to match Picker's behavior
+            long selection = selectedDateMillis != null ? selectedDateMillis : MaterialDatePicker.todayInUtcMilliseconds();
+
             MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
                     .setTitleText("Select Date")
                     .setTheme(R.style.CustomDatePickerTheme)
-                    .setSelection(selectedDateMillis != null ? selectedDateMillis : MaterialDatePicker.todayInUtcMilliseconds())
+                    .setSelection(selection)
                     .setDayViewDecorator(decorator)
                     .build();
 
-            datePicker.addOnPositiveButtonClickListener(selection -> {
-                selectedDateMillis = selection;
+            datePicker.addOnPositiveButtonClickListener(selectionResult -> {
+                // selectionResult is start of day in UTC
+                // Convert UTC selection to local time start-of-day for the repository query
+                Calendar cal = Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"));
+                cal.setTimeInMillis(selectionResult);
+                
+                Calendar localCal = Calendar.getInstance();
+                localCal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+                localCal.set(Calendar.MILLISECOND, 0);
+                
+                selectedDateMillis = localCal.getTimeInMillis();
                 updateHeader();
                 reloadDreams();
             });
@@ -138,20 +154,46 @@ public class MainActivity extends AppCompatActivity {
         });
 
         tvTodayReset.setOnClickListener(v -> {
-            selectedDateMillis = null;
+            selectedDateMillis = getTodayStartMillis();
             updateHeader();
             reloadDreams();
+            recyclerView.smoothScrollToPosition(0);
         });
+    }
+
+    private long getTodayStartMillis() {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTimeInMillis();
     }
 
     private void updateHeader() {
         if (selectedDateMillis != null) {
             SimpleDateFormat sdf = new SimpleDateFormat("dd MMM", Locale.getDefault());
-            tvTitle.setText("Dreams • " + sdf.format(new Date(selectedDateMillis)));
-            tvTodayReset.setVisibility(View.VISIBLE);
+            
+            long todayStart = getTodayStartMillis();
+            
+            if (selectedDateMillis == todayStart) {
+                tvTitle.setText("Dreams • Today");
+                tvTodayReset.setVisibility(View.GONE);
+            } else {
+                tvTitle.setText("Dreams • " + sdf.format(new Date(selectedDateMillis)));
+                tvTodayReset.setVisibility(View.VISIBLE);
+            }
         } else {
             tvTitle.setText("Dreams");
             tvTodayReset.setVisibility(View.GONE);
+        }
+        
+        // Show count in title if there are dreams
+        if (dreamList != null && !dreamList.isEmpty()) {
+            String countText = dreamList.size() + (dreamList.size() == 1 ? " dream" : " dreams");
+            if (selectedDateMillis != null && selectedDateMillis == getTodayStartMillis()) {
+                tvTitle.setText("Dreams • " + countText + " today");
+            }
         }
     }
 
@@ -190,13 +232,15 @@ public class MainActivity extends AppCompatActivity {
     private void reloadDreams() {
         String query = etSearchTags.getText().toString().trim();
         
-        // Show all dreams filtered by tag, or all dreams if no tag and no date selected
+        // Show dreams filtered by date and/or tag
         dreamList = repository.getDreamsFiltered(selectedDateMillis, query);
         
         adapter.updateList(dreamList);
+        updateHeader(); // Update header with count
         
         View llEmptyState = findViewById(R.id.llEmptyState);
         TextView tvEmptyStatus = findViewById(R.id.tvEmptyStatus);
+        TextView tvEmptySubStatus = findViewById(R.id.tvEmptySubStatus);
 
         if (dreamList == null || dreamList.isEmpty()) {
             recyclerView.setVisibility(View.GONE);
@@ -205,14 +249,23 @@ public class MainActivity extends AppCompatActivity {
             if (selectedDateMillis != null) {
                 if (!query.isEmpty()) {
                     tvEmptyStatus.setText("No dreams found for this tag on this date");
+                    tvEmptySubStatus.setText("Try a different tag or clear the search");
                 } else {
-                    tvEmptyStatus.setText("No dreams recorded on this day");
+                    if (selectedDateMillis == getTodayStartMillis()) {
+                        tvEmptyStatus.setText("No dreams recorded today");
+                        tvEmptySubStatus.setText("+ Add Dream");
+                    } else {
+                        tvEmptyStatus.setText("No dreams recorded on this day");
+                        tvEmptySubStatus.setText("Select another date or add a dream");
+                    }
                 }
             } else {
                 if (!query.isEmpty()) {
                     tvEmptyStatus.setText("No dreams found for this tag");
+                    tvEmptySubStatus.setText("Try a different tag or clear the search");
                 } else {
                     tvEmptyStatus.setText("No dreams recorded yet");
+                    tvEmptySubStatus.setText("Tap + to add your first dream");
                 }
             }
         } else {

@@ -23,7 +23,9 @@ android {
             localProperties.load(localPropertiesFile.inputStream())
         }
         val hfKey = (localProperties.getProperty("HUGGING_FACE_API_KEY") ?: "").trim()
+        val geminiKey = (localProperties.getProperty("GEMINI_API_KEY") ?: "").trim()
         buildConfigField("String", "HUGGING_FACE_API_KEY", "\"$hfKey\"")
+        buildConfigField("String", "GEMINI_API_KEY", "\"$geminiKey\"")
     }
 
     buildFeatures {
