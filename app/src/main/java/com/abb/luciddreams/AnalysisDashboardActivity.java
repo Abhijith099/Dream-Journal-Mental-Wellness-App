@@ -67,6 +67,7 @@ public class AnalysisDashboardActivity extends AppCompatActivity {
     private View cardEmergency;
 
     private ValueAnimator fakeProgressAnimator;
+    private CalmActionsUx calmActionsUx;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,10 +124,9 @@ public class AnalysisDashboardActivity extends AppCompatActivity {
         llMoodSupport = findViewById(R.id.llMoodSupport);
         cardEmergency = findViewById(R.id.cardEmergency);
 
-        findViewById(R.id.btnMeditation).setOnClickListener(v -> PremiumToast.show(this, "Guided Meditation is coming soon."));
-        findViewById(R.id.btnBreathing).setOnClickListener(v -> PremiumToast.show(this, "Breathing Exercise is coming soon."));
-        findViewById(R.id.btnSleepSounds).setOnClickListener(v -> PremiumToast.show(this, "Sleep Sounds is coming soon."));
-        findViewById(R.id.btnJournalThoughts).setOnClickListener(v -> PremiumToast.show(this, "Journal Thoughts is coming soon."));
+        // Calm Actions premium panel (navigation + animations)
+        calmActionsUx = new CalmActionsUx(this);
+        calmActionsUx.bindAndStart();
 
         findViewById(R.id.btnCallHelpline).setOnClickListener(v -> PremiumToast.show(this, "Helpline calling is not configured yet."));
         findViewById(R.id.btnCallEmergencyContact).setOnClickListener(v -> PremiumToast.show(this, "Emergency contact is not configured yet."));
@@ -587,6 +587,13 @@ public class AnalysisDashboardActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         loadCachedReport();
+        if (calmActionsUx != null) calmActionsUx.bindAndStart();
+    }
+
+    @Override
+    protected void onPause() {
+        if (calmActionsUx != null) calmActionsUx.stop();
+        super.onPause();
     }
 }
 
