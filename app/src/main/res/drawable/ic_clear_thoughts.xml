@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Head outline -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M12,3 C7.582,3 4,6.582 4,11 C4,14.418 6.097,17.347 9,18.584 L9,21 L15,21 L15,18.584 C17.903,17.347 20,14.418 20,11 C20,6.582 16.418,3 12,3 Z" />
+    <!-- Stars / clear thoughts dots -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M10,9.5 L10.5,8 L11,9.5 L12.5,10 L11,10.5 L10.5,12 L10,10.5 L8.5,10 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M14,12 L14.35,11 L14.7,12 L15.7,12.35 L14.7,12.7 L14.35,13.7 L14,12.7 L13,12.35 Z" />
+</vector>
