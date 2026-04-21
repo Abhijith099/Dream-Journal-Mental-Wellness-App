@@ -1,0 +1,33 @@
+package com.abb.luciddreams;
+
+import android.os.Bundle;
+import android.view.View;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+public class EmergencySupportActivity extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_emergency_support);
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.simple_root), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+
+        View back = findViewById(R.id.simple_back);
+        if (back != null) back.setOnClickListener(v -> finish());
+
+        findViewById(R.id.support_call_helpline).setOnClickListener(v -> PremiumToast.show(this, "Helpline calling is not configured yet."));
+        findViewById(R.id.support_call_emergency_contact).setOnClickListener(v -> PremiumToast.show(this, "Emergency contact is not configured yet."));
+        findViewById(R.id.support_message_trusted_contact).setOnClickListener(v -> PremiumToast.show(this, "Messaging is not configured yet."));
+    }
+}
+

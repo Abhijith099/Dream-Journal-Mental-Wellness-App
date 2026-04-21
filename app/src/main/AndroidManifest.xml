@@ -48,6 +48,22 @@
         <activity android:name=".ProfileActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.LucidDreams.Patterns"/>
+
+        <activity android:name=".GuidedMeditationActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.LucidDreams.Patterns"/>
+        <activity android:name=".BreathingTrainerActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.LucidDreams.Patterns"/>
+        <activity android:name=".SleepSoundsActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.LucidDreams.Patterns"/>
+        <activity android:name=".QuickJournalActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.LucidDreams.Patterns"/>
+        <activity android:name=".EmergencySupportActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.LucidDreams.Patterns"/>
     </application>
 
 </manifest>

@@ -353,85 +353,340 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="14dp"
-                app:cardBackgroundColor="@color/card_bg_alt"
+                app:cardBackgroundColor="@android:color/transparent"
                 app:cardCornerRadius="26dp"
                 app:cardElevation="0dp">
 
-                <LinearLayout
+                <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="18dp">
+                    android:background="@drawable/bg_calm_actions_panel"
+                    android:clipToOutline="true">
 
-                    <TextView
+                    <!-- Ambient aura / particles (subtle, animated in code) -->
+                    <View
+                        android:id="@+id/caParticleA"
+                        android:layout_width="90dp"
+                        android:layout_height="90dp"
+                        android:layout_gravity="top|end"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="14dp"
+                        android:alpha="0.55"
+                        android:background="@drawable/bg_calm_particle_purple" />
+
+                    <View
+                        android:id="@+id/caParticleB"
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:layout_gravity="bottom|start"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginBottom="12dp"
+                        android:alpha="0.38"
+                        android:background="@drawable/bg_calm_particle_cyan" />
+
+                    <View
+                        android:id="@+id/caParticleC"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:layout_gravity="center|end"
+                        android:layout_marginEnd="18dp"
+                        android:alpha="0.22"
+                        android:background="@drawable/bg_calm_particle_amber" />
+
+                    <LinearLayout
+                        android:id="@+id/caContent"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Calm Actions"
-                        android:textColor="@color/text_primary"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:fontFamily="@font/poppins"
-                        android:layout_marginBottom="12dp" />
+                        android:orientation="vertical"
+                        android:padding="18dp">
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnMeditation"
-                        style="@style/Widget.Material3.Button"
-                        android:layout_width="match_parent"
-                        android:layout_height="54dp"
-                        android:text="Guided Meditation"
-                        android:textSize="16sp"
-                        android:fontFamily="@font/poppins"
-                        android:textColor="@color/text_primary"
-                        app:cornerRadius="18dp"
-                        app:icon="@drawable/ic_meditation"
-                        app:iconTint="@color/text_primary"
-                        app:backgroundTint="#2A3567" />
+                        <!-- Header with subtle wave -->
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="14dp">
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnBreathing"
-                        style="@style/Widget.Material3.Button"
-                        android:layout_width="match_parent"
-                        android:layout_height="54dp"
-                        android:layout_marginTop="10dp"
-                        android:text="Breathing Exercise"
-                        android:textSize="16sp"
-                        android:fontFamily="@font/poppins"
-                        android:textColor="@color/text_primary"
-                        app:cornerRadius="18dp"
-                        app:icon="@drawable/ic_breathing"
-                        app:iconTint="@color/text_primary"
-                        app:backgroundTint="#2A3567" />
+                            <View
+                                android:id="@+id/caWave"
+                                android:layout_width="match_parent"
+                                android:layout_height="34dp"
+                                android:layout_gravity="center_vertical"
+                                android:alpha="0.40"
+                                android:background="@drawable/bg_calm_wave_line" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnSleepSounds"
-                        style="@style/Widget.Material3.Button"
-                        android:layout_width="match_parent"
-                        android:layout_height="54dp"
-                        android:layout_marginTop="10dp"
-                        android:text="Sleep Sounds"
-                        android:textSize="16sp"
-                        android:fontFamily="@font/poppins"
-                        android:textColor="@color/text_primary"
-                        app:cornerRadius="18dp"
-                        app:icon="@drawable/ic_sleep_sounds"
-                        app:iconTint="@color/text_primary"
-                        app:backgroundTint="#2A3567" />
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnJournalThoughts"
-                        style="@style/Widget.Material3.Button"
-                        android:layout_width="match_parent"
-                        android:layout_height="54dp"
-                        android:layout_marginTop="10dp"
-                        android:text="Journal Thoughts"
-                        android:textSize="16sp"
-                        android:fontFamily="@font/poppins"
-                        android:textColor="@color/text_primary"
-                        app:cornerRadius="18dp"
-                        app:icon="@drawable/ic_journal_thoughts"
-                        app:iconTint="@color/text_primary"
-                        app:backgroundTint="#2A3567" />
-                </LinearLayout>
+                                <TextView
+                                    android:id="@+id/caTitle"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Calm Actions"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="22sp"
+                                    android:textStyle="bold"
+                                    android:fontFamily="@font/poppins" />
+
+                                <TextView
+                                    android:id="@+id/caSubtitle"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="6dp"
+                                    android:text="Immediate tools to support your wellbeing"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="15sp"
+                                    android:fontFamily="@font/poppins"
+                                    android:lineSpacingMultiplier="1.15" />
+                            </LinearLayout>
+                        </FrameLayout>
+
+                        <!-- Tile 1: Guided Meditation -->
+                        <FrameLayout
+                            android:id="@+id/tileMeditation"
+                            android:layout_width="match_parent"
+                            android:layout_height="64dp"
+                            android:background="@drawable/bg_calm_tile_purple"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="?attr/selectableItemBackground"
+                            android:paddingHorizontal="14dp"
+                            android:paddingVertical="12dp">
+
+                            <View
+                                android:id="@+id/haloMeditation"
+                                android:layout_width="42dp"
+                                android:layout_height="42dp"
+                                android:layout_gravity="start|center_vertical"
+                                android:background="@drawable/bg_calm_halo_purple"
+                                android:alpha="0.0" />
+
+                            <ImageView
+                                android:id="@+id/iconMeditation"
+                                android:layout_width="26dp"
+                                android:layout_height="26dp"
+                                android:layout_gravity="start|center_vertical"
+                                android:layout_marginStart="8dp"
+                                android:src="@drawable/ic_meditation"
+                                app:tint="#D7C6FF"
+                                android:contentDescription="Guided Meditation" />
+
+                            <TextView
+                                android:id="@+id/btnMeditation"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical|start"
+                                android:layout_marginStart="52dp"
+                                android:text="Guided Meditation"
+                                android:textColor="@color/text_primary"
+                                android:textSize="17sp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/poppins" />
+                        </FrameLayout>
+
+                        <!-- Tile 2: Breathing Exercise -->
+                        <FrameLayout
+                            android:id="@+id/tileBreathing"
+                            android:layout_width="match_parent"
+                            android:layout_height="64dp"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/bg_calm_tile_cyan"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="?attr/selectableItemBackground"
+                            android:paddingHorizontal="14dp"
+                            android:paddingVertical="12dp">
+
+                            <View
+                                android:id="@+id/haloBreathing"
+                                android:layout_width="42dp"
+                                android:layout_height="42dp"
+                                android:layout_gravity="start|center_vertical"
+                                android:background="@drawable/bg_calm_halo_cyan"
+                                android:alpha="0.0" />
+
+                            <ImageView
+                                android:id="@+id/iconBreathing"
+                                android:layout_width="26dp"
+                                android:layout_height="26dp"
+                                android:layout_gravity="start|center_vertical"
+                                android:layout_marginStart="8dp"
+                                android:src="@drawable/ic_breathing"
+                                app:tint="#BFF4FF"
+                                android:contentDescription="Breathing Exercise" />
+
+                            <TextView
+                                android:id="@+id/btnBreathing"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical|start"
+                                android:layout_marginStart="52dp"
+                                android:text="Breathing Exercise"
+                                android:textColor="@color/text_primary"
+                                android:textSize="17sp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/poppins" />
+                        </FrameLayout>
+
+                        <!-- Tile 3: Sleep Sounds -->
+                        <FrameLayout
+                            android:id="@+id/tileSleepSounds"
+                            android:layout_width="match_parent"
+                            android:layout_height="64dp"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/bg_calm_tile_moon"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="?attr/selectableItemBackground"
+                            android:paddingHorizontal="14dp"
+                            android:paddingVertical="12dp">
+
+                            <LinearLayout
+                                android:id="@+id/equalizerWrap"
+                                android:layout_width="42dp"
+                                android:layout_height="42dp"
+                                android:layout_gravity="start|center_vertical"
+                                android:gravity="center"
+                                android:orientation="horizontal">
+                                <View
+                                    android:id="@+id/eq1"
+                                    android:layout_width="4dp"
+                                    android:layout_height="14dp"
+                                    android:layout_marginHorizontal="2dp"
+                                    android:background="@drawable/bg_eq_bar" />
+                                <View
+                                    android:id="@+id/eq2"
+                                    android:layout_width="4dp"
+                                    android:layout_height="20dp"
+                                    android:layout_marginHorizontal="2dp"
+                                    android:background="@drawable/bg_eq_bar" />
+                                <View
+                                    android:id="@+id/eq3"
+                                    android:layout_width="4dp"
+                                    android:layout_height="16dp"
+                                    android:layout_marginHorizontal="2dp"
+                                    android:background="@drawable/bg_eq_bar" />
+                                <View
+                                    android:id="@+id/eq4"
+                                    android:layout_width="4dp"
+                                    android:layout_height="22dp"
+                                    android:layout_marginHorizontal="2dp"
+                                    android:background="@drawable/bg_eq_bar" />
+                            </LinearLayout>
+
+                            <ImageView
+                                android:id="@+id/iconSleepSounds"
+                                android:layout_width="26dp"
+                                android:layout_height="26dp"
+                                android:layout_gravity="start|center_vertical"
+                                android:layout_marginStart="52dp"
+                                android:src="@drawable/ic_sleep_sounds"
+                                app:tint="#D7E6FF"
+                                android:contentDescription="Sleep Sounds" />
+
+                            <TextView
+                                android:id="@+id/btnSleepSounds"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical|start"
+                                android:layout_marginStart="86dp"
+                                android:text="Sleep Sounds"
+                                android:textColor="@color/text_primary"
+                                android:textSize="17sp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/poppins" />
+                        </FrameLayout>
+
+                        <!-- Tile 4: Journal Thoughts -->
+                        <FrameLayout
+                            android:id="@+id/tileJournalThoughts"
+                            android:layout_width="match_parent"
+                            android:layout_height="64dp"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/bg_calm_tile_amber"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="?attr/selectableItemBackground"
+                            android:paddingHorizontal="14dp"
+                            android:paddingVertical="12dp">
+
+                            <FrameLayout
+                                android:layout_width="42dp"
+                                android:layout_height="42dp"
+                                android:layout_gravity="start|center_vertical">
+
+                                <View
+                                    android:id="@+id/shimmerJournal"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:background="@drawable/bg_shimmer_sweep"
+                                    android:alpha="0.0" />
+
+                                <ImageView
+                                    android:id="@+id/iconJournalThoughts"
+                                    android:layout_width="26dp"
+                                    android:layout_height="26dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_journal_thoughts"
+                                    app:tint="#FFE4A8"
+                                    android:contentDescription="Journal Thoughts" />
+                            </FrameLayout>
+
+                            <TextView
+                                android:id="@+id/btnJournalThoughts"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical|start"
+                                android:layout_marginStart="52dp"
+                                android:text="Journal Thoughts"
+                                android:textColor="@color/text_primary"
+                                android:textSize="17sp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/poppins" />
+                        </FrameLayout>
+
+                        <!-- Emergency CTA (premium, full-width) -->
+                        <FrameLayout
+                            android:id="@+id/btnImmediateSupport"
+                            android:layout_width="match_parent"
+                            android:layout_height="66dp"
+                            android:layout_marginTop="14dp"
+                            android:background="@drawable/bg_emergency_support"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="?attr/selectableItemBackground"
+                            android:paddingHorizontal="16dp"
+                            android:paddingVertical="14dp">
+
+                            <View
+                                android:id="@+id/emergencyPulse"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/bg_emergency_pulse_border"
+                                android:alpha="0.0" />
+
+                            <ImageView
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
+                                android:layout_gravity="center_vertical|start"
+                                android:src="@drawable/ic_support_shield"
+                                app:tint="#FFFFFF"
+                                android:contentDescription="Immediate support" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:text="Need Immediate Support"
+                                android:textColor="#FFFFFF"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/poppins" />
+                        </FrameLayout>
+
+                    </LinearLayout>
+                </FrameLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Today's advice -->
