@@ -3,267 +3,139 @@ package com.abb.luciddreams;
 import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
-import android.util.Log;
-import android.widget.ImageView;
-import com.google.android.material.button.MaterialButtonToggleGroup;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import android.view.Window;
-import android.view.WindowManager;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.chip.Chip;
-import com.google.android.material.chip.ChipGroup;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 
 public class AnalysisDashboardActivity extends AppCompatActivity {
 
+    private static final String TAG = "AIWellnessReport";
+
     private DreamRepository repository;
-    private TextView tvTotalDreamsCount;
-    private TextView tvOverallEmotion;
-    private TextView tvDominantThemes;
-    private ChipGroup cgThemeChips;
-    private LinearLayout llCalendarGrid;
-    private TextView tvCalendarMonth;
-    private Typeface poppins;
-
-    private Calendar displayedMonth;
-    private List<Long> datesWithDreams;
-
     private GeminiService geminiService;
-    private ProgressBar pbAiLoading;
-    private View btnRefreshAi;
-    private TextView tvAiStatus;
+
+    // Loading overlay
+    private View loadingOverlay;
+    private LinearProgressIndicator progressAnalyze;
+    private TextView tvLoadingPercent;
+
+    // Report UI
+    private TextView tvMoodStatusTitle;
+    private TextView tvMoodStatusDesc;
+    private ProgressBar pbStressCircle;
+    private TextView tvStressValue;
+    private TextView tvStressLabel;
+    private TextView tvSleepScore;
+    private TextView tvSleepDesc;
+    private LineChart chartMoodTrend;
+    private ChipGroup cgThemes;
+    private LinearLayout llAdvice;
+
+    // Conditional sections
+    private View cardMoodSupport;
+    private LinearLayout llMoodSupport;
+    private View cardEmergency;
+
+    private ValueAnimator fakeProgressAnimator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_analysis_dashboard);
+        setContentView(R.layout.activity_ai_wellness_report);
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.analysis_dashboard_root), (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.ai_wellness_root), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0);
             return insets;
         });
 
-        poppins = ResourcesCompat.getFont(this, R.font.poppins);
         repository = new DreamRepository(this);
         geminiService = new GeminiService();
-        displayedMonth = Calendar.getInstance();
 
         initViews();
         setupBottomNav();
         setupFab();
-        setupCalendarNav();
-        loadData();
-        loadCachedAiAnalysis();
-    }
 
-    private void loadCachedAiAnalysis() {
-        android.content.SharedPreferences prefs = getSharedPreferences("ai_insights", MODE_PRIVATE);
-        String cachedJson = prefs.getString("last_analysis", null);
-        if (cachedJson != null) {
-            updateUiWithAiResponse(cachedJson);
-            tvAiStatus.setText("Showing last analysis");
-        }
-    }
+        setupMoodTrendChartDefaults();
+        applyThemesDefaults();
+        applyAdviceDefaults();
 
-    private ProgressBar pbWellnessCircle, pbMoodStability, pbStressLevel, pbAnxietySigns;
-    private TextView tvWellnessPercentage, tvMoodStabilityLabel, tvStressLevelLabel, tvAnxietySignsLabel, tvAiAlertMessage, tvEmotionalHealthSummary;
-    private LinearLayout llSuggestions;
-    private MaterialButtonToggleGroup toggleGroupTrends;
-    private LineChart vTrendGraph;
+        cardMoodSupport.setVisibility(View.GONE);
+        cardEmergency.setVisibility(View.GONE);
+
+        loadCachedReport();
+    }
 
     private void initViews() {
-        tvTotalDreamsCount = findViewById(R.id.tvTotalDreamsCount);
-        tvOverallEmotion = findViewById(R.id.tvOverallEmotion);
-        tvDominantThemes = findViewById(R.id.tvDominantThemes);
-        cgThemeChips = findViewById(R.id.cgThemeChips);
-        llCalendarGrid = findViewById(R.id.llCalendarGrid);
-        tvCalendarMonth = findViewById(R.id.tvCalendarMonth);
+        findViewById(R.id.btnAnalyze).setOnClickListener(v -> performWellnessAnalysis());
 
-        pbWellnessCircle = findViewById(R.id.pbWellnessCircle);
-        tvWellnessPercentage = findViewById(R.id.tvWellnessPercentage);
-        pbMoodStability = findViewById(R.id.pbMoodStability);
-        tvMoodStabilityLabel = findViewById(R.id.tvMoodStability);
-        pbStressLevel = findViewById(R.id.pbStressLevel);
-        tvStressLevelLabel = findViewById(R.id.tvStressLevel);
-        pbAnxietySigns = findViewById(R.id.pbAnxietySigns);
-        tvAnxietySignsLabel = findViewById(R.id.tvAnxietySigns);
-        tvAiAlertMessage = findViewById(R.id.tvAiAlertMessage);
-        llSuggestions = findViewById(R.id.llSuggestions);
-        tvEmotionalHealthSummary = findViewById(R.id.tvEmotionalHealthSummary);
-        toggleGroupTrends = findViewById(R.id.toggleGroupTrends);
-        vTrendGraph = findViewById(R.id.vTrendGraph);
+        loadingOverlay = findViewById(R.id.loadingOverlay);
+        progressAnalyze = findViewById(R.id.progressAnalyze);
+        tvLoadingPercent = findViewById(R.id.tvLoadingPercent);
 
-        pbAiLoading = findViewById(R.id.pbAiLoading);
-        btnRefreshAi = findViewById(R.id.btnRefreshAi);
-        tvAiStatus = findViewById(R.id.tvAiStatus);
+        tvMoodStatusTitle = findViewById(R.id.tvMoodStatusTitle);
+        tvMoodStatusDesc = findViewById(R.id.tvMoodStatusDesc);
 
-        btnRefreshAi.setOnClickListener(v -> performAiAnalysis());
+        pbStressCircle = findViewById(R.id.pbStressCircle);
+        tvStressValue = findViewById(R.id.tvStressValue);
+        tvStressLabel = findViewById(R.id.tvStressLabel);
 
-        toggleGroupTrends.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
-            if (isChecked) {
-                loadTrends(checkedId == R.id.btn30Days ? 30 : 7);
-            }
-        });
-    }
+        tvSleepScore = findViewById(R.id.tvSleepScore);
+        tvSleepDesc = findViewById(R.id.tvSleepDesc);
 
-    private void performAiAnalysis() {
-        List<Dream> recentDreams = repository.getDreamsFiltered(null, "");
-        if (recentDreams.isEmpty()) {
-            PremiumToast.show(this, "Add some dreams first for AI analysis!");
-            return;
-        }
+        chartMoodTrend = findViewById(R.id.chartMoodTrend);
+        cgThemes = findViewById(R.id.cgThemes);
+        llAdvice = findViewById(R.id.llAdvice);
 
-        pbAiLoading.setVisibility(View.VISIBLE);
-        tvAiStatus.setText("AI is analyzing your subconscious...");
-        btnRefreshAi.setEnabled(false);
+        cardMoodSupport = findViewById(R.id.cardMoodSupport);
+        llMoodSupport = findViewById(R.id.llMoodSupport);
+        cardEmergency = findViewById(R.id.cardEmergency);
 
-        StringBuilder dreamContent = new StringBuilder();
-        for (int i = 0; i < Math.min(recentDreams.size(), 10); i++) {
-            Dream d = recentDreams.get(i);
-            dreamContent.append("Dream ").append(i + 1).append(": ").append(d.getDescription()).append("\n");
-        }
+        findViewById(R.id.btnMeditation).setOnClickListener(v -> PremiumToast.show(this, "Guided Meditation is coming soon."));
+        findViewById(R.id.btnBreathing).setOnClickListener(v -> PremiumToast.show(this, "Breathing Exercise is coming soon."));
+        findViewById(R.id.btnSleepSounds).setOnClickListener(v -> PremiumToast.show(this, "Sleep Sounds is coming soon."));
+        findViewById(R.id.btnJournalThoughts).setOnClickListener(v -> PremiumToast.show(this, "Journal Thoughts is coming soon."));
 
-        String prompt = "Analyze these recent dream journal entries and provide a JSON response with the following fields: " +
-                "'wellness_score' (0-100), 'mood_stability' (0-100), 'stress_level' ('Low', 'Medium', 'High'), " +
-                "'anxiety_signs' ('Low', 'Medium', 'High'), 'ai_alert' (a 1-sentence observation), " +
-                "'dominant_themes' (array of strings), 'suggestions' (array of 3 strings), 'emotional_health_summary' (a paragraph). " +
-                "Be insightful and empathetic. Dreams:\n" + dreamContent.toString();
-
-        geminiService.analyzeDreams(prompt, new GeminiService.GeminiListener() {
-            @Override
-            public void onSuccess(String response) {
-                pbAiLoading.setVisibility(View.GONE);
-                tvAiStatus.setText("Personalized AI insights updated");
-                btnRefreshAi.setEnabled(true);
-                updateUiWithAiResponse(response);
-            }
-
-            @Override
-            public void onError(String error) {
-                pbAiLoading.setVisibility(View.GONE);
-                tvAiStatus.setText("Analysis failed. Try again.");
-                btnRefreshAi.setEnabled(true);
-                PremiumToast.show(AnalysisDashboardActivity.this, "AI Analysis Error: " + error);
-            }
-        });
-    }
-
-    private void updateUiWithAiResponse(String response) {
-        try {
-            // Remove markdown code blocks if present
-            String cleanedResponse = response.replaceAll("```json", "").replaceAll("```", "").trim();
-            org.json.JSONObject json = new org.json.JSONObject(cleanedResponse);
-
-            // Save to cache
-            getSharedPreferences("ai_insights", MODE_PRIVATE)
-                    .edit()
-                    .putString("last_analysis", cleanedResponse)
-                    .apply();
-
-            int wellness = json.optInt("wellness_score", 70);
-            int stability = json.optInt("mood_stability", 70);
-            String stress = json.optString("stress_level", "Medium");
-            String anxiety = json.optString("anxiety_signs", "Low");
-            String alert = json.optString("ai_alert", "No major patterns detected.");
-            String summary = json.optString("emotional_health_summary", "");
-
-            pbWellnessCircle.setProgress(wellness);
-            tvWellnessPercentage.setText(wellness + "%");
-            pbMoodStability.setProgress(stability);
-            tvMoodStabilityLabel.setText("Mood Stability: " + stability + "%");
-            
-            tvStressLevelLabel.setText("Stress Level: " + stress);
-            pbStressLevel.setProgress(stress.equalsIgnoreCase("High") ? 85 : stress.equalsIgnoreCase("Medium") ? 50 : 20);
-            
-            tvAnxietySignsLabel.setText("Anxiety Signs: " + anxiety);
-            pbAnxietySigns.setProgress(anxiety.equalsIgnoreCase("High") ? 85 : anxiety.equalsIgnoreCase("Medium") ? 50 : 20);
-
-            tvAiAlertMessage.setText(alert);
-            tvEmotionalHealthSummary.setText(summary);
-
-            // Update Themes
-            org.json.JSONArray themes = json.optJSONArray("dominant_themes");
-            if (themes != null) {
-                cgThemeChips.removeAllViews();
-                tvDominantThemes.setText("Your dreams often revolve around:");
-                for (int i = 0; i < themes.length(); i++) {
-                    Chip chip = new Chip(this);
-                    chip.setText(capitalize(themes.getString(i)));
-                    chip.setTextColor(Color.WHITE);
-                    chip.setTextSize(15f);
-                    if (poppins != null) chip.setTypeface(poppins);
-                    chip.setChipBackgroundColorResource(R.color.accent_purple);
-                    chip.setClickable(false);
-                    cgThemeChips.addView(chip);
-                }
-            }
-
-            // Update Suggestions
-            org.json.JSONArray suggestions = json.optJSONArray("suggestions");
-            if (suggestions != null) {
-                llSuggestions.removeAllViews();
-                for (int i = 0; i < suggestions.length(); i++) {
-                    addSuggestion(suggestions.getString(i), R.drawable.ic_insights);
-                }
-            }
-
-        } catch (Exception e) {
-            Log.e("AnalysisDashboard", "JSON Parse error", e);
-        }
+        findViewById(R.id.btnCallHelpline).setOnClickListener(v -> PremiumToast.show(this, "Helpline calling is not configured yet."));
+        findViewById(R.id.btnCallEmergencyContact).setOnClickListener(v -> PremiumToast.show(this, "Emergency contact is not configured yet."));
+        findViewById(R.id.btnMessageTrusted).setOnClickListener(v -> PremiumToast.show(this, "Messaging is not configured yet."));
     }
 
     private void setupFab() {
         FloatingActionButton fabAdd = findViewById(R.id.fabAdd);
-        fabAdd.setOnClickListener(v -> {
-            Intent intent = new Intent(this, AddDreamActivity.class);
-            startActivity(intent);
-        });
-    }
-
-    private void setupCalendarNav() {
-        findViewById(R.id.ivCalPrev).setOnClickListener(v -> {
-            displayedMonth.add(Calendar.MONTH, -1);
-            buildCalendar();
-        });
-        findViewById(R.id.ivCalNext).setOnClickListener(v -> {
-            displayedMonth.add(Calendar.MONTH, 1);
-            buildCalendar();
-        });
+        fabAdd.setOnClickListener(v -> startActivity(new Intent(this, AddDreamActivity.class)));
     }
 
     private void setupBottomNav() {
@@ -284,8 +156,7 @@ public class AnalysisDashboardActivity extends AppCompatActivity {
                 overridePendingTransition(0, 0);
                 return true;
             } else if (id == R.id.nav_profile) {
-                Intent intent = new Intent(this, ProfileActivity.class);
-                startActivity(intent);
+                startActivity(new Intent(this, ProfileActivity.class));
                 overridePendingTransition(0, 0);
                 return true;
             }
@@ -293,405 +164,409 @@ public class AnalysisDashboardActivity extends AppCompatActivity {
         });
     }
 
-    private void loadData() {
-        long thirtyDaysAgo = System.currentTimeMillis() - (30L * 24 * 60 * 60 * 1000);
-        Map<String, Object> stats = repository.getStatsSummary(0);
-        Map<String, Double> factors = repository.getDreamFactors(thirtyDaysAgo);
-        List<Map.Entry<String, Integer>> moods = repository.getMoodSummary(thirtyDaysAgo);
-
-        Object lifetimeObj = stats.getOrDefault("totalDreamsLifetime", 0);
-        int totalDreams = (lifetimeObj instanceof Integer) ? (int) lifetimeObj : 0;
-        animateCounter(tvTotalDreamsCount, totalDreams);
-
-        if (!moods.isEmpty()) {
-            tvOverallEmotion.setText(getMoodName(moods.get(0).getKey()));
-        } else {
-            tvOverallEmotion.setText("-");
+    private void performWellnessAnalysis() {
+        List<Dream> allDreams = repository.getDreamsFiltered(null, "");
+        if (allDreams == null || allDreams.size() < 3) {
+            PremiumToast.show(this, "Add at least 3 dreams to generate a wellness report.");
+            return;
         }
 
-        updateWellnessScore(factors, moods);
-        loadTrends(toggleGroupTrends.getCheckedButtonId() == R.id.btn30Days ? 30 : 7);
-        updateSuggestions(factors, moods);
+        List<Dream> last3 = allDreams.subList(0, 3);
 
-        // Dominant themes (keywords)
-        List<Map.Entry<String, Integer>> keywords = repository.getKeywords(0);
-        cgThemeChips.removeAllViews();
-        if (!keywords.isEmpty()) {
-            StringBuilder sb = new StringBuilder("Your dreams often revolve around:");
-            tvDominantThemes.setText(sb.toString());
-            int count = 0;
-            for (Map.Entry<String, Integer> entry : keywords) {
-                Chip chip = new Chip(this);
-                chip.setText(capitalize(entry.getKey()));
-                chip.setTextColor(Color.WHITE);
-                chip.setTextSize(15f);
-                if (poppins != null) chip.setTypeface(poppins);
-                if (count == 0) {
-                    chip.setChipBackgroundColorResource(R.color.glow_primary);
-                } else if (count % 2 == 0) {
-                    chip.setChipBackgroundColorResource(R.color.accent_purple);
-                } else {
-                    chip.setChipBackgroundColor(
-                            android.content.res.ColorStateList.valueOf(Color.parseColor("#2A3567")));
-                    chip.setChipStrokeColor(
-                            android.content.res.ColorStateList.valueOf(Color.parseColor("#39C6FF")));
-                    chip.setChipStrokeWidth(1.5f);
-                }
-                chip.setShapeAppearanceModel(chip.getShapeAppearanceModel().toBuilder()
-                        .setAllCornerSizes(44f).build());
-                if (count == 0 || count % 2 == 0) {
-                    chip.setChipStrokeWidth(0);
-                }
-                chip.setClickable(false);
-                chip.setCheckable(false);
-                cgThemeChips.addView(chip);
-                count++;
+        showLoading(true);
+        String prompt = buildWellnessPrompt(last3);
+        geminiService.analyzeDreams(prompt, new GeminiService.GeminiListener() {
+            @Override
+            public void onSuccess(String response) {
+                showLoading(false);
+                applyReportFromJson(response, last3);
             }
-        } else {
-            tvDominantThemes.setText("Keep journaling to reveal your dominant dream themes.");
-        }
 
-        // Calendar
-        datesWithDreams = repository.getDatesWithDreams();
-        buildCalendar();
+            @Override
+            public void onError(String error) {
+                showLoading(false);
+                PremiumToast.show(AnalysisDashboardActivity.this, "Wellness analysis failed. Showing local insights.");
+                applyFallbackReport(last3);
+            }
+        });
     }
 
-    private void buildCalendar() {
-        llCalendarGrid.removeAllViews();
+    private void showLoading(boolean show) {
+        loadingOverlay.setVisibility(show ? View.VISIBLE : View.GONE);
+        if (show) startFakeProgress();
+        else stopFakeProgress();
 
-        // Build set of \"yyyy-MM-dd\" strings for quick lookup
-        SimpleDateFormat dayFmt = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        Set<String> dreamDaySet = new HashSet<>();
-        if (datesWithDreams != null) {
-            for (Long ts : datesWithDreams) {
-                dreamDaySet.add(dayFmt.format(new Date(ts)));
-            }
-        }
-
-        // Update month header
-        SimpleDateFormat monthFmt = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
-        tvCalendarMonth.setText(monthFmt.format(displayedMonth.getTime()));
-
-        Calendar cal = (Calendar) displayedMonth.clone();
-        cal.set(Calendar.DAY_OF_MONTH, 1);
-        int firstDayOfWeek = cal.get(Calendar.DAY_OF_WEEK) - 1; // 0=Sun
-        int daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
-
-        Calendar todayCal = Calendar.getInstance();
-        int todayYear = todayCal.get(Calendar.YEAR);
-        int todayMonth = todayCal.get(Calendar.MONTH);
-        int todayDay = todayCal.get(Calendar.DAY_OF_MONTH);
-
-        int year = displayedMonth.get(Calendar.YEAR);
-        int month = displayedMonth.get(Calendar.MONTH);
-
-        int dayNumber = 1;
-        int totalCells = firstDayOfWeek + daysInMonth;
-        int rows = (int) Math.ceil(totalCells / 7.0);
-
-        for (int row = 0; row < rows; row++) {
-            LinearLayout rowLayout = new LinearLayout(this);
-            rowLayout.setLayoutParams(new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT));
-            rowLayout.setOrientation(LinearLayout.HORIZONTAL);
-
-            for (int col = 0; col < 7; col++) {
-                int cellIndex = row * 7 + col;
-                LinearLayout cellLayout = new LinearLayout(this);
-                LinearLayout.LayoutParams cellParams = new LinearLayout.LayoutParams(
-                        0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
-                cellLayout.setLayoutParams(cellParams);
-                cellLayout.setOrientation(LinearLayout.VERTICAL);
-                cellLayout.setGravity(Gravity.CENTER_HORIZONTAL);
-                int cellPad = dpToPx(4);
-                cellLayout.setPadding(cellPad, cellPad, cellPad, cellPad);
-
-                if (cellIndex >= firstDayOfWeek && dayNumber <= daysInMonth) {
-                    final int day = dayNumber;
-                    // Format check date
-                    cal.set(year, month, day);
-                    String dateKey = dayFmt.format(cal.getTime());
-                    boolean hasDream = dreamDaySet.contains(dateKey);
-                    boolean isToday = (year == todayYear && month == todayMonth && day == todayDay);
-
-                    // Day number text
-                    TextView tvDay = new TextView(this);
-                    tvDay.setText(String.valueOf(day));
-                    tvDay.setTextSize(15f);
-                    tvDay.setGravity(Gravity.CENTER);
-                    if (poppins != null) tvDay.setTypeface(poppins);
-
-                    if (isToday) {
-                        tvDay.setTextColor(Color.parseColor("#171F4B"));
-                        tvDay.setBackground(createCircleBackground(Color.parseColor("#39C6FF")));
-                        int pad = dpToPx(6);
-                        tvDay.setPadding(pad, pad, pad, pad);
-                        tvDay.setTypeface(poppins, Typeface.BOLD);
-                    } else if (hasDream) {
-                        tvDay.setTextColor(Color.WHITE);
-                    } else {
-                        tvDay.setTextColor(Color.parseColor("#C5CAE9"));
-                    }
-
-                    cellLayout.addView(tvDay);
-
-                    // Dream dot
-                    if (hasDream) {
-                        ImageView ivDot = new ImageView(this);
-                        ivDot.setImageResource(R.drawable.ic_calendar_dot);
-                        LinearLayout.LayoutParams dotParams = new LinearLayout.LayoutParams(
-                                dpToPx(8), dpToPx(8));
-                        dotParams.topMargin = dpToPx(2);
-                        ivDot.setLayoutParams(dotParams);
-                        cellLayout.addView(ivDot);
-                    }
-
-                    // Tap to show dream count
-                    if (hasDream) {
-                        final String fDateKey = dateKey;
-                        cellLayout.setOnClickListener(v -> {
-                            int count = countDreamsOnDate(fDateKey, dayFmt);
-                            PremiumToast.show(this,
-                                    count + (count == 1 ? " dream" : " dreams") + " on this day");
-                        });
-                    }
-
-                    dayNumber++;
+        // Start vector animation if possible
+        if (show) {
+            try {
+                Drawable d = ((android.widget.ImageView) findViewById(R.id.ivLoadingAnim)).getDrawable();
+                if (d instanceof android.graphics.drawable.Animatable) {
+                    ((android.graphics.drawable.Animatable) d).start();
                 }
-
-                rowLayout.addView(cellLayout);
+            } catch (Exception ignored) {
             }
-
-            llCalendarGrid.addView(rowLayout);
         }
     }
 
-    private int countDreamsOnDate(String dateKey, SimpleDateFormat fmt) {
-        if (datesWithDreams == null) return 0;
+    private void startFakeProgress() {
+        stopFakeProgress();
+        progressAnalyze.setProgress(0);
+        tvLoadingPercent.setText("0%");
+        fakeProgressAnimator = ValueAnimator.ofInt(0, 92);
+        fakeProgressAnimator.setDuration(2200);
+        fakeProgressAnimator.addUpdateListener(a -> {
+            int v = (int) a.getAnimatedValue();
+            progressAnalyze.setProgress(v);
+            tvLoadingPercent.setText(v + "%");
+        });
+        fakeProgressAnimator.start();
+    }
+
+    private void stopFakeProgress() {
+        if (fakeProgressAnimator != null) {
+            fakeProgressAnimator.cancel();
+            fakeProgressAnimator = null;
+        }
+        progressAnalyze.setProgress(100);
+        tvLoadingPercent.setText("100%");
+    }
+
+    private String buildWellnessPrompt(List<Dream> last3) {
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM d", Locale.getDefault());
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < last3.size(); i++) {
+            Dream d = last3.get(i);
+            sb.append("Entry ").append(i + 1).append(" (").append(sdf.format(new Date(d.getTimestamp()))).append(")\n");
+            sb.append("Mood: ").append(safe(d.getMood())).append("\n");
+            sb.append("Nightmare: ").append(d.isNightmare() ? "Yes" : "No").append("\n");
+            sb.append("Recurring: ").append(d.isRecurring() ? "Yes" : "No").append("\n");
+            sb.append("Text: ").append(safe(d.getDescription())).append("\n\n");
+        }
+
+        return "You are a mental wellness assistant for a dream journal app. " +
+                "Analyze ONLY the last 3 dream entries below. " +
+                "Return STRICT JSON ONLY (no markdown, no extra keys) with this schema:\n" +
+                "{\n" +
+                "  \"mood_status\": \"Mood Stable\" | \"Elevated Stress Signs\" | \"Low Mood Patterns Detected\" | \"Distress Signals Found\",\n" +
+                "  \"mood_explanation\": string,\n" +
+                "  \"stress_score\": integer (0-100),\n" +
+                "  \"stress_label\": \"Low\" | \"Moderate\" | \"High\",\n" +
+                "  \"sleep_quality_score\": integer (0-100),\n" +
+                "  \"sleep_quality_explanation\": string,\n" +
+                "  \"mood_trend\": [integer, integer, integer],\n" +
+                "  \"mood_trend_labels\": [string, string, string],\n" +
+                "  \"recurring_themes\": [string, ...],\n" +
+                "  \"theme_insights\": { \"Theme\": { \"meaning\": string, \"reflection\": string } },\n" +
+                "  \"today_advice\": [string, string, string, string],\n" +
+                "  \"mood_support\": [string, ...],\n" +
+                "  \"severe_risk\": boolean\n" +
+                "}\n" +
+                "Constraints: No emojis. Calm, clinical, supportive tone. Avoid diagnosis. " +
+                "Mood trend values should map to -1 (low), 0 (neutral), 1 (improved).\n\n" +
+                "Entries:\n" + sb;
+    }
+
+    private void loadCachedReport() {
+        String cached = getSharedPreferences("ai_wellness_report", MODE_PRIVATE).getString("last_report_json", null);
+        if (cached == null) return;
+
+        List<Dream> allDreams = repository.getDreamsFiltered(null, "");
+        if (allDreams == null || allDreams.size() < 3) return;
+
+        applyReportFromJson(cached, allDreams.subList(0, 3));
+    }
+
+    private void applyReportFromJson(String response, List<Dream> last3) {
         try {
-            Date d = fmt.parse(dateKey);
-            if (d != null) {
-                List<Dream> dreams = repository.getDreamsFiltered(d.getTime(), "");
-                return dreams.size();
-            }
-        } catch (Exception ignored) {}
-        return 0;
-    }
+            String cleaned = response.replaceAll("```json", "").replaceAll("```", "").trim();
+            JSONObject json = new JSONObject(cleaned);
 
-    private android.graphics.drawable.GradientDrawable createCircleBackground(int color) {
-        android.graphics.drawable.GradientDrawable circle = new android.graphics.drawable.GradientDrawable();
-        circle.setShape(android.graphics.drawable.GradientDrawable.OVAL);
-        circle.setColor(color);
-        return circle;
-    }
+            getSharedPreferences("ai_wellness_report", MODE_PRIVATE)
+                    .edit()
+                    .putString("last_report_json", cleaned)
+                    .apply();
 
-    private void updateWellnessScore(Map<String, Double> factors, List<Map.Entry<String, Integer>> moods) {
-        double nightmarePercent = factors.getOrDefault("nightmarePercent", 0.0);
-        double avgClarity = factors.getOrDefault("avgClarity", 50.0);
-        
-        // Calculate Mood Stability (based on variety of moods)
-        int totalMoods = 0;
-        for (Map.Entry<String, Integer> entry : moods) totalMoods += entry.getValue();
-        double stability = 100.0;
-        if (totalMoods > 0) {
-            double dominantPercent = (double) moods.get(0).getValue() / totalMoods;
-            stability = (0.5 + (dominantPercent * 0.5)) * 100; // Simplified stability logic
-        }
+            String moodStatus = json.optString("mood_status", "Mood Stable");
+            String moodExplanation = json.optString("mood_explanation",
+                    "Your recent dreams suggest steady emotional tone with manageable stress.");
+            int stressScore = clampInt(json.optInt("stress_score", 35), 0, 100);
+            String stressLabel = json.optString("stress_label", scoreToStressLabel(stressScore));
+            int sleepScore = clampInt(json.optInt("sleep_quality_score", 78), 0, 100);
+            String sleepExplanation = json.optString("sleep_quality_explanation",
+                    "Estimate based on dream disturbances and recurring fear patterns.");
+            boolean severeRisk = json.optBoolean("severe_risk", false);
 
-        // Stress level from nightmare percentage and specific moods
-        double stress = nightmarePercent; 
-        for (Map.Entry<String, Integer> entry : moods) {
-            String key = entry.getKey();
-            if ("Fearful".equals(key) || "Stressed".equals(key) || "🔥".equals(key) || "⚡".equals(key)) {
-                stress += (entry.getValue() * 10.0);
-            }
-        }
-        stress = Math.min(100, stress);
+            tvMoodStatusTitle.setText(moodStatus);
+            tvMoodStatusDesc.setText(moodExplanation);
+            applyMoodStatusStyle(moodStatus);
 
-        // Anxiety from nightmare + recurring
-        double anxiety = factors.getOrDefault("recurringPercent", 0.0) + (nightmarePercent / 2);
-        anxiety = Math.min(100, anxiety);
+            pbStressCircle.setProgress(stressScore);
+            tvStressValue.setText(String.valueOf(stressScore));
+            tvStressLabel.setText(stressLabel + " stress level");
 
-        int wellnessScore = (int) ((stability + (100 - stress) + (100 - anxiety) + avgClarity) / 4);
-        
-        pbWellnessCircle.setProgress(wellnessScore);
-        tvWellnessPercentage.setText(wellnessScore + "%");
-        
-        pbMoodStability.setProgress((int) stability);
-        tvMoodStabilityLabel.setText("Mood Stability: " + (int) stability + "%");
-        
-        pbStressLevel.setProgress((int) stress);
-        tvStressLevelLabel.setText("Stress Level: " + (stress > 60 ? "High" : stress > 30 ? "Medium" : "Low"));
-        
-        pbAnxietySigns.setProgress((int) anxiety);
-        tvAnxietySignsLabel.setText("Anxiety Signs: " + (anxiety > 60 ? "High" : anxiety > 30 ? "Medium" : "Low"));
+            tvSleepScore.setText(String.valueOf(sleepScore));
+            tvSleepDesc.setText(sleepExplanation);
 
-        // AI Alert logic
-        if (stress > 50 || nightmarePercent > 30) {
-            tvAiAlertMessage.setText("Your recent dream patterns indicate elevated stress. Consider a relaxing pre-sleep routine.");
-            tvEmotionalHealthSummary.setText("Action required: Stress indicators are high this week.");
-        } else {
-            tvAiAlertMessage.setText("Your dream patterns look healthy and stable. Keep up the consistent journaling!");
-            tvEmotionalHealthSummary.setText("Stable this week. No major concern detected.");
-        }
-    }
+            renderMoodTrend(json.optJSONArray("mood_trend"), json.optJSONArray("mood_trend_labels"), last3);
 
-    private void loadTrends(int days) {
-        long startTime = System.currentTimeMillis() - (days * 24L * 60 * 60 * 1000);
-        List<Dream> history = repository.getMoodHistory(startTime);
-        
-        setupChart(days, history);
-    }
-
-    private void setupChart(int days, List<Dream> dreams) {
-        vTrendGraph.getDescription().setEnabled(false);
-        vTrendGraph.setDrawGridBackground(false);
-        vTrendGraph.getLegend().setEnabled(false);
-        vTrendGraph.setTouchEnabled(false);
-
-        XAxis xAxis = vTrendGraph.getXAxis();
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setTextColor(Color.parseColor("#C5CAE9"));
-        xAxis.setDrawGridLines(false);
-        xAxis.setGranularity(1f);
-        xAxis.setLabelCount(days > 7 ? 6 : days);
-
-        vTrendGraph.getAxisLeft().setTextColor(Color.parseColor("#C5CAE9"));
-        vTrendGraph.getAxisLeft().setDrawGridLines(true);
-        vTrendGraph.getAxisLeft().setGridColor(Color.parseColor("#2A3567"));
-        vTrendGraph.getAxisRight().setEnabled(false);
-
-        ArrayList<Entry> lucidityEntries = new ArrayList<>();
-        ArrayList<Entry> clarityEntries = new ArrayList<>();
-        ArrayList<Entry> nightmareEntries = new ArrayList<>();
-
-        // Group data by day
-        Calendar cal = Calendar.getInstance();
-        for (int i = 0; i < days; i++) {
-            cal.setTimeInMillis(System.currentTimeMillis());
-            cal.add(Calendar.DAY_OF_YEAR, -(days - 1 - i));
-            cal.set(Calendar.HOUR_OF_DAY, 0);
-            cal.set(Calendar.MINUTE, 0);
-            cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MILLISECOND, 0);
-            long dayStart = cal.getTimeInMillis();
-            long dayEnd = dayStart + (24 * 60 * 60 * 1000);
-
-            float lucidityDay = 0, clarityDay = 0, nightmaresDay = 0;
-            int count = 0;
-
-            for (Dream d : dreams) {
-                if (d.getTimestamp() >= dayStart && d.getTimestamp() < dayEnd) {
-                    lucidityDay += d.getLucidity() * 10;
-                    clarityDay += d.getClarity() * 10;
-                    nightmaresDay += (d.isNightmare() ? 100 : 0);
-                    count++;
+            // Themes
+            cgThemes.removeAllViews();
+            JSONArray themes = json.optJSONArray("recurring_themes");
+            JSONObject themeInsights = json.optJSONObject("theme_insights");
+            if (themes != null && themes.length() > 0) {
+                for (int i = 0; i < themes.length(); i++) {
+                    String raw = themes.optString(i, "Theme");
+                    String t = capitalize(raw);
+                    String meaning = "";
+                    String reflection = "";
+                    if (themeInsights != null) {
+                        JSONObject insight = themeInsights.optJSONObject(t);
+                        if (insight == null) insight = themeInsights.optJSONObject(raw);
+                        if (insight != null) {
+                            meaning = insight.optString("meaning", "");
+                            reflection = insight.optString("reflection", "");
+                        }
+                    }
+                    if (meaning.isEmpty()) meaning = "This theme can reflect how your mind processes stress, change, or unmet needs.";
+                    if (reflection.isEmpty()) reflection = "What small, practical step would make today feel more supported?";
+                    addThemeChip(t, meaning, reflection);
                 }
-            }
-
-            if (count > 0) {
-                lucidityEntries.add(new Entry(i, lucidityDay / count));
-                clarityEntries.add(new Entry(i, clarityDay / count));
-                nightmareEntries.add(new Entry(i, nightmaresDay / count));
             } else {
-                lucidityEntries.add(new Entry(i, 0f));
-                clarityEntries.add(new Entry(i, 0f));
-                nightmareEntries.add(new Entry(i, 0f));
+                applyThemesDefaults();
             }
+
+            // Advice
+            llAdvice.removeAllViews();
+            JSONArray advice = json.optJSONArray("today_advice");
+            if (advice != null && advice.length() > 0) {
+                for (int i = 0; i < advice.length(); i++) addBulletRow(llAdvice, advice.optString(i));
+            } else {
+                applyAdviceDefaults();
+            }
+
+            // Mood support
+            JSONArray support = json.optJSONArray("mood_support");
+            boolean lowMoodState = "Low Mood Patterns Detected".equalsIgnoreCase(moodStatus) ||
+                    "Distress Signals Found".equalsIgnoreCase(moodStatus);
+            if (support != null && support.length() > 0 && lowMoodState) {
+                cardMoodSupport.setVisibility(View.VISIBLE);
+                llMoodSupport.removeAllViews();
+                for (int i = 0; i < support.length(); i++) addBulletRow(llMoodSupport, support.optString(i));
+            } else {
+                cardMoodSupport.setVisibility(View.GONE);
+            }
+
+            cardEmergency.setVisibility(severeRisk ? View.VISIBLE : View.GONE);
+        } catch (Exception e) {
+            Log.e(TAG, "JSON parse error", e);
+            applyFallbackReport(last3);
         }
-
-        LineDataSet luciditySet = createDataSet(lucidityEntries, "Lucidity", "#39C6FF");
-        LineDataSet claritySet = createDataSet(clarityEntries, "Clarity", "#8B5CFF");
-        LineDataSet nightmareSet = createDataSet(nightmareEntries, "Nightmares", "#FF5252");
-
-        vTrendGraph.setData(new LineData(luciditySet, claritySet, nightmareSet));
-        vTrendGraph.animateX(1000);
     }
 
-    private LineDataSet createDataSet(ArrayList<Entry> entries, String label, String color) {
-        LineDataSet set = new LineDataSet(entries, label);
-        set.setColor(Color.parseColor(color));
-        set.setLineWidth(2.5f);
-        set.setCircleColor(Color.parseColor(color));
-        set.setCircleRadius(3f);
+    private void applyFallbackReport(List<Dream> last3) {
+        int nightmares = 0;
+        int recurring = 0;
+        int lowMood = 0;
+        for (Dream d : last3) {
+            if (d == null) continue;
+            if (d.isNightmare()) nightmares++;
+            if (d.isRecurring()) recurring++;
+            String m = safe(d.getMood()).toLowerCase(Locale.ROOT);
+            if (m.contains("fear") || m.contains("stress") || m.contains("bad") || m.contains("terrible")) lowMood++;
+        }
+
+        int stressScore = clampInt((nightmares * 30) + (recurring * 15) + (lowMood * 15), 0, 100);
+        int sleepScore = clampInt(90 - (nightmares * 25) - (recurring * 10), 0, 100);
+        String moodStatus = stressScore >= 75 ? "Distress Signals Found" :
+                stressScore >= 55 ? "Elevated Stress Signs" :
+                        lowMood >= 2 ? "Low Mood Patterns Detected" : "Mood Stable";
+
+        tvMoodStatusTitle.setText(moodStatus);
+        tvMoodStatusDesc.setText("This report was generated locally from your last 3 entries. For deeper insights, tap Analyze again.");
+        applyMoodStatusStyle(moodStatus);
+
+        pbStressCircle.setProgress(stressScore);
+        tvStressValue.setText(String.valueOf(stressScore));
+        tvStressLabel.setText(scoreToStressLabel(stressScore) + " stress level");
+
+        tvSleepScore.setText(String.valueOf(sleepScore));
+        tvSleepDesc.setText("Estimate based on nightmares, recurring patterns, and emotional tone in your last 3 entries.");
+
+        renderMoodTrend(null, null, last3);
+        applyThemesDefaults();
+        applyAdviceDefaults();
+
+        boolean lowMoodState = "Low Mood Patterns Detected".equalsIgnoreCase(moodStatus) ||
+                "Distress Signals Found".equalsIgnoreCase(moodStatus);
+        if (lowMoodState) {
+            cardMoodSupport.setVisibility(View.VISIBLE);
+            llMoodSupport.removeAllViews();
+            addBulletRow(llMoodSupport, "Call a trusted person");
+            addBulletRow(llMoodSupport, "Get sunlight for 15 minutes");
+            addBulletRow(llMoodSupport, "Eat and hydrate");
+            addBulletRow(llMoodSupport, "Complete one small task");
+            addBulletRow(llMoodSupport, "Write one positive memory");
+        } else {
+            cardMoodSupport.setVisibility(View.GONE);
+        }
+
+        cardEmergency.setVisibility(stressScore >= 90 ? View.VISIBLE : View.GONE);
+    }
+
+    private void renderMoodTrend(JSONArray trend, JSONArray labels, List<Dream> last3) {
+        ArrayList<Entry> entries = new ArrayList<>();
+        String[] xLabels = new String[]{"Day 1", "Day 2", "Day 3"};
+
+        for (int i = 0; i < 3; i++) {
+            float v;
+            if (trend != null && i < trend.length()) {
+                v = (float) trend.optInt(i, 0);
+            } else if (last3 != null && i < last3.size()) {
+                v = moodToTrendValue(last3.get(i).getMood());
+            } else {
+                v = 0f;
+            }
+            entries.add(new Entry(i, v));
+            if (labels != null && i < labels.length()) xLabels[i] = labels.optString(i, xLabels[i]);
+        }
+
+        LineDataSet set = new LineDataSet(entries, "Mood");
+        set.setColor(Color.parseColor("#39C6FF"));
+        set.setLineWidth(2.6f);
+        set.setCircleColor(Color.parseColor("#39C6FF"));
+        set.setCircleRadius(4f);
         set.setDrawCircleHole(false);
         set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
         set.setDrawValues(false);
-        return set;
+
+        chartMoodTrend.getXAxis().setGranularity(1f);
+        chartMoodTrend.getXAxis().setLabelCount(3, true);
+        chartMoodTrend.getXAxis().setValueFormatter(new com.github.mikephil.charting.formatter.ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                int idx = Math.round(value);
+                if (idx < 0 || idx >= xLabels.length) return "";
+                return xLabels[idx];
+            }
+        });
+
+        chartMoodTrend.getAxisLeft().setAxisMinimum(-1.2f);
+        chartMoodTrend.getAxisLeft().setAxisMaximum(1.2f);
+
+        chartMoodTrend.setData(new LineData(set));
+        chartMoodTrend.animateX(850);
+        chartMoodTrend.invalidate();
     }
 
-    private void updateSuggestions(Map<String, Double> factors, List<Map.Entry<String, Integer>> moods) {
-        llSuggestions.removeAllViews();
-        double stress = factors.getOrDefault("nightmarePercent", 0.0);
-        
-        if (stress > 40) {
-            addSuggestion("Try a 10-minute meditation before bed", R.drawable.ic_meditation);
-            addSuggestion("Avoid screens 1 hour before sleep", R.drawable.ic_no_screens);
-            addSuggestion("Write down 3 things you're grateful for", R.drawable.ic_gratitude);
-        } else {
-            addSuggestion("Try chamomile tea for even deeper rest", R.drawable.ic_tea);
-            addSuggestion("Read a fiction book to stimulate creativity", R.drawable.ic_journal);
-            addSuggestion("Get 15 mins of morning sunlight tomorrow", R.drawable.ic_sunlight);
-        }
+    private void setupMoodTrendChartDefaults() {
+        chartMoodTrend.getDescription().setEnabled(false);
+        chartMoodTrend.setDrawGridBackground(false);
+        chartMoodTrend.getLegend().setEnabled(false);
+        chartMoodTrend.setTouchEnabled(false);
+        chartMoodTrend.getAxisRight().setEnabled(false);
+        chartMoodTrend.getAxisLeft().setTextColor(Color.parseColor("#BFC8E8"));
+        chartMoodTrend.getAxisLeft().setGridColor(Color.parseColor("#2A3567"));
+        chartMoodTrend.getXAxis().setTextColor(Color.parseColor("#BFC8E8"));
+        chartMoodTrend.getXAxis().setGridColor(Color.TRANSPARENT);
+        chartMoodTrend.getXAxis().setAxisLineColor(Color.parseColor("#2A3567"));
+        chartMoodTrend.getAxisLeft().setAxisLineColor(Color.parseColor("#2A3567"));
     }
 
-    private void addSuggestion(String text, int iconRes) {
+    private void applyAdviceDefaults() {
+        llAdvice.removeAllViews();
+        addBulletRow(llAdvice, "Reduce caffeine later in the day");
+        addBulletRow(llAdvice, "Sleep a little earlier tonight");
+        addBulletRow(llAdvice, "Avoid screens before bed");
+        addBulletRow(llAdvice, "Take a short walk today");
+    }
+
+    private void applyThemesDefaults() {
+        cgThemes.removeAllViews();
+        addThemeChip("Falling", "Often linked to pressure or feeling unprepared.",
+                "What is one area where you could ask for support or simplify your plan today?");
+        addThemeChip("Exams", "Common when you are self-evaluating or fearing judgment.",
+                "Is there a recent goal where you can define “good enough” more kindly?");
+        addThemeChip("Chased", "May reflect avoidance of an emotion or task that feels urgent.",
+                "What would change if you faced the smallest part of what you’re avoiding for 10 minutes?");
+        addThemeChip("Darkness", "Can signal uncertainty, transition, or a need for rest and safety.",
+                "What helps you feel grounded before sleep when the day feels heavy?");
+        addThemeChip("Water", "Often tied to emotional depth, change, or overwhelm.",
+                "Which emotion has been most present lately, and what does it need from you?");
+        addThemeChip("Family", "May reflect connection, old patterns, or unmet needs.",
+                "What boundary or honest conversation would support you this week?");
+    }
+
+    private void addBulletRow(LinearLayout container, String text) {
         TextView tv = new TextView(this);
         tv.setText(text);
-        tv.setTextColor(Color.parseColor("#C5CAE9"));
-        tv.setTextSize(14f);
-        tv.setPadding(0, dpToPx(8), 0, dpToPx(8));
-        tv.setCompoundDrawablesWithIntrinsicBounds(iconRes, 0, 0, 0);
+        tv.setTextColor(Color.parseColor("#BFC8E8"));
+        tv.setTextSize(15f);
+        tv.setPadding(0, dpToPx(10), 0, dpToPx(10));
+        tv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_success, 0, 0, 0);
         tv.setCompoundDrawablePadding(dpToPx(12));
         tv.setGravity(Gravity.CENTER_VERTICAL);
-        if (poppins != null) tv.setTypeface(poppins);
-        llSuggestions.addView(tv);
+        container.addView(tv);
     }
 
-    private float spToPx(int sp) {
-        return sp * getResources().getDisplayMetrics().scaledDensity / getResources().getDisplayMetrics().density;
+    private void addThemeChip(String label, String meaning, String reflection) {
+        Chip chip = new Chip(this);
+        chip.setText(label);
+        chip.setTextColor(Color.WHITE);
+        chip.setTextSize(15f);
+        chip.setChipBackgroundColor(android.content.res.ColorStateList.valueOf(Color.parseColor("#2A3567")));
+        chip.setChipStrokeColor(android.content.res.ColorStateList.valueOf(Color.parseColor("#39C6FF")));
+        chip.setChipStrokeWidth(1f);
+        chip.setShapeAppearanceModel(chip.getShapeAppearanceModel().toBuilder().setAllCornerSizes(44f).build());
+        chip.setClickable(true);
+        chip.setCheckable(false);
+        chip.setOnClickListener(v -> ThemeInsightBottomSheet
+                .newInstance(label, meaning, reflection)
+                .show(getSupportFragmentManager(), "THEME_INSIGHT"));
+        cgThemes.addView(chip);
     }
 
-    private void animateCounter(TextView textView, int target) {
-        if (target == 0) {
-            textView.setText("0");
-            return;
+    private void applyMoodStatusStyle(String moodStatus) {
+        View card = findViewById(R.id.cardMoodStatus);
+        if (!(card instanceof com.google.android.material.card.MaterialCardView)) return;
+        com.google.android.material.card.MaterialCardView mcv = (com.google.android.material.card.MaterialCardView) card;
+
+        int bg;
+        int stroke;
+        if ("Distress Signals Found".equalsIgnoreCase(moodStatus)) {
+            bg = Color.parseColor("#3A1B22");
+            stroke = Color.parseColor("#B4232E");
+        } else if ("Low Mood Patterns Detected".equalsIgnoreCase(moodStatus)) {
+            bg = Color.parseColor("#2F2233");
+            stroke = Color.parseColor("#8B5CFF");
+        } else if ("Elevated Stress Signs".equalsIgnoreCase(moodStatus)) {
+            bg = Color.parseColor("#2F2B1F");
+            stroke = Color.parseColor("#F6C65B");
+        } else {
+            bg = Color.parseColor("#22366B");
+            stroke = Color.parseColor("#39C6FF");
         }
-        ValueAnimator animator = ValueAnimator.ofInt(0, target);
-        animator.setDuration(1200);
-        animator.setInterpolator(new DecelerateInterpolator());
-        animator.addUpdateListener(animation ->
-                textView.setText(String.valueOf((int) animation.getAnimatedValue())));
-        animator.start();
+        mcv.setCardBackgroundColor(bg);
+        mcv.setStrokeColor(stroke);
+        mcv.setStrokeWidth(dpToPx(1));
     }
 
-    private String getMoodName(String mood) {
-        if (mood == null) return "Wonder";
-        switch (mood) {
-            case "Happy":
-            case "✨":
-                return "Happy";
-            case "Calm":
-            case "🌙":
-                return "Calm";
-            case "Neutral":
-            case "Unclear":
-            case "☁":
-                return "Neutral";
-            case "Stressed":
-            case "⚡":
-                return "Stressed";
-            case "Fearful":
-            case "🔥":
-                return "Fearful";
-            default: return "Wonder";
-        }
+    private float moodToTrendValue(String mood) {
+        if (mood == null) return 0f;
+        String m = mood.toLowerCase(Locale.ROOT);
+        if (m.contains("happy") || m.contains("calm") || m.contains("good")) return 1f;
+        if (m.contains("neutral") || m.contains("unclear")) return 0f;
+        if (m.contains("stress") || m.contains("fear") || m.contains("bad") || m.contains("terrible")) return -1f;
+        return 0f;
     }
 
-    private String capitalize(String word) {
-        if (word == null || word.isEmpty()) return word;
-        return Character.toUpperCase(word.charAt(0)) + word.substring(1);
+    private int clampInt(int v, int min, int max) {
+        return Math.max(min, Math.min(max, v));
+    }
+
+    private String scoreToStressLabel(int score) {
+        if (score >= 67) return "High";
+        if (score >= 34) return "Moderate";
+        return "Low";
     }
 
     private int dpToPx(int dp) {
@@ -699,12 +574,19 @@ public class AnalysisDashboardActivity extends AppCompatActivity {
         return Math.round(dp * density);
     }
 
+    private String capitalize(String word) {
+        if (word == null || word.isEmpty()) return word;
+        return Character.toUpperCase(word.charAt(0)) + word.substring(1);
+    }
+
+    private String safe(String s) {
+        return s == null ? "" : s.trim();
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
-        // Refresh data when returning from adding a dream
-        datesWithDreams = repository.getDatesWithDreams();
-        loadData();
-        loadCachedAiAnalysis();
+        loadCachedReport();
     }
 }
+
