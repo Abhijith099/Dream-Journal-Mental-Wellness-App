@@ -54,6 +54,17 @@
                 android:textStyle="bold"
                 android:fontFamily="@font/poppins" />
 
+            <!-- Date line -->
+            <TextView
+                android:id="@+id/tvJournalDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text=""
+                android:textColor="#80BFF4FF"
+                android:textSize="14sp"
+                android:fontFamily="@font/poppins" />
+
             <TextView
                 android:id="@+id/subtitle"
                 android:layout_width="match_parent"
@@ -65,10 +76,11 @@
                 android:fontFamily="@font/poppins"
                 android:lineSpacingMultiplier="1.25" />
 
+            <!-- Hero animation card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginTop="32dp"
+                android:layout_height="170dp"
+                android:layout_marginTop="24dp"
                 app:cardCornerRadius="28dp"
                 app:cardElevation="0dp"
                 app:cardBackgroundColor="@android:color/transparent"
@@ -81,23 +93,75 @@
                     android:background="@drawable/bg_calm_actions_panel">
 
                     <View
-                        android:layout_width="220dp"
-                        android:layout_height="220dp"
+                        android:id="@+id/journalAnimParticle"
+                        android:layout_width="200dp"
+                        android:layout_height="200dp"
                         android:layout_gravity="center"
                         android:alpha="0.24"
                         android:background="@drawable/bg_calm_particle_amber" />
 
                     <ImageView
-                        android:layout_width="64dp"
-                        android:layout_height="64dp"
+                        android:layout_width="58dp"
+                        android:layout_height="58dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_journal_thoughts"
                         app:tint="#FFE4A8"
-                        android:contentDescription="Journal animation placeholder" />
+                        android:contentDescription="Journal animation" />
                 </FrameLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Prompt card -->
+            <!-- Confirmation banner (hidden by default) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/journalConfirmBanner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:visibility="gone"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="#1A2A40">
+
+                <TextView
+                    android:id="@+id/tvJournalConfirm"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="14dp"
+                    android:text="✨  Reflection Saved"
+                    android:textColor="#FFE4A8"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/poppins" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Mood selector -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:text="How are you feeling?"
+                android:textColor="@color/text_primary"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/poppins" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:scrollbars="none"
+                android:overScrollMode="never">
+
+                <LinearLayout
+                    android:id="@+id/moodSelectorRow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical" />
+
+            </HorizontalScrollView>
+
+            <!-- Writing prompt card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -182,4 +246,3 @@
     </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-

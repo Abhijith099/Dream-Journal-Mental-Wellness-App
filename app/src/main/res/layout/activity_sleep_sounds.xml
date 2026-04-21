@@ -65,9 +65,10 @@
                 android:fontFamily="@font/poppins"
                 android:lineSpacingMultiplier="1.25" />
 
+            <!-- Hero animation area -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
-                android:layout_height="220dp"
+                android:layout_height="200dp"
                 android:layout_marginTop="32dp"
                 app:cardCornerRadius="28dp"
                 app:cardElevation="0dp"
@@ -81,23 +82,53 @@
                     android:background="@drawable/bg_calm_actions_panel">
 
                     <View
+                        android:id="@+id/soundAnimParticle"
                         android:layout_width="220dp"
                         android:layout_height="220dp"
                         android:layout_gravity="center"
                         android:alpha="0.26"
                         android:background="@drawable/bg_calm_particle_cyan" />
 
-                    <ImageView
-                        android:layout_width="64dp"
-                        android:layout_height="64dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_sleep_sounds"
-                        app:tint="#D7E6FF"
-                        android:contentDescription="Sleep sounds animation placeholder" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="52dp"
+                            android:layout_height="52dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_sleep_sounds"
+                            app:tint="#D7E6FF"
+                            android:contentDescription="Sleep sounds" />
+
+                        <TextView
+                            android:id="@+id/tvNowPlaying"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:gravity="center"
+                            android:text="Select a sound to begin"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14sp"
+                            android:fontFamily="@font/poppins" />
+
+                        <TextView
+                            android:id="@+id/tvSleepTimer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:gravity="center"
+                            android:text=""
+                            android:textColor="#BFF4FF"
+                            android:textSize="13sp"
+                            android:fontFamily="@font/poppins" />
+                    </LinearLayout>
                 </FrameLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Sound cards -->
+            <!-- Sound cards – row 1 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -110,9 +141,11 @@
                     android:orientation="horizontal">
 
                     <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardRain"
                         android:layout_width="0dp"
                         android:layout_height="86dp"
                         android:layout_weight="1"
+                        android:foreground="?attr/selectableItemBackground"
                         app:cardCornerRadius="22dp"
                         app:cardElevation="0dp"
                         app:cardBackgroundColor="#1AFFFFFF"
@@ -127,7 +160,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Rain"
+                                android:text="🌧 Rain"
                                 android:textColor="@color/text_primary"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
@@ -144,10 +177,12 @@
                     </com.google.android.material.card.MaterialCardView>
 
                     <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardOcean"
                         android:layout_width="0dp"
                         android:layout_height="86dp"
                         android:layout_weight="1"
                         android:layout_marginStart="12dp"
+                        android:foreground="?attr/selectableItemBackground"
                         app:cardCornerRadius="22dp"
                         app:cardElevation="0dp"
                         app:cardBackgroundColor="#1AFFFFFF"
@@ -162,7 +197,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Ocean"
+                                android:text="🌊 Ocean"
                                 android:textColor="@color/text_primary"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
@@ -179,6 +214,7 @@
                     </com.google.android.material.card.MaterialCardView>
                 </LinearLayout>
 
+                <!-- Sound cards – row 2 -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -186,9 +222,11 @@
                     android:orientation="horizontal">
 
                     <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardForest"
                         android:layout_width="0dp"
                         android:layout_height="86dp"
                         android:layout_weight="1"
+                        android:foreground="?attr/selectableItemBackground"
                         app:cardCornerRadius="22dp"
                         app:cardElevation="0dp"
                         app:cardBackgroundColor="#1AFFFFFF"
@@ -203,7 +241,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Forest"
+                                android:text="🌲 Forest"
                                 android:textColor="@color/text_primary"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
@@ -220,10 +258,12 @@
                     </com.google.android.material.card.MaterialCardView>
 
                     <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardWhiteNoise"
                         android:layout_width="0dp"
                         android:layout_height="86dp"
                         android:layout_weight="1"
                         android:layout_marginStart="12dp"
+                        android:foreground="?attr/selectableItemBackground"
                         app:cardCornerRadius="22dp"
                         app:cardElevation="0dp"
                         app:cardBackgroundColor="#1AFFFFFF"
@@ -238,7 +278,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="White Noise"
+                                android:text="〰 White Noise"
                                 android:textColor="@color/text_primary"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
@@ -256,13 +296,53 @@
                 </LinearLayout>
             </LinearLayout>
 
+            <!-- Volume control -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="#1AFFFFFF"
+                app:strokeColor="#1AFFFFFF"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Volume"
+                        android:textColor="@color/text_primary"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/poppins" />
+
+                    <SeekBar
+                        android:id="@+id/seekVolume"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:max="100"
+                        android:progress="70"
+                        android:thumbTint="#39C6FF"
+                        android:progressTint="#39C6FF"
+                        android:progressBackgroundTint="#2AFFFFFF" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Play / Pause button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnPlay"
                 style="@style/Widget.Material3.Button"
                 android:layout_width="match_parent"
                 android:layout_height="58dp"
-                android:layout_marginTop="22dp"
-                android:text="Play Soundscape"
+                android:layout_marginTop="16dp"
+                android:text="▶  Play Soundscape"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:fontFamily="@font/poppins"
@@ -272,8 +352,22 @@
                 app:strokeColor="#39C6FF"
                 app:strokeWidth="1dp" />
 
+            <!-- Sleep timer button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSleepTimer"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:text="15 min sleep timer"
+                android:textAllCaps="false"
+                android:textColor="@color/text_primary"
+                android:fontFamily="@font/poppins"
+                android:textSize="15sp"
+                app:cornerRadius="16dp"
+                app:strokeColor="#2FFFFFFF" />
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-
