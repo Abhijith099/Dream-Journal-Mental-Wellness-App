@@ -3,15 +3,24 @@ package com.abb.luciddreams;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
-import android.content.SharedPreferences;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.CountDownTimer;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,32 +30,25 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.button.MaterialButton;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 public class GuidedMeditationActivity extends AppCompatActivity {
 
-    // ── States ────────────────────────────────────────────────────────────────
-    private enum State { IDLE, RUNNING, PAUSED, COMPLETE }
-    private State state = State.IDLE;
+    private VideoView videoView;
+    private View videoPlaceholder, placeholderPulse, medInner;
+    private FrameLayout particleCanvas;
+    private ProgressBar progressBar;
+    private TextView tvDurationLabel, tvCurrentTime, tvLoopStatus, tvLiveIndicator;
+    private ImageView iconPlayPause, iconMute;
+    private View btnPlayPause, btnMute, btnFullscreen, btnStopMeditation;
+    private View optBreathing, optAnxiety, optThoughts, optSleep;
 
-    // ── Duration options ─────────────────────────────────────────────────────
-    private static final long DUR_5  = 5  * 60 * 1000L;
-    private static final long DUR_10 = 10 * 60 * 1000L;
-    private static final long DUR_SLEEP = 20 * 60 * 1000L;
-    private long selectedDuration = DUR_5;
-
-    // ── Views ─────────────────────────────────────────────────────────────────
-    private View          animParticle, animIcon;
-    private TextView      tvTimer, tvStatus;
-    private MaterialButton btnStart, btn5, btn10, btnSleep;
-    private View          controlPanel;
-    private MaterialButton btnPause, btnEnd;
-
-    // ── Timer + Animator ─────────────────────────────────────────────────────
-    private CountDownTimer countDown;
-    private long           remainingMs;
-    private ObjectAnimator pulseAnim;
-
-    // ── Prefs ─────────────────────────────────────────────────────────────────
-    private SharedPreferences prefs;
+    private MediaPlayer mediaPlayer;
+    private boolean isMuted = false;
+    private Handler progressHandler = new Handler(Looper.getMainLooper());
+    private ParticleView particleView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,307 +56,256 @@ public class GuidedMeditationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guided_meditation);
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.simple_root), (v, insets) -> {
+        View root = findViewById(R.id.med_root);
+        ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
             Insets sys = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(sys.left, sys.top, sys.right, sys.bottom);
             return insets;
         });
 
-        prefs = getSharedPreferences("meditation_prefs", MODE_PRIVATE);
-        selectedDuration = prefs.getLong("duration", DUR_5);
-
         bindViews();
-        wireListeners();
-        applyDurationSelection(selectedDuration);
-        setState(State.IDLE);
+        setupVideoPlayer();
+        setupAnimations();
+        setupListeners();
+        
+        // Start screen fade-in
+        medInner.animate().alpha(1f).setDuration(1000).setInterpolator(new DecelerateInterpolator()).start();
+    }
+
+    private void bindViews() {
+        videoView = findViewById(R.id.videoView);
+        videoPlaceholder = findViewById(R.id.videoPlaceholder);
+        placeholderPulse = findViewById(R.id.placeholderPulse);
+        medInner = findViewById(R.id.med_inner);
+        particleCanvas = findViewById(R.id.particleCanvas);
+        progressBar = findViewById(R.id.videoProgressBar);
+        tvDurationLabel = findViewById(R.id.tvDurationLabel);
+        tvCurrentTime = findViewById(R.id.tvCurrentTime);
+        tvLoopStatus = findViewById(R.id.tvLoopStatus);
+        tvLiveIndicator = findViewById(R.id.tvLiveIndicator);
+        iconPlayPause = findViewById(R.id.iconPlayPause);
+        iconMute = findViewById(R.id.iconMute);
+        
+        btnPlayPause = findViewById(R.id.btnPlayPause);
+        btnMute = findViewById(R.id.btnMute);
+        btnFullscreen = findViewById(R.id.btnFullscreen);
+        btnStopMeditation = findViewById(R.id.btnStopMeditation);
+        
+        optBreathing = findViewById(R.id.optDeepBreathing);
+        optAnxiety = findViewById(R.id.optReduceAnxiety);
+        optThoughts = findViewById(R.id.optClearThoughts);
+        optSleep = findViewById(R.id.optPrepareSleep);
+
+        findViewById(R.id.med_back).setOnClickListener(v -> finish());
+    }
+
+    private void setupVideoPlayer() {
+        try {
+            Uri videoUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.meditation_video);
+            videoView.setVideoURI(videoUri);
+
+            videoView.setOnPreparedListener(mp -> {
+                mediaPlayer = mp;
+                mp.setLooping(true);
+                videoView.start();
+                
+                // Hide placeholder with animation
+                videoPlaceholder.animate().alpha(0f).setDuration(500).withEndAction(() -> {
+                    videoPlaceholder.setVisibility(View.GONE);
+                    videoView.setVisibility(View.VISIBLE);
+                    videoView.setAlpha(0f);
+                    videoView.animate().alpha(1f).setDuration(500).start();
+                }).start();
+
+                updateUIForPlaying();
+                startProgressUpdate();
+                
+                // Set duration label
+                int duration = mp.getDuration() / 1000;
+                int min = duration / 60;
+                int sec = duration % 60;
+                tvDurationLabel.setText(String.format("Duration: %02d:%02d", min, sec));
+                progressBar.setMax(mp.getDuration());
+                
+                tvLiveIndicator.setVisibility(View.VISIBLE);
+                tvLiveIndicator.setAlpha(0f);
+                tvLiveIndicator.animate().alpha(1f).start();
+            });
+
+            videoView.setOnErrorListener((mp, what, extra) -> {
+                // Fallback if video missing
+                tvDurationLabel.setText("Video resource not found");
+                return true;
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void setupAnimations() {
+        // Placeholder pulse
+        ObjectAnimator pulse = ObjectAnimator.ofPropertyValuesHolder(
+                placeholderPulse,
+                android.animation.PropertyValuesHolder.ofFloat(View.SCALE_X, 1f, 1.2f),
+                android.animation.PropertyValuesHolder.ofFloat(View.SCALE_Y, 1f, 1.2f),
+                android.animation.PropertyValuesHolder.ofFloat(View.ALPHA, 0.35f, 0.15f)
+        );
+        pulse.setDuration(2000);
+        pulse.setRepeatCount(ValueAnimator.INFINITE);
+        pulse.setRepeatMode(ValueAnimator.REVERSE);
+        pulse.setInterpolator(new AccelerateDecelerateInterpolator());
+        pulse.start();
+
+        // Background particles
+        particleView = new ParticleView(this);
+        particleCanvas.addView(particleView);
+    }
+
+    private void setupListeners() {
+        btnPlayPause.setOnClickListener(v -> togglePlayPause());
+        btnMute.setOnClickListener(v -> toggleMute());
+        btnStopMeditation.setOnClickListener(v -> stopMeditation());
+        btnFullscreen.setOnClickListener(v -> {
+            // Logic for fullscreen could go here (e.g. rotate and resize)
+            PremiumToast.show(this, "Fullscreen mode enabled (demo)");
+        });
+
+        // Quick options
+        setupOptionClick(optBreathing);
+        setupOptionClick(optAnxiety);
+        setupOptionClick(optThoughts);
+        setupOptionClick(optSleep);
+    }
+
+    private void setupOptionClick(View view) {
+        view.setOnClickListener(v -> {
+            v.animate().scaleX(0.95f).scaleY(0.95f).setDuration(100)
+                    .withEndAction(() -> v.animate().scaleX(1f).scaleY(1f).setDuration(100).start())
+                    .start();
+            PremiumToast.show(this, "Optimizing for your needs...");
+        });
+    }
+
+    private void togglePlayPause() {
+        if (videoView.isPlaying()) {
+            videoView.pause();
+            updateUIForPaused();
+        } else {
+            videoView.start();
+            updateUIForPlaying();
+        }
+    }
+
+    private void toggleMute() {
+        if (mediaPlayer == null) return;
+        isMuted = !isMuted;
+        if (isMuted) {
+            mediaPlayer.setVolume(0, 0);
+            iconMute.setImageResource(R.drawable.ic_mute);
+            iconMute.setAlpha(0.6f);
+        } else {
+            mediaPlayer.setVolume(1, 1);
+            iconMute.setImageResource(R.drawable.ic_unmute);
+            iconMute.setAlpha(1.0f);
+        }
+    }
+
+    private void stopMeditation() {
+        if (mediaPlayer != null) {
+            mediaPlayer.setLooping(false);
+            videoView.stopPlayback();
+        }
+        tvLoopStatus.setText("Meditation stopped.");
+        tvLiveIndicator.setVisibility(View.GONE);
+        videoView.animate().alpha(0f).setDuration(300).start();
+        videoPlaceholder.setVisibility(View.VISIBLE);
+        videoPlaceholder.setAlpha(0f);
+        videoPlaceholder.animate().alpha(1f).setDuration(300).start();
+    }
+
+    private void updateUIForPlaying() {
+        iconPlayPause.setImageResource(R.drawable.ic_pause);
+        iconPlayPause.animate().scaleX(1.1f).scaleY(1.1f).setDuration(200).start();
+    }
+
+    private void updateUIForPaused() {
+        iconPlayPause.setImageResource(R.drawable.ic_play);
+        iconPlayPause.animate().scaleX(1.0f).scaleY(1.0f).setDuration(200).start();
+    }
+
+    private void startProgressUpdate() {
+        progressHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (videoView != null && videoView.isPlaying()) {
+                    int current = videoView.getCurrentPosition();
+                    progressBar.setProgress(current);
+                    
+                    int sec = (current / 1000) % 60;
+                    int min = (current / 1000) / 60;
+                    tvCurrentTime.setText(String.format("%d:%02d", min, sec));
+                }
+                progressHandler.postDelayed(this, 1000);
+            }
+        }, 0);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        // Pause timer when screen leaves foreground
-        if (state == State.RUNNING) pauseSession();
+        if (videoView != null) videoView.stopPlayback();
+        progressHandler.removeCallbacksAndMessages(null);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        cancelTimer();
-        stopPulse();
-    }
+    // ── Custom Particle View ──
+    private class ParticleView extends View {
+        private List<Particle> particles = new ArrayList<>();
+        private Paint paint = new Paint();
+        private Random random = new Random();
 
-    // ─────────────────────────────────────────────────────────────────────────
-    //  View binding
-    // ─────────────────────────────────────────────────────────────────────────
-
-    private void bindViews() {
-        animParticle = findViewById(R.id.medAnimParticle);
-        animIcon     = findViewById(R.id.medAnimIcon);
-        tvTimer      = findViewById(R.id.tvMedTimer);
-        tvStatus     = findViewById(R.id.tvMedStatus);
-        btnStart     = findViewById(R.id.btnStart);
-        btn5         = findViewById(R.id.btn5min);
-        btn10        = findViewById(R.id.btn10min);
-        btnSleep     = findViewById(R.id.btnSleep);
-        controlPanel = findViewById(R.id.medControlPanel);
-        btnPause     = findViewById(R.id.btnMedPause);
-        btnEnd       = findViewById(R.id.btnMedEnd);
-
-        View back = findViewById(R.id.simple_back);
-        if (back != null) back.setOnClickListener(v -> finish());
-    }
-
-    // ─────────────────────────────────────────────────────────────────────────
-    //  Listeners
-    // ─────────────────────────────────────────────────────────────────────────
-
-    private void wireListeners() {
-        btnStart.setOnClickListener(v -> {
-            if (state == State.IDLE || state == State.COMPLETE) startSession();
-        });
-
-        btn5.setOnClickListener(v -> {
-            applyDurationSelection(DUR_5);
-            prefs.edit().putLong("duration", DUR_5).apply();
-        });
-        btn10.setOnClickListener(v -> {
-            applyDurationSelection(DUR_10);
-            prefs.edit().putLong("duration", DUR_10).apply();
-        });
-        btnSleep.setOnClickListener(v -> {
-            applyDurationSelection(DUR_SLEEP);
-            prefs.edit().putLong("duration", DUR_SLEEP).apply();
-        });
-
-        if (btnPause != null) btnPause.setOnClickListener(v -> {
-            if (state == State.RUNNING) pauseSession();
-            else if (state == State.PAUSED) resumeSession();
-        });
-        if (btnEnd != null) btnEnd.setOnClickListener(v -> endSession(false));
-    }
-
-    // ─────────────────────────────────────────────────────────────────────────
-    //  Duration selection
-    // ─────────────────────────────────────────────────────────────────────────
-
-    private void applyDurationSelection(long dur) {
-        selectedDuration = dur;
-        remainingMs = dur;
-        updateTimerText(dur);
-
-        // Highlight selected button
-        int activeColor  = 0xFF39C6FF;
-        int inactiveColor = 0x2FFFFFFF;
-
-        safeStroke(btn5,    dur == DUR_5);
-        safeStroke(btn10,   dur == DUR_10);
-        safeStroke(btnSleep,dur == DUR_SLEEP);
-    }
-
-    private void safeStroke(MaterialButton b, boolean selected) {
-        if (b == null) return;
-        b.setStrokeColor(android.content.res.ColorStateList.valueOf(
-                selected ? 0xFF39C6FF : 0x2FFFFFFF));
-        b.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
-                selected ? 0xFF2A3580 : 0xFF2A3567));
-    }
-
-    // ─────────────────────────────────────────────────────────────────────────
-    //  Session control
-    // ─────────────────────────────────────────────────────────────────────────
-
-    private void startSession() {
-        remainingMs = selectedDuration;
-        setState(State.RUNNING);
-        startTimer(remainingMs);
-        startPulse(selectedDuration == DUR_SLEEP);
-    }
-
-    private void pauseSession() {
-        cancelTimer();
-        stopPulse();
-        setState(State.PAUSED);
-    }
-
-    private void resumeSession() {
-        setState(State.RUNNING);
-        startTimer(remainingMs);
-        startPulse(selectedDuration == DUR_SLEEP);
-    }
-
-    private void endSession(boolean natural) {
-        cancelTimer();
-        stopPulse();
-        setState(natural ? State.COMPLETE : State.IDLE);
-        if (!natural) remainingMs = selectedDuration;
-        updateTimerText(natural ? 0 : selectedDuration);
-    }
-
-    // ─────────────────────────────────────────────────────────────────────────
-    //  State machine → UI
-    // ─────────────────────────────────────────────────────────────────────────
-
-    private void setState(State s) {
-        state = s;
-        switch (s) {
-            case IDLE:
-                btnStart.setText("Start Session");
-                btnStart.setEnabled(true);
-                setVisible(controlPanel, false);
-                setDurationRowEnabled(true);
-                if (tvStatus != null) tvStatus.setText("Choose your duration and begin.");
-                break;
-
-            case RUNNING:
-                btnStart.setEnabled(false);
-                setVisible(controlPanel, true);
-                if (btnPause != null) btnPause.setText("Pause");
-                setDurationRowEnabled(false);
-                if (tvStatus != null) tvStatus.setText("Breathe slowly. You're doing great.");
-                break;
-
-            case PAUSED:
-                if (btnPause != null) btnPause.setText("Resume");
-                if (tvStatus != null) tvStatus.setText("Paused — take your time.");
-                break;
-
-            case COMPLETE:
-                btnStart.setText("Start Again");
-                btnStart.setEnabled(true);
-                setVisible(controlPanel, false);
-                setDurationRowEnabled(true);
-                if (tvStatus != null) {
-                    tvStatus.setText("Session Complete\nYou took time for yourself today.");
-                    tvStatus.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_success, 0, 0, 0);
-                    tvStatus.setCompoundDrawablePadding(20);
-                }
-                if (tvTimer != null) tvTimer.setText("00:00");
-                showCompletionGlow();
-                break;
-        }
-    }
-
-    // ─────────────────────────────────────────────────────────────────────────
-    //  CountDownTimer
-    // ─────────────────────────────────────────────────────────────────────────
-
-    private void startTimer(long millis) {
-        cancelTimer();
-        countDown = new CountDownTimer(millis, 500) {
-            @Override public void onTick(long left) {
-                remainingMs = left;
-                updateTimerText(left);
+        public ParticleView(android.content.Context context) {
+            super(context);
+            paint.setColor(Color.WHITE);
+            paint.setAntiAlias(true);
+            
+            for (int i = 0; i < 40; i++) {
+                particles.add(new Particle());
             }
-            @Override public void onFinish() {
-                remainingMs = 0;
-                endSession(true);
+        }
+
+        @Override
+        protected void onDraw(Canvas canvas) {
+            super.onDraw(canvas);
+            for (Particle p : particles) {
+                p.update(getWidth(), getHeight());
+                paint.setAlpha((int) (p.alpha * 255));
+                canvas.drawCircle(p.x, p.y, p.size, paint);
             }
-        }.start();
-    }
-
-    private void cancelTimer() {
-        if (countDown != null) { countDown.cancel(); countDown = null; }
-    }
-
-    private void updateTimerText(long ms) {
-        if (tvTimer == null) return;
-        long total = ms / 1000;
-        long m = total / 60, s = total % 60;
-        tvTimer.setText(String.format(java.util.Locale.US, "%02d:%02d", m, s));
-    }
-
-    // ─────────────────────────────────────────────────────────────────────────
-    //  Pulse animation
-    // ─────────────────────────────────────────────────────────────────────────
-
-    private void startPulse(boolean sleepMode) {
-        stopPulse();
-        if (animParticle == null) return;
-
-        float maxScale = sleepMode ? 0.7f : 1.0f;
-        float minScale = sleepMode ? 0.45f : 0.6f;
-        long  dur      = sleepMode ? 4000L : 2200L;
-
-        pulseAnim = ObjectAnimator.ofPropertyValuesHolder(
-                animParticle,
-                PropertyValuesHolder.ofFloat(View.SCALE_X, minScale, maxScale),
-                PropertyValuesHolder.ofFloat(View.SCALE_Y, minScale, maxScale),
-                PropertyValuesHolder.ofFloat(View.ALPHA, 0.25f, sleepMode ? 0.18f : 0.45f)
-        );
-        pulseAnim.setDuration(dur);
-        pulseAnim.setRepeatCount(ValueAnimator.INFINITE);
-        pulseAnim.setRepeatMode(ValueAnimator.REVERSE);
-        pulseAnim.setInterpolator(new AccelerateDecelerateInterpolator());
-        pulseAnim.start();
-
-        // Icon breathe
-        if (animIcon != null) {
-            animIcon.animate()
-                    .scaleX(1.12f).scaleY(1.12f)
-                    .setDuration(dur)
-                    .setInterpolator(new AccelerateDecelerateInterpolator()).start();
-            startIconLoop(dur, sleepMode);
+            invalidate();
         }
-    }
 
-    private void startIconLoop(long dur, boolean slow) {
-        if (animIcon == null) return;
-        animIcon.animate()
-                .scaleX(slow ? 1.06f : 1.14f)
-                .scaleY(slow ? 1.06f : 1.14f)
-                .setDuration(dur)
-                .setInterpolator(new AccelerateDecelerateInterpolator())
-                .withEndAction(() -> {
-                    if (state == State.RUNNING && animIcon != null) {
-                        animIcon.animate()
-                                .scaleX(1f).scaleY(1f)
-                                .setDuration(dur)
-                                .setInterpolator(new AccelerateDecelerateInterpolator())
-                                .withEndAction(() -> { if (state == State.RUNNING) startIconLoop(dur, slow); })
-                                .start();
-                    }
-                }).start();
-    }
+        private class Particle {
+            float x, y, size, speed, alpha;
+            
+            Particle() {
+                reset(true);
+            }
 
-    private void stopPulse() {
-        if (pulseAnim != null) { pulseAnim.cancel(); pulseAnim = null; }
-        if (animIcon  != null) { animIcon.clearAnimation(); animIcon.animate().cancel(); }
-        if (animParticle != null) { animParticle.clearAnimation(); animParticle.animate().cancel(); }
-    }
+            void reset(boolean startRandom) {
+                x = random.nextFloat() * 1000; // Will be corrected on first update
+                y = startRandom ? random.nextFloat() * 2000 : 2100;
+                size = 2 + random.nextFloat() * 4;
+                speed = 0.5f + random.nextFloat() * 1.5f;
+                alpha = 0.1f + random.nextFloat() * 0.4f;
+            }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    //  Helpers
-    // ─────────────────────────────────────────────────────────────────────────
-
-    private void showCompletionGlow() {
-        if (animParticle == null) return;
-        animParticle.animate().scaleX(1.4f).scaleY(1.4f).alpha(0.6f)
-                .setDuration(600).setInterpolator(new DecelerateInterpolator())
-                .withEndAction(() -> animParticle.animate()
-                        .scaleX(1f).scaleY(1f).alpha(0.35f)
-                        .setDuration(800).start())
-                .start();
-    }
-
-    private void setVisible(View v, boolean visible) {
-        if (v == null) return;
-        if (visible) {
-            v.setVisibility(View.VISIBLE);
-            v.setAlpha(0f);
-            v.animate().alpha(1f).setDuration(220).start();
-        } else {
-            v.animate().alpha(0f).setDuration(180)
-                    .withEndAction(() -> v.setVisibility(View.GONE)).start();
+            void update(int w, int h) {
+                if (x > w) x = random.nextFloat() * w;
+                y -= speed;
+                if (y < -50) reset(false);
+                if (x < 0 || x > w) x = random.nextFloat() * w;
+            }
         }
-    }
-
-    private void setDurationRowEnabled(boolean enabled) {
-        if (btn5  != null) btn5.setEnabled(enabled);
-        if (btn10 != null) btn10.setEnabled(enabled);
-        if (btnSleep != null) btnSleep.setEnabled(enabled);
-        float alpha = enabled ? 1f : 0.45f;
-        if (btn5    != null) btn5.setAlpha(alpha);
-        if (btn10   != null) btn10.setAlpha(alpha);
-        if (btnSleep!= null) btnSleep.setAlpha(alpha);
     }
 }
