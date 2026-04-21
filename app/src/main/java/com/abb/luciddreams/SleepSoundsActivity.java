@@ -4,14 +4,12 @@ import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.content.SharedPreferences;
-import android.media.AudioAttributes;
-import android.media.AudioFormat;
-import android.media.AudioManager;
-import android.media.AudioTrack;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.SeekBar;
@@ -26,12 +24,9 @@ import androidx.core.view.WindowInsetsCompat;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 
-import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
 public class SleepSoundsActivity extends AppCompatActivity {
+
+    private static final String TAG = "SleepSoundsActivity";
 
     // ── Sound types ────────────────────────────────────────────────────────────
     private static final int SOUND_RAIN       = 0;
@@ -44,12 +39,8 @@ public class SleepSoundsActivity extends AppCompatActivity {
     private boolean isPlaying  = false;
     private float   volume     = 0.7f;
 
-    // ── AudioTrack synthesis ──────────────────────────────────────────────────
-    private static final int SAMPLE_RATE = 22050;
-    private AudioTrack audioTrack;
-    private ExecutorService audioExecutor;
-    private Future<?>  audioFuture;
-    private volatile boolean audioRunning = false;
+    // ── MediaPlayer ──────────────────────────────────────────────────────────
+    private MediaPlayer mediaPlayer;
 
     // ── Sleep timer (15 min) ─────────────────────────────────────────────────
     private static final long SLEEP_TIMER_MS = 15 * 60 * 1000L;
@@ -86,8 +77,6 @@ public class SleepSoundsActivity extends AppCompatActivity {
         selectedSound = prefs.getInt("last_sound", -1);
         volume = prefs.getFloat("volume", 0.7f);
 
-        audioExecutor = Executors.newSingleThreadExecutor();
-
         bindViews();
         wireListeners();
         applyVolumeUi(volume);
@@ -99,6 +88,8 @@ public class SleepSoundsActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        // Keep playing if user leaves, or stop if you prefer? 
+        // Standard sleep apps keep playing. Let's stop for now as per original behavior.
         stopAudio();
         stopSleepTimer();
     }
@@ -108,7 +99,6 @@ public class SleepSoundsActivity extends AppCompatActivity {
         super.onDestroy();
         stopAudio();
         stopSleepTimer();
-        audioExecutor.shutdownNow();
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -162,7 +152,9 @@ public class SleepSoundsActivity extends AppCompatActivity {
             seekVolume.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override public void onProgressChanged(SeekBar sb, int p, boolean user) {
                     volume = p / 100f;
-                    applyVolumeToTrack();
+                    if (mediaPlayer != null) {
+                        mediaPlayer.setVolume(volume, volume);
+                    }
                     prefs.edit().putFloat("volume", volume).apply();
                 }
                 @Override public void onStartTrackingTouch(SeekBar sb) {}
@@ -216,125 +208,53 @@ public class SleepSoundsActivity extends AppCompatActivity {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    //  Audio playback via AudioTrack synthesis
+    //  Audio playback via MediaPlayer using raw resources
     // ─────────────────────────────────────────────────────────────────────────
 
     private void startAudio(int sound) {
         stopAudio();
         isPlaying = true;
-        audioRunning = true;
         updatePlayButton();
         startPulseAnim();
 
-        audioFuture = audioExecutor.submit(() -> {
-            try {
-                int bufSize = AudioTrack.getMinBufferSize(SAMPLE_RATE,
-                        AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
-                bufSize = Math.max(bufSize, SAMPLE_RATE / 4); // at least 0.25s
-
-                AudioAttributes attrs = new AudioAttributes.Builder()
-                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                        .setUsage(AudioAttributes.USAGE_MEDIA)
-                        .build();
-                AudioFormat fmt = new AudioFormat.Builder()
-                        .setSampleRate(SAMPLE_RATE)
-                        .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
-                        .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
-                        .build();
-
-                audioTrack = new AudioTrack(attrs, fmt, bufSize,
-                        AudioTrack.MODE_STREAM, AudioManager.AUDIO_SESSION_ID_GENERATE);
-                audioTrack.play();
-
-                short[] buffer = new short[bufSize];
-                Random  rng    = new Random();
-
-                while (audioRunning && !Thread.currentThread().isInterrupted()) {
-                    generateSamples(sound, buffer, rng);
-                    // apply volume
-                    applyGain(buffer, volume);
-                    if (audioRunning) audioTrack.write(buffer, 0, buffer.length);
-                }
-            } catch (Exception ignored) {
-            } finally {
-                if (audioTrack != null) {
-                    try { audioTrack.stop(); } catch (Exception ignored) {}
-                    try { audioTrack.release(); } catch (Exception ignored) {}
-                    audioTrack = null;
-                }
-            }
-        });
-    }
-
-    private void generateSamples(int sound, short[] buffer, Random rng) {
+        int resId;
         switch (sound) {
-            case SOUND_RAIN:       generateRain(buffer, rng);       break;
-            case SOUND_OCEAN:      generateOcean(buffer, rng);      break;
-            case SOUND_FOREST:     generateForest(buffer, rng);     break;
-            case SOUND_WHITE_NOISE:generateWhiteNoise(buffer, rng); break;
+            case SOUND_RAIN:       resId = R.raw.rain;        break;
+            case SOUND_OCEAN:      resId = R.raw.ocean;       break;
+            case SOUND_FOREST:     resId = R.raw.forest;      break;
+            case SOUND_WHITE_NOISE:resId = R.raw.white_noise; break;
+            default: return;
         }
-    }
 
-    // ── White noise ───────────────────────────────────────────────────────────
-    private void generateWhiteNoise(short[] buf, Random rng) {
-        for (int i = 0; i < buf.length; i++) {
-            buf[i] = (short)(rng.nextGaussian() * 8000);
-        }
-    }
-
-    // ── Rain: pink-ish noise with soft amplitude modulation ──────────────────
-    private double rainPrev = 0;
-    private void generateRain(short[] buf, Random rng) {
-        for (int i = 0; i < buf.length; i++) {
-            double white = rng.nextGaussian();
-            // one-pole low-pass (simple pink approximation)
-            rainPrev = 0.97 * rainPrev + 0.03 * white;
-            double sample = rainPrev * 0.5 + white * 0.5;
-            buf[i] = (short) Math.max(-32767, Math.min(32767, sample * 9000));
-        }
-    }
-
-    // ── Ocean: low-frequency sine sweep + noise ───────────────────────────────
-    private double oceanPhase = 0;
-    private void generateOcean(short[] buf, Random rng) {
-        double waveFreq = 0.08; // ~0.08 Hz swell
-        for (int i = 0; i < buf.length; i++) {
-            oceanPhase += 2 * Math.PI * waveFreq / SAMPLE_RATE;
-            double swell = 0.5 + 0.5 * Math.sin(oceanPhase);
-            double noise = rng.nextGaussian();
-            double sample = noise * swell;
-            buf[i] = (short) Math.max(-32767, Math.min(32767, sample * 11000));
-        }
-    }
-
-    // ── Forest: band-pass noise (mid frequencies like wind / leaves) ──────────
-    private double forestPrev1 = 0, forestPrev2 = 0;
-    private void generateForest(short[] buf, Random rng) {
-        for (int i = 0; i < buf.length; i++) {
-            double white = rng.nextGaussian();
-            forestPrev1 = 0.94 * forestPrev1 + 0.06 * white;
-            forestPrev2 = 0.90 * forestPrev2 + 0.10 * white;
-            double sample = forestPrev2 - forestPrev1;
-            buf[i] = (short) Math.max(-32767, Math.min(32767, sample * 18000));
-        }
-    }
-
-    private void applyGain(short[] buf, float gain) {
-        for (int i = 0; i < buf.length; i++) {
-            buf[i] = (short) Math.max(-32767, Math.min(32767, buf[i] * gain));
-        }
-    }
-
-    private void applyVolumeToTrack() {
-        if (audioTrack != null) {
-            try { audioTrack.setVolume(volume); } catch (Exception ignored) {}
+        try {
+            mediaPlayer = MediaPlayer.create(this, resId);
+            if (mediaPlayer != null) {
+                mediaPlayer.setLooping(true);
+                mediaPlayer.setVolume(volume, volume);
+                mediaPlayer.start();
+            } else {
+                Log.e(TAG, "Failed to create MediaPlayer for resId: " + resId);
+                isPlaying = false;
+                updatePlayButton();
+                stopPulseAnim();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error starting MediaPlayer", e);
+            isPlaying = false;
+            updatePlayButton();
+            stopPulseAnim();
         }
     }
 
     private void stopAudio() {
-        audioRunning = false;
-        if (audioFuture != null) { audioFuture.cancel(true); audioFuture = null; }
         isPlaying = false;
+        if (mediaPlayer != null) {
+            try {
+                if (mediaPlayer.isPlaying()) mediaPlayer.stop();
+                mediaPlayer.release();
+            } catch (Exception ignored) {}
+            mediaPlayer = null;
+        }
         stopPulseAnim();
         mainHandler.post(() -> {
             updatePlayButton();
@@ -408,9 +328,9 @@ public class SleepSoundsActivity extends AppCompatActivity {
 
     private void updatePlayButton() {
         if (btnPlay == null) return;
-        btnPlay.setText(isPlaying ? "⏸  Pause" : "▶  Play Soundscape");
-        btnPlay.setStrokeColor(android.content.res.ColorStateList.valueOf(
-                isPlaying ? 0xFF39C6FF : 0xFF39C6FF));
+        btnPlay.setText(isPlaying ? "Pause" : "Play Soundscape");
+        btnPlay.setIconResource(isPlaying ? R.drawable.ic_pause : R.drawable.ic_play);
+        btnPlay.setStrokeColor(android.content.res.ColorStateList.valueOf(0xFF39C6FF));
     }
 
     private void updateNowPlaying() {

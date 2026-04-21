@@ -8,6 +8,8 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
@@ -146,14 +148,22 @@ public class AddDreamActivity extends AppCompatActivity {
     }
 
     private void setupSpeechRecognizer() {
+        if (!SpeechRecognizer.isRecognitionAvailable(this)) {
+            tvMicStatus.setText("Speech STT Not Available");
+            btnHoldToTalk.setEnabled(false);
+            return;
+        }
+
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
         Intent speechIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         speechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        speechIntent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
 
         speechRecognizer.setRecognitionListener(new RecognitionListener() {
             @Override
             public void onReadyForSpeech(Bundle params) {
                 tvMicStatus.setText("Listening...");
+                btnHoldToTalk.setAlpha(1.0f);
             }
 
             @Override
@@ -168,33 +178,46 @@ public class AddDreamActivity extends AppCompatActivity {
             @Override
             public void onEndOfSpeech() {
                 tvMicStatus.setText("Processing...");
-                btnHoldToTalk.setVisibility(View.GONE);
-                btnAnalyze.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onError(int error) {
+                String message;
+                switch (error) {
+                    case SpeechRecognizer.ERROR_AUDIO: message = "Audio error"; break;
+                    case SpeechRecognizer.ERROR_CLIENT: message = "Client error"; break;
+                    case SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS: message = "Permission missing"; break;
+                    case SpeechRecognizer.ERROR_NETWORK: message = "Network error"; break;
+                    case SpeechRecognizer.ERROR_NETWORK_TIMEOUT: message = "Network timeout"; break;
+                    case SpeechRecognizer.ERROR_NO_MATCH: message = "No speech detected"; break;
+                    case SpeechRecognizer.ERROR_RECOGNIZER_BUSY: message = "Busy, try again"; break;
+                    case SpeechRecognizer.ERROR_SERVER: message = "Server error"; break;
+                    case SpeechRecognizer.ERROR_SPEECH_TIMEOUT: message = "No speech input"; break;
+                    default: message = "STT Error: " + error; break;
+                }
                 tvMicStatus.setText("Hold to Talk");
-                PremiumToast.show(AddDreamActivity.this, "Speech recognition error");
+                btnHoldToTalk.setAlpha(1.0f);
+                PremiumToast.show(AddDreamActivity.this, message);
             }
 
             @Override
             public void onResults(Bundle results) {
                 tvMicStatus.setText("Hold to Talk");
+                btnHoldToTalk.setAlpha(1.0f);
                 ArrayList<String> data = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
                 if (data != null && !data.isEmpty()) {
                     String recognizedText = data.get(0);
-                    String currentText = etDreamJournal.getText().toString();
-                    if (!currentText.isEmpty() && !currentText.endsWith(" ")) {
-                        currentText += " ";
-                    }
-                    etDreamJournal.setText(currentText + recognizedText);
-                    etDreamJournal.setSelection(etDreamJournal.getText().length());
+                    appendToJournal(recognizedText);
                 }
             }
 
             @Override
-            public void onPartialResults(Bundle partialResults) {}
+            public void onPartialResults(Bundle partialResults) {
+                ArrayList<String> data = partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+                if (data != null && !data.isEmpty()) {
+                    tvMicStatus.setText("..." + data.get(0));
+                }
+            }
 
             @Override
             public void onEvent(int eventType, Bundle params) {}
@@ -203,13 +226,25 @@ public class AddDreamActivity extends AppCompatActivity {
         btnHoldToTalk.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 if (checkAudioPermission()) {
+                    v.setAlpha(0.6f);
+                    v.performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS);
                     speechRecognizer.startListening(speechIntent);
                 }
-            } else if (event.getAction() == MotionEvent.ACTION_UP) {
+            } else if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
+                v.setAlpha(1.0f);
                 speechRecognizer.stopListening();
             }
             return true;
         });
+    }
+
+    private void appendToJournal(String text) {
+        String current = etDreamJournal.getText().toString();
+        if (!current.isEmpty() && !current.endsWith(" ")) {
+            current += " ";
+        }
+        etDreamJournal.setText(current + text);
+        etDreamJournal.setSelection(etDreamJournal.getText().length());
     }
 
     private void saveDraft() {

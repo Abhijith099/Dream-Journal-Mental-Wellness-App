@@ -8,6 +8,11 @@
     android:background="@drawable/bg_main_gradient"
     tools:context=".AnalysisDashboardActivity">
 
+    <com.abb.luciddreams.GlitterBackgroundView
+        android:id="@+id/glitterBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollContent"
         android:layout_width="match_parent"
