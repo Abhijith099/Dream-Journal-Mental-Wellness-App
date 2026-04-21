@@ -158,13 +158,17 @@
                             android:gravity="center_vertical"
                             android:padding="16dp">
                             <TextView
+                                android:id="@+id/tvRain"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="🌧 Rain"
+                                android:text="Rain"
                                 android:textColor="@color/text_primary"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
-                                android:fontFamily="@font/poppins" />
+                                android:fontFamily="@font/poppins"
+                                app:drawableStartCompat="@drawable/ic_calm"
+                                android:drawablePadding="8dp"
+                                app:drawableTint="@color/text_primary" />
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -195,13 +199,17 @@
                             android:gravity="center_vertical"
                             android:padding="16dp">
                             <TextView
+                                android:id="@+id/tvOcean"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="🌊 Ocean"
+                                android:text="Ocean"
                                 android:textColor="@color/text_primary"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
-                                android:fontFamily="@font/poppins" />
+                                android:fontFamily="@font/poppins"
+                                app:drawableStartCompat="@drawable/ic_calm"
+                                android:drawablePadding="8dp"
+                                app:drawableTint="@color/text_primary" />
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -239,13 +247,17 @@
                             android:gravity="center_vertical"
                             android:padding="16dp">
                             <TextView
+                                android:id="@+id/tvForest"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="🌲 Forest"
+                                android:text="Forest"
                                 android:textColor="@color/text_primary"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
-                                android:fontFamily="@font/poppins" />
+                                android:fontFamily="@font/poppins"
+                                app:drawableStartCompat="@drawable/ic_calm"
+                                android:drawablePadding="8dp"
+                                app:drawableTint="@color/text_primary" />
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -276,13 +288,17 @@
                             android:gravity="center_vertical"
                             android:padding="16dp">
                             <TextView
+                                android:id="@+id/tvWhiteNoise"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="〰 White Noise"
+                                android:text="White Noise"
                                 android:textColor="@color/text_primary"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
-                                android:fontFamily="@font/poppins" />
+                                android:fontFamily="@font/poppins"
+                                app:drawableStartCompat="@drawable/ic_calm"
+                                android:drawablePadding="8dp"
+                                app:drawableTint="@color/text_primary" />
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"

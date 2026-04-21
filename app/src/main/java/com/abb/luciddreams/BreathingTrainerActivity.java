@@ -47,7 +47,7 @@ public class BreathingTrainerActivity extends AppCompatActivity {
     private View           breathIcon;
     private TextView       tvBreathPhase, tvBreathCountdown, tvSessionTimer;
     private MaterialButton btnStartBreathing, btnPauseBreath, btnStopBreath;
-    private View           phasePanel, controlPanel;
+    private View           controlPanel;
     private MaterialButton btnDur1, btnDur3, btnDur5;
 
     // ── Timer + breathing loop ─────────────────────────────────────────────────
@@ -108,7 +108,7 @@ public class BreathingTrainerActivity extends AppCompatActivity {
         btnPauseBreath   = findViewById(R.id.btnPauseBreath);
         btnStopBreath    = findViewById(R.id.btnStopBreath);
         controlPanel     = findViewById(R.id.breathControlPanel);
-        phasePanel       = findViewById(R.id.breathPhasePanel);
+
         btnDur1          = findViewById(R.id.btnDur1);
         btnDur3          = findViewById(R.id.btnDur3);
         btnDur5          = findViewById(R.id.btnDur5);

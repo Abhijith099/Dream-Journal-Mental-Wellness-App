@@ -417,13 +417,20 @@ public class SleepSoundsActivity extends AppCompatActivity {
         if (tvNowPlaying == null) return;
         if (!isPlaying || selectedSound < 0) {
             tvNowPlaying.setText("Select a sound to begin");
+            tvNowPlaying.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
         } else {
-            String[] names = {"🌧  Rain", "🌊  Ocean", "🌲  Forest", "〰  White Noise"};
+            String[] names = {"Rain", "Ocean", "Forest", "White Noise"};
             tvNowPlaying.setText("Now playing: " + names[selectedSound]);
+            tvNowPlaying.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_calm, 0, 0, 0);
+            tvNowPlaying.setCompoundDrawablePadding(dpToPx(8));
         }
     }
 
     private void applyVolumeUi(float v) {
         if (seekVolume != null) seekVolume.setProgress((int)(v * 100));
+    }
+
+    private int dpToPx(int dp) {
+        return (int)(dp * getResources().getDisplayMetrics().density);
     }
 }

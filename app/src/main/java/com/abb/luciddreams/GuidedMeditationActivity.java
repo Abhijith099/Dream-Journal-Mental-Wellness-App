@@ -224,7 +224,9 @@ public class GuidedMeditationActivity extends AppCompatActivity {
                 setVisible(controlPanel, false);
                 setDurationRowEnabled(true);
                 if (tvStatus != null) {
-                    tvStatus.setText("✨  Session Complete\nYou took time for yourself today.");
+                    tvStatus.setText("Session Complete\nYou took time for yourself today.");
+                    tvStatus.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_success, 0, 0, 0);
+                    tvStatus.setCompoundDrawablePadding(20);
                 }
                 if (tvTimer != null) tvTimer.setText("00:00");
                 showCompletionGlow();
@@ -289,7 +291,7 @@ public class GuidedMeditationActivity extends AppCompatActivity {
         if (animIcon != null) {
             animIcon.animate()
                     .scaleX(1.12f).scaleY(1.12f)
-                    .setDuration(dur).setRepeatCount(-1) // no API, workaround below
+                    .setDuration(dur)
                     .setInterpolator(new AccelerateDecelerateInterpolator()).start();
             startIconLoop(dur, sleepMode);
         }

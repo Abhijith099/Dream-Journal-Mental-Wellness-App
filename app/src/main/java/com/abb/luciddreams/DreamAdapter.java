@@ -106,24 +106,19 @@ public class DreamAdapter extends RecyclerView.Adapter<DreamAdapter.DreamViewHol
         }
         switch (mood) {
             case "Happy":
-            case "✨":
                 imageView.setImageResource(R.drawable.ic_lucid_happy);
                 break;
             case "Calm":
-            case "🌙":
                 imageView.setImageResource(R.drawable.ic_calm);
                 break;
             case "Unclear":
             case "Neutral":
-            case "☁":
                 imageView.setImageResource(R.drawable.ic_neutral);
                 break;
             case "Stressed":
-            case "⚡":
                 imageView.setImageResource(R.drawable.ic_stressed);
                 break;
             case "Fearful":
-            case "🔥":
                 imageView.setImageResource(R.drawable.ic_fearful);
                 break;
             default:

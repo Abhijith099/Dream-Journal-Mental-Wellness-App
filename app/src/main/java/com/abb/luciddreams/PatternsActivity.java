@@ -350,20 +350,15 @@ public class PatternsActivity extends AppCompatActivity {
         if (mood == null) return R.drawable.ic_mood_unclear;
         switch (mood) {
             case "Happy":
-            case "✨":
                 return R.drawable.ic_mood_lucid;
             case "Calm":
-            case "🌙":
                 return R.drawable.ic_mood_calm;
             case "Neutral":
             case "Unclear":
-            case "☁":
                 return R.drawable.ic_mood_neutral;
             case "Stressed":
-            case "⚡":
                 return R.drawable.ic_mood_stressed;
             case "Fearful":
-            case "🔥":
                 return R.drawable.ic_mood_intense;
             default:
                 return R.drawable.ic_mood_unclear;
@@ -385,20 +380,15 @@ public class PatternsActivity extends AppCompatActivity {
         if (mood == null) return "Neutral";
         switch (mood) {
             case "Happy":
-            case "✨":
                 return "Happy";
             case "Calm":
-            case "🌙":
                 return "Calm";
             case "Neutral":
             case "Unclear":
-            case "☁":
                 return "Neutral";
             case "Stressed":
-            case "⚡":
                 return "Stressed";
             case "Fearful":
-            case "🔥":
                 return "Fearful";
             default:
                 return mood.isEmpty() ? "Neutral" : mood;

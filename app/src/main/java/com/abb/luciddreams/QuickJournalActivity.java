@@ -32,7 +32,15 @@ import java.util.Locale;
 public class QuickJournalActivity extends AppCompatActivity {
 
     // ── Mood options ───────────────────────────────────────────────────────────
-    private static final String[] MOODS = {"😌 Calm", "😊 Happy", "😔 Sad", "😤 Anxious", "😴 Tired", "✨ Grateful"};
+    private static final String[] MOODS = {"Calm", "Happy", "Sad", "Anxious", "Tired", "Grateful"};
+    private static final int[] MOOD_ICONS = {
+        R.drawable.ic_mood_calm,
+        R.drawable.ic_mood_good,
+        R.drawable.ic_mood_bad,
+        R.drawable.ic_mood_stressed,
+        R.drawable.ic_neutral,
+        R.drawable.ic_gratitude
+    };
     private String selectedMood = null;
 
     // ── Views ─────────────────────────────────────────────────────────────────
@@ -106,13 +114,16 @@ public class QuickJournalActivity extends AppCompatActivity {
             MaterialButton btn = new MaterialButton(this, null,
                     com.google.android.material.R.attr.materialButtonOutlinedStyle);
             btn.setText(MOODS[i]);
+            btn.setIconResource(MOOD_ICONS[i]);
+            btn.setIconTintResource(R.color.text_primary);
+            btn.setIconPadding(dpToPx(6));
             btn.setTextSize(13f);
             btn.setTextColor(android.content.res.ColorStateList.valueOf(0xFFFFFFFF));
             btn.setStrokeColor(android.content.res.ColorStateList.valueOf(0x2FFFFFFF));
             btn.setBackgroundTintList(android.content.res.ColorStateList.valueOf(0x00000000));
             btn.setCornerRadius(dpToPx(14));
             btn.setInsetTop(0); btn.setInsetBottom(0);
-            btn.setPadding(dpToPx(4), dpToPx(6), dpToPx(4), dpToPx(6));
+            btn.setPadding(dpToPx(8), dpToPx(6), dpToPx(8), dpToPx(6));
             btn.setSingleLine(true);
 
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
@@ -199,7 +210,11 @@ public class QuickJournalActivity extends AppCompatActivity {
         }
 
         if (confirmBanner == null) return;
-        if (tvConfirm != null) tvConfirm.setText("✨  Reflection Saved");
+        if (tvConfirm != null) {
+            tvConfirm.setText("Reflection Saved");
+            tvConfirm.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_success, 0, 0, 0);
+            tvConfirm.setCompoundDrawablePadding(dpToPx(10));
+        }
         confirmBanner.setVisibility(View.VISIBLE);
         confirmBanner.setAlpha(0f);
         confirmBanner.setTranslationY(-dpToPx(10));

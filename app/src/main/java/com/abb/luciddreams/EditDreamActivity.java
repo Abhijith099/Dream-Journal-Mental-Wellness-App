@@ -155,19 +155,15 @@ public class EditDreamActivity extends AppCompatActivity {
     private void updateMoodHighlight(String mood) {
         switch (mood) {
             case "Calm":
-            case "🌙":
                 updateMoodSelection("Calm", moodCalm);
                 break;
             case "Stressed":
-            case "⚡":
                 updateMoodSelection("Stressed", moodStressed);
                 break;
             case "Happy":
-            case "✨":
                 updateMoodSelection("Happy", moodLucid);
                 break;
             case "Fearful":
-            case "🔥":
                 updateMoodSelection("Fearful", moodIntense);
                 break;
             default:
