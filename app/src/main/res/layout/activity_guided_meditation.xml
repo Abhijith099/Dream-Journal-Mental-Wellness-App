@@ -27,7 +27,7 @@
             android:paddingTop="10dp"
             android:paddingBottom="28dp">
 
-            <!-- Top app bar (safe below system insets via Activity padding) -->
+            <!-- Top app bar -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
@@ -82,23 +82,60 @@
                     android:layout_height="match_parent"
                     android:background="@drawable/bg_calm_actions_panel">
 
+                    <!-- Animated pulsing particle -->
                     <View
+                        android:id="@+id/medAnimParticle"
                         android:layout_width="220dp"
                         android:layout_height="220dp"
                         android:layout_gravity="center"
                         android:alpha="0.35"
                         android:background="@drawable/bg_calm_particle_purple" />
 
-                    <ImageView
-                        android:layout_width="64dp"
-                        android:layout_height="64dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_meditation"
-                        app:tint="#D7C6FF"
-                        android:contentDescription="Meditation animation placeholder" />
+                    <!-- Meditation icon + timer overlay -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/medAnimIcon"
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"
+                            android:src="@drawable/ic_meditation"
+                            app:tint="#D7C6FF"
+                            android:contentDescription="Meditation animation" />
+
+                        <TextView
+                            android:id="@+id/tvMedTimer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="14dp"
+                            android:text="05:00"
+                            android:textColor="#D7C6FF"
+                            android:textSize="40sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/poppins"
+                            android:letterSpacing="0.05" />
+
+                        <TextView
+                            android:id="@+id/tvMedStatus"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:gravity="center"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:text="Choose your duration and begin."
+                            android:textColor="@color/text_secondary"
+                            android:textSize="13sp"
+                            android:fontFamily="@font/poppins"
+                            android:lineSpacingMultiplier="1.3" />
+                    </LinearLayout>
                 </FrameLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Start button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnStart"
                 style="@style/Widget.Material3.Button"
@@ -115,7 +152,46 @@
                 app:strokeColor="#39C6FF"
                 app:strokeWidth="1dp" />
 
-            <!-- Secondary options -->
+            <!-- Pause / End control panel (hidden until session starts) -->
+            <LinearLayout
+                android:id="@+id/medControlPanel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnMedPause"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:text="Pause"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text_primary"
+                    android:fontFamily="@font/poppins"
+                    android:textSize="15sp"
+                    app:cornerRadius="16dp"
+                    app:strokeColor="#39C6FF" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnMedEnd"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="10dp"
+                    android:text="End"
+                    android:textAllCaps="false"
+                    android:textColor="#FF6B8A"
+                    android:fontFamily="@font/poppins"
+                    android:textSize="15sp"
+                    app:cornerRadius="16dp"
+                    app:strokeColor="#FF6B8A" />
+            </LinearLayout>
+
+            <!-- Duration options -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -124,6 +200,7 @@
                 android:gravity="center">
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn5min"
                     style="@style/Widget.Material3.Button.OutlinedButton"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
@@ -136,6 +213,7 @@
                     app:strokeColor="#2FFFFFFF" />
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn10min"
                     style="@style/Widget.Material3.Button.OutlinedButton"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
@@ -149,6 +227,7 @@
                     app:strokeColor="#2FFFFFFF" />
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSleep"
                     style="@style/Widget.Material3.Button.OutlinedButton"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
@@ -176,4 +255,3 @@
     </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-
