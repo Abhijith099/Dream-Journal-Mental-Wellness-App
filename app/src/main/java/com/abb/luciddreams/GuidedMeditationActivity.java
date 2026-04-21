@@ -202,11 +202,11 @@ public class GuidedMeditationActivity extends AppCompatActivity {
         isMuted = !isMuted;
         if (isMuted) {
             mediaPlayer.setVolume(0, 0);
-            iconMute.setImageResource(R.drawable.ic_support_shield); // Placeholder for mute icon
-            iconMute.setAlpha(0.5f);
+            iconMute.setImageResource(R.drawable.ic_mute);
+            iconMute.setAlpha(0.6f);
         } else {
             mediaPlayer.setVolume(1, 1);
-            iconMute.setImageResource(R.drawable.ic_calm);
+            iconMute.setImageResource(R.drawable.ic_unmute);
             iconMute.setAlpha(1.0f);
         }
     }
@@ -225,12 +225,12 @@ public class GuidedMeditationActivity extends AppCompatActivity {
     }
 
     private void updateUIForPlaying() {
-        iconPlayPause.setImageResource(R.drawable.ic_meditation); // Assuming this is a pause-like icon or we can use another
-        // If we don't have a pause icon, we just keep it as is or tint it
+        iconPlayPause.setImageResource(R.drawable.ic_pause);
         iconPlayPause.animate().scaleX(1.1f).scaleY(1.1f).setDuration(200).start();
     }
 
     private void updateUIForPaused() {
+        iconPlayPause.setImageResource(R.drawable.ic_play);
         iconPlayPause.animate().scaleX(1.0f).scaleY(1.0f).setDuration(200).start();
     }
 

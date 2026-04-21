@@ -259,7 +259,7 @@
                                 android:id="@+id/iconMute"
                                 android:layout_width="22dp"
                                 android:layout_height="22dp"
-                                android:src="@drawable/ic_calm"
+                                android:src="@drawable/ic_unmute"
                                 app:tint="#BFC8E8"
                                 android:contentDescription="Mute" />
                         </LinearLayout>
@@ -279,7 +279,7 @@
                                 android:id="@+id/iconPlayPause"
                                 android:layout_width="28dp"
                                 android:layout_height="28dp"
-                                android:src="@drawable/ic_meditation"
+                                android:src="@drawable/ic_pause"
                                 app:tint="#FFFFFF"
                                 android:contentDescription="Play / Pause" />
                         </LinearLayout>
