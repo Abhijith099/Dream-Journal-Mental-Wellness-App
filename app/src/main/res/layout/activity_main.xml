@@ -8,6 +8,11 @@
     android:background="@drawable/bg_main_gradient"
     tools:context=".MainActivity">
 
+    <com.abb.luciddreams.GlitterBackgroundView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:importantForAccessibility="no" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">

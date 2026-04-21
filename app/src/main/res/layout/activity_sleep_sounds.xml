@@ -6,6 +6,11 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg_main_gradient">
 
+    <com.abb.luciddreams.GlitterBackgroundView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:importantForAccessibility="no" />
+
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scroll"
         android:layout_width="0dp"

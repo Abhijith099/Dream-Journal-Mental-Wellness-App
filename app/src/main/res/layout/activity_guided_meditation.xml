@@ -339,11 +339,14 @@
                     android:paddingEnd="14dp"
                     android:paddingTop="5dp"
                     android:paddingBottom="5dp"
-                    android:text="🔁  Auto-looping — playing continuously"
+                    android:text="Auto-looping — playing continuously"
                     android:textColor="#80D7C6FF"
                     android:textSize="12sp"
                     android:fontFamily="@font/poppins"
-                    android:background="@drawable/bg_tag" />
+                    android:background="@drawable/bg_tag"
+                    app:drawableStartCompat="@drawable/ic_neural_pulse"
+                    android:drawablePadding="6dp"
+                    app:drawableTint="#80D7C6FF" />
 
             </LinearLayout>
 
@@ -566,11 +569,11 @@
                     android:padding="16dp"
                     android:gravity="center_vertical">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="💡"
-                        android:textSize="20sp" />
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_suggestions"
+                        app:tint="#F6C65B" />
 
                     <TextView
                         android:layout_width="0dp"

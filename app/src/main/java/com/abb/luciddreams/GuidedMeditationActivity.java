@@ -48,7 +48,7 @@ public class GuidedMeditationActivity extends AppCompatActivity {
     private MediaPlayer mediaPlayer;
     private boolean isMuted = false;
     private Handler progressHandler = new Handler(Looper.getMainLooper());
-    private ParticleView particleView;
+    private GlitterBackgroundView glitterView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +107,14 @@ public class GuidedMeditationActivity extends AppCompatActivity {
             videoView.setOnPreparedListener(mp -> {
                 mediaPlayer = mp;
                 mp.setLooping(true);
+                
+                // Set duration label
+                int duration = mp.getDuration() / 1000;
+                int min = duration / 60;
+                int sec = duration % 60;
+                tvDurationLabel.setText(String.format("Duration: %02d:%02d", min, sec));
+                progressBar.setMax(mp.getDuration());
+                
                 videoView.start();
                 
                 // Hide placeholder with animation
@@ -119,13 +127,6 @@ public class GuidedMeditationActivity extends AppCompatActivity {
 
                 updateUIForPlaying();
                 startProgressUpdate();
-                
-                // Set duration label
-                int duration = mp.getDuration() / 1000;
-                int min = duration / 60;
-                int sec = duration % 60;
-                tvDurationLabel.setText(String.format("Duration: %02d:%02d", min, sec));
-                progressBar.setMax(mp.getDuration());
                 
                 tvLiveIndicator.setVisibility(View.VISIBLE);
                 tvLiveIndicator.setAlpha(0f);
@@ -158,8 +159,8 @@ public class GuidedMeditationActivity extends AppCompatActivity {
         pulse.start();
 
         // Background particles
-        particleView = new ParticleView(this);
-        particleCanvas.addView(particleView);
+        glitterView = new GlitterBackgroundView(this);
+        particleCanvas.addView(glitterView);
     }
 
     private void setupListeners() {
@@ -256,56 +257,5 @@ public class GuidedMeditationActivity extends AppCompatActivity {
         super.onStop();
         if (videoView != null) videoView.stopPlayback();
         progressHandler.removeCallbacksAndMessages(null);
-    }
-
-    // ── Custom Particle View ──
-    private class ParticleView extends View {
-        private List<Particle> particles = new ArrayList<>();
-        private Paint paint = new Paint();
-        private Random random = new Random();
-
-        public ParticleView(android.content.Context context) {
-            super(context);
-            paint.setColor(Color.WHITE);
-            paint.setAntiAlias(true);
-            
-            for (int i = 0; i < 40; i++) {
-                particles.add(new Particle());
-            }
-        }
-
-        @Override
-        protected void onDraw(Canvas canvas) {
-            super.onDraw(canvas);
-            for (Particle p : particles) {
-                p.update(getWidth(), getHeight());
-                paint.setAlpha((int) (p.alpha * 255));
-                canvas.drawCircle(p.x, p.y, p.size, paint);
-            }
-            invalidate();
-        }
-
-        private class Particle {
-            float x, y, size, speed, alpha;
-            
-            Particle() {
-                reset(true);
-            }
-
-            void reset(boolean startRandom) {
-                x = random.nextFloat() * 1000; // Will be corrected on first update
-                y = startRandom ? random.nextFloat() * 2000 : 2100;
-                size = 2 + random.nextFloat() * 4;
-                speed = 0.5f + random.nextFloat() * 1.5f;
-                alpha = 0.1f + random.nextFloat() * 0.4f;
-            }
-
-            void update(int w, int h) {
-                if (x > w) x = random.nextFloat() * w;
-                y -= speed;
-                if (y < -50) reset(false);
-                if (x < 0 || x > w) x = random.nextFloat() * w;
-            }
-        }
     }
 }

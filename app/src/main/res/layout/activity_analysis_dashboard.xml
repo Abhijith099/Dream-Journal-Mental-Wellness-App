@@ -8,6 +8,11 @@
     android:background="#171F4B"
     tools:context=".AnalysisDashboardActivity">
 
+    <com.abb.luciddreams.GlitterBackgroundView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:importantForAccessibility="no" />
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
