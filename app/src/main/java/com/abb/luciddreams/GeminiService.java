@@ -58,13 +58,39 @@ public class GeminiService {
                         MediaType.get("application/json; charset=utf-8")
                 );
 
-                Request request = new Request.Builder()
-                        .url(API_URL + apiKey)
-                        .post(body)
-                        .build();
+                int retryCount = 0;
+                int maxRetries = 3;
+                long backoffDelay = 2000; // 2 seconds
 
-                try (Response response = client.newCall(request).execute()) {
-                    if (!response.isSuccessful()) {
+                while (retryCount <= maxRetries) {
+                    Request request = new Request.Builder()
+                            .url(API_URL + apiKey)
+                            .post(body)
+                            .build();
+
+                    try (Response response = client.newCall(request).execute()) {
+                        if (response.isSuccessful()) {
+                            String responseData = response.body().string();
+                            JSONObject jsonResponse = new JSONObject(responseData);
+                            String text = jsonResponse.getJSONArray("candidates")
+                                    .getJSONObject(0)
+                                    .getJSONObject("content")
+                                    .getJSONArray("parts")
+                                    .getJSONObject(0)
+                                    .getString("text");
+
+                            mainHandler.post(() -> listener.onSuccess(text));
+                            return;
+                        }
+
+                        if (response.code() == 503 && retryCount < maxRetries) {
+                            retryCount++;
+                            Log.w(TAG, "503 Service Unavailable, retrying " + retryCount + "/" + maxRetries + " after " + backoffDelay + "ms...");
+                            Thread.sleep(backoffDelay);
+                            backoffDelay *= 2; // Exponential backoff
+                            continue;
+                        }
+
                         String errorBody = response.body() != null ? response.body().string() : "No error body";
                         Log.e(TAG, "API Error: " + response.code() + " - " + errorBody);
                         String errorMsg = "API Error: " + response.code();
@@ -74,22 +100,19 @@ public class GeminiService {
                                 errorMsg = errJson.getJSONObject("error").getString("message");
                             }
                         } catch (Exception ignored) {}
-                        
+
                         final String finalError = errorMsg;
                         mainHandler.post(() -> listener.onError(finalError));
                         return;
+                    } catch (IOException | InterruptedException e) {
+                        if (retryCount < maxRetries) {
+                            retryCount++;
+                            Thread.sleep(backoffDelay);
+                            backoffDelay *= 2;
+                            continue;
+                        }
+                        throw e;
                     }
-
-                    String responseData = response.body().string();
-                    JSONObject jsonResponse = new JSONObject(responseData);
-                    String text = jsonResponse.getJSONArray("candidates")
-                            .getJSONObject(0)
-                            .getJSONObject("content")
-                            .getJSONArray("parts")
-                            .getJSONObject(0)
-                            .getString("text");
-
-                    mainHandler.post(() -> listener.onSuccess(text));
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Error: ", e);

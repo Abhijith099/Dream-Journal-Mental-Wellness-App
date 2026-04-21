@@ -297,17 +297,16 @@ public class PatternsActivity extends AppCompatActivity {
         leftAxis.setTextColor(Color.parseColor("#C5CAE9"));
         leftAxis.setTextSize(16f);
         if (poppins != null) leftAxis.setTypeface(poppins);
-        leftAxis.setAxisMaximum(5.5f);
-        leftAxis.setAxisMinimum(0.5f);
-        leftAxis.setLabelCount(5, true);
+        leftAxis.setAxisMaximum(10.5f);
+        leftAxis.setAxisMinimum(-0.5f);
+        leftAxis.setLabelCount(11, true);
         leftAxis.setDrawGridLines(true);
         leftAxis.setGridColor(Color.parseColor("#32407A")); // Subtle grid line color
         
         leftAxis.setValueFormatter(new ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {
-                int val = Math.round(value);
-                return getMoodName(getMoodFromValue(val)); // Show text labels instead of emojis if emojis fail to render
+                return String.valueOf((int) value);
             }
         });
 
@@ -322,25 +321,13 @@ public class PatternsActivity extends AppCompatActivity {
 
         List<Entry> entries = new ArrayList<>();
         for (Dream d : history) {
-            float val = 3f;
-            String m = d.getMood();
-            if ("Happy".equals(m)) val = 5f;
-            else if ("Calm".equals(m)) val = 4f;
-            else if ("Neutral".equals(m) || "Unclear".equals(m)) val = 3f;
-            else if ("Stressed".equals(m)) val = 2f;
-            else if ("Fearful".equals(m)) val = 1f;
-            else if ("✨".equals(m)) val = 5f;
-            else if ("🌙".equals(m)) val = 4f;
-            else if ("☁".equals(m)) val = 3f;
-            else if ("⚡".equals(m)) val = 2f;
-            else if ("🔥".equals(m)) val = 1f;
-            entries.add(new Entry(d.getTimestamp(), val));
+            entries.add(new Entry(d.getTimestamp(), (float) d.getLucidity()));
         }
 
-        LineDataSet dataSet = new LineDataSet(entries, "Mood");
-        dataSet.setColor(Color.parseColor("#39C6FF"));
+        LineDataSet dataSet = new LineDataSet(entries, "Lucidity Trend");
+        dataSet.setColor(Color.parseColor("#9A63FF"));
         dataSet.setLineWidth(3f); // Thicker line
-        dataSet.setCircleColor(Color.parseColor("#39C6FF"));
+        dataSet.setCircleColor(Color.parseColor("#9A63FF"));
         dataSet.setCircleRadius(8f); // Larger dots
         dataSet.setDrawCircleHole(true);
         dataSet.setCircleHoleColor(Color.parseColor("#171F4B"));
@@ -348,7 +335,7 @@ public class PatternsActivity extends AppCompatActivity {
         
         // Premium Glow effect using duplicate set or fill
         dataSet.setDrawFilled(true);
-        dataSet.setFillColor(Color.parseColor("#39C6FF"));
+        dataSet.setFillColor(Color.parseColor("#9A63FF"));
         dataSet.setFillAlpha(35);
         
         dataSet.setDrawValues(false);

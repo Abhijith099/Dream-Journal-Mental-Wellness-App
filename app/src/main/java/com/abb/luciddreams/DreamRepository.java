@@ -316,7 +316,7 @@ public class DreamRepository {
 
         Cursor cursor = db.query(
                 DreamDbHelper.TABLE_DREAMS,
-                new String[]{DreamDbHelper.COLUMN_TIMESTAMP, DreamDbHelper.COLUMN_MOOD},
+                new String[]{DreamDbHelper.COLUMN_TIMESTAMP, DreamDbHelper.COLUMN_MOOD, DreamDbHelper.COLUMN_LUCIDITY},
                 selection,
                 selectionArgs,
                 null,
@@ -328,6 +328,7 @@ public class DreamRepository {
             Dream d = new Dream();
             d.setTimestamp(cursor.getLong(0));
             d.setMood(cursor.getString(1));
+            d.setLucidity(cursor.getInt(2));
             dreams.add(d);
         }
         cursor.close();

@@ -238,6 +238,8 @@ public class AnalysisDashboardActivity extends AppCompatActivity {
             Dream d = last3.get(i);
             sb.append("Entry ").append(i + 1).append(" (").append(sdf.format(new Date(d.getTimestamp()))).append(")\n");
             sb.append("Mood: ").append(safe(d.getMood())).append("\n");
+            sb.append("Clarity Score: ").append(d.getClarity()).append("/10\n");
+            sb.append("Lucidity Score: ").append(d.getLucidity()).append("/10\n");
             sb.append("Nightmare: ").append(d.isNightmare() ? "Yes" : "No").append("\n");
             sb.append("Recurring: ").append(d.isRecurring() ? "Yes" : "No").append("\n");
             sb.append("Text: ").append(safe(d.getDescription())).append("\n\n");
@@ -367,16 +369,35 @@ public class AnalysisDashboardActivity extends AppCompatActivity {
         int nightmares = 0;
         int recurring = 0;
         int lowMood = 0;
+        int totalLucidity = 0;
+        int totalClarity = 0;
+        int count = 0;
+
         for (Dream d : last3) {
             if (d == null) continue;
+            count++;
             if (d.isNightmare()) nightmares++;
             if (d.isRecurring()) recurring++;
+            
+            totalLucidity += d.getLucidity();
+            totalClarity += d.getClarity();
+
             String m = safe(d.getMood()).toLowerCase(Locale.ROOT);
             if (m.contains("fear") || m.contains("stress") || m.contains("bad") || m.contains("terrible")) lowMood++;
         }
 
-        int stressScore = clampInt((nightmares * 30) + (recurring * 15) + (lowMood * 15), 0, 100);
-        int sleepScore = clampInt(90 - (nightmares * 25) - (recurring * 10), 0, 100);
+        float avgLucidity = count > 0 ? (float) totalLucidity / count : 5f;
+        float avgClarity = count > 0 ? (float) totalClarity / count : 5f;
+
+        // Stress increases with nightmares, recurring patterns, low mood, AND low clarity/lucidity
+        // If avgClarity is 0, add up to 20 points. If 10, add 0.
+        int clarityImpact = Math.round((10 - avgClarity) * 2); 
+        int stressScore = clampInt((nightmares * 30) + (recurring * 15) + (lowMood * 15) + clarityImpact, 0, 100);
+        
+        // Sleep quality is better with higher lucidity/clarity
+        int scoreFromScores = Math.round((avgLucidity + avgClarity) * 2.5f); // Max 50 from these two
+        int sleepScore = clampInt(scoreFromScores + 40 - (nightmares * 25) - (recurring * 10), 0, 100);
+
         String moodStatus = stressScore >= 75 ? "Distress Signals Found" :
                 stressScore >= 55 ? "Elevated Stress Signs" :
                         lowMood >= 2 ? "Low Mood Patterns Detected" : "Mood Stable";
@@ -390,7 +411,7 @@ public class AnalysisDashboardActivity extends AppCompatActivity {
         tvStressLabel.setText(scoreToStressLabel(stressScore) + " stress level");
 
         tvSleepScore.setText(String.valueOf(sleepScore));
-        tvSleepDesc.setText("Estimate based on nightmares, recurring patterns, and emotional tone in your last 3 entries.");
+        tvSleepDesc.setText("Estimate based on nightmares, scores (Lucidity/Clarity), and emotional tone in your last 3 entries.");
 
         renderMoodTrend(null, null, last3);
         applyThemesDefaults();
