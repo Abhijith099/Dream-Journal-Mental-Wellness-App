@@ -27,6 +27,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButtonToggleGroup;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
@@ -48,6 +49,7 @@ public class PatternsActivity extends AppCompatActivity {
     private TextView tvTotalDreams, tvPeriodDreams, tvInsight;
     private View llEmptyState;
     private BottomNavigationView bottomNav;
+    private MaterialCardView cardGallery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +83,7 @@ public class PatternsActivity extends AppCompatActivity {
         tvInsight = findViewById(R.id.tvInsight);
         llEmptyState = findViewById(R.id.llEmptyState);
         bottomNav = findViewById(R.id.bottomNav);
+        cardGallery = findViewById(R.id.cardGallery);
 
         setupChart();
     }
@@ -94,6 +97,32 @@ public class PatternsActivity extends AppCompatActivity {
                 else if (checkedId == R.id.btnLifetime) filter = "Lifetime";
                 loadData(getTimeFilter(filter));
             }
+        });
+
+        cardGallery.setOnTouchListener((v, event) -> {
+            switch (event.getAction()) {
+                case android.view.MotionEvent.ACTION_DOWN:
+                    v.animate().scaleX(0.96f).scaleY(0.96f).setDuration(100).start();
+                    break;
+                case android.view.MotionEvent.ACTION_UP:
+                case android.view.MotionEvent.ACTION_CANCEL:
+                    v.animate().scaleX(1f).scaleY(1f).setDuration(100).start();
+                    break;
+            }
+            return false;
+        });
+
+        cardGallery.setOnClickListener(v -> {
+            String filter = "Month";
+            int checkedId = toggleGroup.getCheckedButtonId();
+            if (checkedId == R.id.btnDay) filter = "Day";
+            else if (checkedId == R.id.btnYear) filter = "Year";
+            else if (checkedId == R.id.btnLifetime) filter = "Lifetime";
+
+            Intent intent = new Intent(this, DreamGalleryActivity.class);
+            intent.putExtra("gallery_filter", filter);
+            startActivity(intent);
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         });
     }
 

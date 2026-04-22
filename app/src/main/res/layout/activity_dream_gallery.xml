@@ -36,64 +36,62 @@
             android:textSize="24sp"
             android:fontFamily="@font/poppins"
             android:textStyle="bold" />
-
-        <ImageView
-            android:id="@+id/ivGalleryCalendar"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_gravity="center_vertical|end"
-            android:layout_marginEnd="16dp"
-            android:padding="8dp"
-            android:src="@drawable/ic_calendar"
-            app:tint="#39C6FF"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Calendar" />
-
     </FrameLayout>
 
+    <!-- Filter Subtitle Banner -->
     <LinearLayout
-        android:id="@+id/filterHeader"
+        android:id="@+id/filterBanner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingHorizontal="20dp"
-        android:paddingBottom="12dp"
+        android:paddingBottom="14dp"
         android:gravity="center_vertical"
-        android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/topBar">
 
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/ic_gallery"
+            app:tint="#39C6FF"
+            android:alpha="0.8"
+            android:layout_marginEnd="8dp"
+            android:contentDescription="Filter" />
+
         <TextView
-            android:id="@+id/tvFilterDate"
-            android:layout_width="0dp"
+            android:id="@+id/tvActiveFilter"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Showing: 18 Apr"
+            android:text="This Month"
             android:textColor="#39C6FF"
+            android:textSize="14sp"
             android:fontFamily="@font/poppins"
             android:textStyle="bold" />
 
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
         <TextView
-            android:id="@+id/btnSeeAll"
+            android:id="@+id/tvImageCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="See All Images"
-            android:textColor="#FFFFFF"
-            android:background="#33FFFFFF"
-            android:paddingHorizontal="12dp"
-            android:paddingVertical="6dp"
-            android:textSize="12sp"
+            android:text=""
+            android:textColor="#8899CC"
+            android:textSize="13sp"
             android:fontFamily="@font/poppins" />
-
     </LinearLayout>
 
+    <!-- Gallery RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvGallery"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:paddingHorizontal="12dp"
-        android:paddingBottom="100dp"
+        android:paddingBottom="20dp"
         android:clipToPadding="false"
-        app:layout_constraintTop_toBottomOf="@id/filterHeader"
+        app:layout_constraintTop_toBottomOf="@id/filterBanner"
         app:layout_constraintBottom_toTopOf="@id/bottomNav" />
 
     <!-- Bottom Navigation Bar -->
@@ -122,31 +120,33 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <ImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="88dp"
+            android:layout_height="88dp"
             android:src="@drawable/ic_gallery"
             app:tint="#39C6FF"
-            android:alpha="0.5"
-            android:layout_marginBottom="16dp" />
+            android:alpha="0.35"
+            android:layout_marginBottom="20dp"
+            android:contentDescription="Empty" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Your gallery is empty"
+            android:text="No dream images yet"
             android:textColor="#FFFFFF"
-            android:textSize="18sp"
+            android:textSize="20sp"
             android:fontFamily="@font/poppins"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:gravity="center" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="260dp"
             android:layout_height="wrap_content"
-            android:text="Analyze your dreams to generate art"
-            android:textColor="#C5CAE9"
+            android:text="Analyze your dreams to generate\ncalming AI artwork"
+            android:textColor="#8899CC"
             android:textSize="14sp"
             android:fontFamily="@font/poppins"
-            android:layout_marginTop="8dp" />
-
+            android:layout_marginTop="10dp"
+            android:gravity="center" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
