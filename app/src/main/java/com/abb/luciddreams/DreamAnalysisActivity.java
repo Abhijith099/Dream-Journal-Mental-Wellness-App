@@ -297,14 +297,22 @@ public class DreamAnalysisActivity extends AppCompatActivity {
             public void onError(String message) {
                 if (isFinishing() || isDestroyed()) return;
                 loading.setVisibility(View.GONE);
+                
+                // Set a placeholder image if it's currently empty/default
+                imageView.setImageResource(R.drawable.bg_dream_visualization);
+                imageView.setAlpha(0.6f); // Make it look a bit "dimmed" since it's a fallback
+                
                 if (errorOverlay != null) {
                     errorOverlay.setVisibility(View.VISIBLE);
                     TextView tvError = errorOverlay.findViewById(R.id.tvErrorStatus);
-                    if (tvError != null) tvError.setText(message);
+                    if (tvError != null) tvError.setText("Generation unavailable. Using dreamy placeholder.\n(" + message + ")");
+                    
                     Button btnRetry = errorOverlay.findViewById(R.id.btnRetry);
-                    if (btnRetry != null) btnRetry.setOnClickListener(v -> generateAndDisplayImage(text, imageView, loading));
+                    if (btnRetry != null) {
+                        btnRetry.setText("Try Again");
+                        btnRetry.setOnClickListener(v -> generateAndDisplayImage(text, imageView, loading));
+                    }
                 }
-                PremiumToast.show(DreamAnalysisActivity.this, message);
             }
         });
     }
