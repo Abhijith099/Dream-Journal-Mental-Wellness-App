@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="24dp"
+    app:cardElevation="8dp"
+    app:cardBackgroundColor="#232C61"
+    app:strokeWidth="1dp"
+    app:strokeColor="#3039C6FF">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/ivFeaturedImage"
+            android:layout_width="match_parent"
+            android:layout_height="320dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/bg_dream_visualization" />
+
+        <!-- Gradient scrim over the image bottom -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/gradient_scrim"
+            android:layout_above="@+id/featuredMeta" />
+
+        <!-- "Best of Month" badge -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:layout_margin="16dp"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="6dp"
+            android:background="@drawable/bg_date_chip"
+            android:text="✦ Best of Month"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:fontFamily="@font/poppins"
+            android:textStyle="bold" />
+
+        <!-- Date chip top-right -->
+        <TextView
+            android:id="@+id/tvFeaturedDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="16dp"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
+            android:background="@drawable/bg_date_chip"
+            android:text="18 Apr"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:fontFamily="@font/poppins"
+            android:textStyle="bold" />
+
+        <!-- Bottom meta container -->
+        <LinearLayout
+            android:id="@+id/featuredMeta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tvFeaturedDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Dream description..."
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:fontFamily="@font/poppins"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:layout_marginBottom="8dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <!-- Mood badge -->
+                <TextView
+                    android:id="@+id/tvFeaturedMood"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="4dp"
+                    android:background="@drawable/bg_date_chip"
+                    android:text="Calm"
+                    android:textColor="#FFFFFF"
+                    android:textSize="11sp"
+                    android:fontFamily="@font/poppins"
+                    android:layout_marginEnd="8dp" />
+
+                <!-- Lucidity badge -->
+                <TextView
+                    android:id="@+id/tvFeaturedLucidity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="4dp"
+                    android:background="@drawable/bg_date_chip"
+                    android:text="Lucidity 8"
+                    android:textColor="#39C6FF"
+                    android:textSize="11sp"
+                    android:fontFamily="@font/poppins" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </RelativeLayout>
+
+</com.google.android.material.card.MaterialCardView>

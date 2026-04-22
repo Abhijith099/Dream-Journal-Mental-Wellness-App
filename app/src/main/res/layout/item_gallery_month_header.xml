@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingHorizontal="8dp"
+    android:paddingTop="20dp"
+    android:paddingBottom="10dp"
+    android:gravity="center_vertical">
+
+    <View
+        android:layout_width="4dp"
+        android:layout_height="20dp"
+        android:background="#39C6FF"
+        android:layout_marginEnd="10dp" />
+
+    <TextView
+        android:id="@+id/tvMonthHeader"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="March 2026"
+        android:textColor="#FFFFFF"
+        android:textSize="17sp"
+        android:fontFamily="@font/poppins"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvMonthCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="3 images"
+        android:textColor="#8899CC"
+        android:textSize="13sp"
+        android:fontFamily="@font/poppins" />
+</LinearLayout>

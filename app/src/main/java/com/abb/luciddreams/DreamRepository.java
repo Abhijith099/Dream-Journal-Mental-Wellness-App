@@ -439,4 +439,113 @@ public class DreamRepository {
 
         return stats;
     }
+
+    /**
+     * Returns dreams that have an image_url, filtered by the given gallery filter.
+     * filter: "Day", "Month", "Year", or "Lifetime"
+     */
+    public List<Dream> getGalleryImages(String filter, long referenceTime) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        List<Dream> dreams = new ArrayList<>();
+
+        // Build time bounds
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(referenceTime);
+
+        StringBuilder selection = new StringBuilder(
+                DreamDbHelper.COLUMN_IMAGE_URL + " IS NOT NULL AND " +
+                DreamDbHelper.COLUMN_IMAGE_URL + " != ''");
+        List<String> args = new ArrayList<>();
+
+        if (!"Lifetime".equals(filter)) {
+            // Normalise to midnight of the reference time
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+
+            long start;
+            if ("Day".equals(filter)) {
+                start = cal.getTimeInMillis();
+            } else if ("Month".equals(filter)) {
+                cal.set(Calendar.DAY_OF_MONTH, 1);
+                start = cal.getTimeInMillis();
+            } else { // Year
+                cal.set(Calendar.DAY_OF_YEAR, 1);
+                start = cal.getTimeInMillis();
+            }
+
+            selection.append(" AND ").append(DreamDbHelper.COLUMN_TIMESTAMP).append(" >= ?");
+            args.add(String.valueOf(start));
+        }
+
+        Cursor cursor = db.query(
+                DreamDbHelper.TABLE_DREAMS,
+                null,
+                selection.toString(),
+                args.isEmpty() ? null : args.toArray(new String[0]),
+                null, null,
+                DreamDbHelper.COLUMN_TIMESTAMP + " DESC"
+        );
+
+        while (cursor.moveToNext()) {
+            dreams.add(cursorToDream(cursor));
+        }
+        cursor.close();
+        return dreams;
+    }
+
+    /** Clears the image URL for a dream (effectively removes it from the gallery). */
+    public void clearDreamImage(long dreamId) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.putNull(DreamDbHelper.COLUMN_IMAGE_URL);
+        db.update(DreamDbHelper.TABLE_DREAMS, values,
+                DreamDbHelper.COLUMN_ID + " = ?",
+                new String[]{String.valueOf(dreamId)});
+    }
+
+    /** Appends a tag to the dream's tags field (comma-separated), avoiding duplicates. */
+    public void addTagToDream(long dreamId, String newTag) {
+        Dream dream = getDreamById(dreamId);
+        if (dream == null) return;
+        String existing = dream.getTags() != null ? dream.getTags() : "";
+        if (!existing.toLowerCase().contains(newTag.toLowerCase())) {
+            String updated = existing.isEmpty() ? newTag : existing + "," + newTag;
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put(DreamDbHelper.COLUMN_TAGS, updated);
+            db.update(DreamDbHelper.TABLE_DREAMS, values,
+                    DreamDbHelper.COLUMN_ID + " = ?",
+                    new String[]{String.valueOf(dreamId)});
+        }
+    }
+
+    /** Returns true if a dream has the "favorite" tag. */
+    public boolean isFavorite(long dreamId) {
+        Dream dream = getDreamById(dreamId);
+        if (dream == null) return false;
+        String tags = dream.getTags();
+        return tags != null && tags.toLowerCase().contains("favorite");
+    }
+
+    /** Finds a dream by its image URL. */
+    public Dream getDreamByImagePath(String path) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.query(
+                DreamDbHelper.TABLE_DREAMS,
+                null,
+                DreamDbHelper.COLUMN_IMAGE_URL + " = ?",
+                new String[]{path},
+                null, null, null
+        );
+        try {
+            if (cursor.moveToFirst()) {
+                return cursorToDream(cursor);
+            }
+            return null;
+        } finally {
+            cursor.close();
+        }
+    }
 }

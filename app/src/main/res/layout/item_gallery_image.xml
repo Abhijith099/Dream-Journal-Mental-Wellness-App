@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
+    android:layout_margin="6dp"
     app:cardCornerRadius="20dp"
     app:cardElevation="6dp"
     app:cardBackgroundColor="#232C61"
@@ -18,42 +18,58 @@
         <ImageView
             android:id="@+id/ivGalleryImage"
             android:layout_width="match_parent"
-            android:layout_height="220dp"
+            android:layout_height="200dp"
             android:scaleType="centerCrop"
             android:src="@drawable/bg_dream_visualization" />
 
-        <!-- Date Chip Overlay -->
+        <!-- Date Chip Overlay top-right -->
         <TextView
             android:id="@+id/tvGalleryDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
-            android:layout_margin="12dp"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="4dp"
+            android:layout_margin="10dp"
+            android:paddingHorizontal="9dp"
+            android:paddingVertical="3dp"
             android:background="@drawable/bg_date_chip"
             android:text="18 Apr"
             android:textColor="#FFFFFF"
-            android:textSize="12sp"
+            android:textSize="11sp"
             android:fontFamily="@font/poppins"
             android:textStyle="bold" />
 
+        <!-- Mood badge bottom-left -->
+        <TextView
+            android:id="@+id/tvGalleryMood"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_margin="10dp"
+            android:paddingHorizontal="9dp"
+            android:paddingVertical="3dp"
+            android:background="@drawable/bg_date_chip"
+            android:text="Calm"
+            android:textColor="#C5CAE9"
+            android:textSize="11sp"
+            android:fontFamily="@font/poppins" />
+
+        <!-- Bottom description strip -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/ivGalleryImage"
             android:orientation="vertical"
-            android:padding="12dp"
-            android:background="#1A000000">
+            android:padding="10dp">
 
             <TextView
                 android:id="@+id/tvGalleryDesc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Dream description goes here..."
+                android:text="Dream description..."
                 android:textColor="#FFFFFF"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 android:fontFamily="@font/poppins"
                 android:maxLines="1"
                 android:ellipsize="end" />

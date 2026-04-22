@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000">
 
-    <com.github.chrisbanes.photoview.PhotoView
-        android:id="@+id/photoView"
+    <!-- ViewPager2 for swipe navigation between images -->
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPagerImages"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <!-- Close button -->
     <ImageView
         android:id="@+id/ivClose"
         android:layout_width="40dp"
@@ -20,6 +21,24 @@
         android:src="@drawable/ic_close"
         app:tint="#FFFFFF"
         android:background="@drawable/bg_circle_dark"
-        android:contentDescription="Close" />
+        android:contentDescription="Close"
+        xmlns:app="http://schemas.android.com/apk/res-auto" />
+
+    <!-- Page indicator: e.g. "2 / 7" -->
+    <TextView
+        android:id="@+id/tvPageIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="24dp"
+        android:paddingHorizontal="14dp"
+        android:paddingVertical="6dp"
+        android:background="@drawable/bg_date_chip"
+        android:text="1 / 1"
+        android:textColor="#FFFFFF"
+        android:textSize="13sp"
+        android:fontFamily="@font/poppins"
+        android:textStyle="bold" />
 
 </FrameLayout>
