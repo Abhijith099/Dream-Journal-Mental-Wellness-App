@@ -4,14 +4,19 @@ import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.content.SharedPreferences;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Vibrator;
+import android.speech.tts.TextToSpeech;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
+
+import java.util.Locale;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -61,6 +66,11 @@ public class BreathingTrainerActivity extends AppCompatActivity {
 
     private SharedPreferences prefs;
 
+    // ── TTS & Haptics ─────────────────────────────────────────────────────────
+    private TextToSpeech tts;
+    private boolean      ttsReady = false;
+    private Vibrator     vibrator;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
@@ -80,6 +90,9 @@ public class BreathingTrainerActivity extends AppCompatActivity {
         wireListeners();
         applyDurationSelection(selectedDuration);
         setState(State.IDLE);
+
+        initTTS();
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
     }
 
     @Override
@@ -90,6 +103,10 @@ public class BreathingTrainerActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        if (tts != null) {
+            tts.stop();
+            tts.shutdown();
+        }
         super.onDestroy();
         stopAll();
     }
@@ -115,6 +132,32 @@ public class BreathingTrainerActivity extends AppCompatActivity {
 
         View back = findViewById(R.id.simple_back);
         if (back != null) back.setOnClickListener(v -> finish());
+    }
+
+    private void initTTS() {
+        tts = new TextToSpeech(this, status -> {
+            if (status == TextToSpeech.SUCCESS) {
+                int langResult = tts.setLanguage(Locale.US);
+                if (langResult != TextToSpeech.LANG_MISSING_DATA && langResult != TextToSpeech.LANG_NOT_SUPPORTED) {
+                    ttsReady = true;
+                    // Calmer voice: slightly lower pitch, slightly slower rate
+                    tts.setPitch(0.9f);
+                    tts.setSpeechRate(0.85f);
+                }
+            }
+        });
+    }
+
+    private void speak(String text) {
+        if (ttsReady && tts != null) {
+            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "breath_cue");
+        }
+    }
+
+    private void vibrate() {
+        if (vibrator != null && vibrator.hasVibrator()) {
+            vibrator.vibrate(50); // Subtle pulse
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -176,6 +219,7 @@ public class BreathingTrainerActivity extends AppCompatActivity {
         currentPhase = 0;
         setState(State.RUNNING);
         startSessionTimer(remainingSession);
+        speak("Starting breathing exercise");
         runNextPhase();
     }
 
@@ -185,12 +229,14 @@ public class BreathingTrainerActivity extends AppCompatActivity {
         breathHandler.removeCallbacks(breathRunnable);
         cancelSessionTimer();
         stopCircleAnim();
+        if (tts != null) tts.stop();
     }
 
     private void resumeBreathing() {
         setState(State.RUNNING);
         startSessionTimer(remainingSession);
         // resume current phase with remaining time
+        speak(phaseName(currentPhase));
         runPhaseWithDuration(currentPhase, phaseRemainMs > 0 ? phaseRemainMs : phaseDuration(currentPhase));
     }
 
@@ -199,6 +245,8 @@ public class BreathingTrainerActivity extends AppCompatActivity {
         breathHandler.removeCallbacks(breathRunnable);
         cancelSessionTimer();
         stopCircleAnim();
+        if (tts != null) tts.stop();
+        speak("Breathing exercise stopped");
         remainingSession = selectedDuration;
         updateSessionTimer(selectedDuration);
         currentPhase = 0;
@@ -222,6 +270,10 @@ public class BreathingTrainerActivity extends AppCompatActivity {
 
         String phaseName = phaseName(phase);
         if (tvBreathPhase != null) tvBreathPhase.setText(phaseName);
+
+        // Visual + Audio + Haptic cues
+        speak(phaseName);
+        vibrate();
 
         // Animate circle expand (inhale) or contract (exhale/hold)
         animateBreathCircle(phase, durationMs);
@@ -259,9 +311,9 @@ public class BreathingTrainerActivity extends AppCompatActivity {
     }
 
     private String phaseName(int phase) {
-        if (phase == 0) return "Inhale";
+        if (phase == 0) return "Breathe in";
         if (phase == 1) return "Hold";
-        return "Exhale";
+        return "Breathe out";
     }
 
     // ─────────────────────────────────────────────────────────────────────────
