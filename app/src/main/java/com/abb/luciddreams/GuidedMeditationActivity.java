@@ -189,12 +189,23 @@ public class GuidedMeditationActivity extends AppCompatActivity {
     }
 
     private void togglePlayPause() {
+        if (videoView == null) return;
+        
         if (videoView.isPlaying()) {
             videoView.pause();
             updateUIForPaused();
         } else {
             videoView.start();
             updateUIForPlaying();
+            
+            // If it was stopped, we need to show it again
+            if (videoView.getVisibility() != View.VISIBLE) {
+                videoPlaceholder.animate().alpha(0f).setDuration(300).withEndAction(() -> {
+                    videoPlaceholder.setVisibility(View.GONE);
+                    videoView.setVisibility(View.VISIBLE);
+                    videoView.setAlpha(1f);
+                }).start();
+            }
         }
     }
 
@@ -213,26 +224,34 @@ public class GuidedMeditationActivity extends AppCompatActivity {
     }
 
     private void stopMeditation() {
-        if (mediaPlayer != null) {
-            mediaPlayer.setLooping(false);
-            videoView.stopPlayback();
+        if (videoView != null) {
+            videoView.pause();
+            videoView.seekTo(0);
         }
         tvLoopStatus.setText("Meditation stopped.");
         tvLiveIndicator.setVisibility(View.GONE);
-        videoView.animate().alpha(0f).setDuration(300).start();
-        videoPlaceholder.setVisibility(View.VISIBLE);
-        videoPlaceholder.setAlpha(0f);
-        videoPlaceholder.animate().alpha(1f).setDuration(300).start();
+        
+        videoView.animate().alpha(0f).setDuration(300).withEndAction(() -> {
+            videoView.setVisibility(View.INVISIBLE);
+            videoPlaceholder.setVisibility(View.VISIBLE);
+            videoPlaceholder.setAlpha(0f);
+            videoPlaceholder.animate().alpha(1f).setDuration(300).start();
+            updateUIForPaused();
+        }).start();
     }
 
     private void updateUIForPlaying() {
-        iconPlayPause.setImageResource(R.drawable.ic_pause);
-        iconPlayPause.animate().scaleX(1.1f).scaleY(1.1f).setDuration(200).start();
+        if (iconPlayPause != null) {
+            iconPlayPause.setImageResource(R.drawable.ic_pause);
+            iconPlayPause.animate().scaleX(1.1f).scaleY(1.1f).setDuration(200).start();
+        }
     }
 
     private void updateUIForPaused() {
-        iconPlayPause.setImageResource(R.drawable.ic_play);
-        iconPlayPause.animate().scaleX(1.0f).scaleY(1.0f).setDuration(200).start();
+        if (iconPlayPause != null) {
+            iconPlayPause.setImageResource(R.drawable.ic_play);
+            iconPlayPause.animate().scaleX(1.0f).scaleY(1.0f).setDuration(200).start();
+        }
     }
 
     private void startProgressUpdate() {
