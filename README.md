@@ -16,7 +16,7 @@ Built with modern web technologies, the project focuses on providing an intuitiv
 
 ## Tech Stack
 
-* Frontend: React.js
+* Frontend: React.js & Typescript
 * Backend: Node.js & Express.js
 * Database: MongoDB
 * Authentication: JWT / Secure Authentication
