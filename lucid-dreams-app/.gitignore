@@ -1,0 +1,31 @@
+# Dependencies (never commit node_modules)
+node_modules/
+
+# Expo temporary builds
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Android / Gradle temporary build caches (do NOT commit temporary binaries)
+android/.gradle/
+android/build/
+android/app/build/
+
+# iOS temporary build caches
+ios/build/
+ios/Pods/
+
+# Metro & Debug logs
+.metro-health-check*
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# OS files
+.DS_Store
+
+# Typescript build info
+*.tsbuildinfo
+
+app-example
