@@ -4,6 +4,20 @@ Lucid Dreams is an AI-powered dream journaling, mental health monitoring, and bi
 
 ---
 
+## Application Preview
+
+| Home Dashboard | Dream & Theme Insights | Emotional Trends |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/01_home_dashboard.jpeg" width="240" /> | <img src="docs/screenshots/02_dream_theme_insights.jpeg" width="240" /> | <img src="docs/screenshots/03_emotional_patterns.jpeg" width="240" /> |
+
+| Adaptive Coping | Sanctuary & Memory Support | Emergency Safety & Dial Guard |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/04_coping_recommendations.jpeg" width="240" /> | <img src="docs/screenshots/05_sanctuary_memories.jpeg" width="240" /> | <img src="docs/screenshots/06_emergency_dialguard.jpeg" width="240" /> |
+
+<!-- Reserved slot for Heart Rate PPG screen: docs/screenshots/07_heart_rate_ppg.jpeg -->
+
+---
+
 ## Architecture Overview
 
 The system consists of two primary subsystems:
@@ -66,6 +80,7 @@ Kotlin is used in `HeartRatePlugin.kt` as a custom **Vision Camera Frame Process
 
 ```
 Lucid_Dreams_Website/
+├── docs/screenshots/               # Showcase screenshots for documentation
 ├── lucid-dreams-app/               # React Native (Expo) mobile frontend
 │   ├── android/                    # Android project files and native Kotlin code
 │   │   └── app/src/main/java/com/anonymous/luciddreamsapp/
